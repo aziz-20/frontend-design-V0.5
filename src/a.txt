@@ -1,0 +1,1465 @@
+res:
+
+{
+
+  success: true,
+
+  code: '0',
+
+  message: {},
+
+  result: {
+
+    pageNo: 1,
+
+    pageSize: 0,
+
+    total: 31,
+
+    pageTotalNum: 0,
+
+    isHasPreviousPage: false,
+
+    isHasNextPage: false,
+
+    data: [
+
+      {
+
+        status: 0,
+
+        delFlag: 0,
+
+        createBy: 0,
+
+        updateBy: 8,
+
+        createByName: 'aziz',
+
+        updateByName: 'aziz',
+
+        createTime: '2023-11-19 11:19:01',
+
+        updateTime: '2023-12-04 08:37:15',
+
+        menuId: 1,
+
+        parentId: 0,
+
+        key: 1,
+
+        name: '系统管理',
+
+        orderNum: 1,
+
+        type: 0,
+
+        path: 'system',
+
+        component: null,
+
+        icon: null,
+
+        remark: '系统管理目录',
+
+        hierarchy: 'system',
+
+        children: Array(15) [
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 8,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-24 12:52:05',
+
+            updateTime: '2023-12-04 08:37:37',
+
+            menuId: 2027,
+
+            parentId: 1,
+
+            key: 2027,
+
+            name: 'Medicald',
+
+            orderNum: 1,
+
+            type: 0,
+
+            path: 'ccccx',
+
+            component: 'user',
+
+            icon: 'userIcon',
+
+            remark: 'for managing the user',
+
+            hierarchy: 'system:ccccx',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 8,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-24 12:04:11',
+
+            updateTime: '2023-12-04 08:37:33',
+
+            menuId: 2023,
+
+            parentId: 1,
+
+            key: 2023,
+
+            name: 'Medical Record',
+
+            orderNum: 1,
+
+            type: 1,
+
+            path: 'system',
+
+            component: 'user',
+
+            icon: 'userIcon',
+
+            remark: 'for managing the user',
+
+            hierarchy: 'system:system',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 8,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-24 12:39:33',
+
+            updateTime: '2023-12-04 08:37:36',
+
+            menuId: 2025,
+
+            parentId: 1,
+
+            key: 2025,
+
+            name: 'Medicald',
+
+            orderNum: 1,
+
+            type: 0,
+
+            path: 'xxxx',
+
+            component: 'user',
+
+            icon: 'userIcon',
+
+            remark: 'for managing the user',
+
+            hierarchy: 'system:xxxx',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 8,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-24 13:11:25',
+
+            updateTime: '2023-12-04 08:37:38',
+
+            menuId: 2028,
+
+            parentId: 1,
+
+            key: 2028,
+
+            name: 'bbbb',
+
+            orderNum: 1,
+
+            type: 0,
+
+            path: 'ccccx',
+
+            component: 'user',
+
+            icon: 'userIcon',
+
+            remark: 'for managing the user',
+
+            hierarchy: 'system:ccccx',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 8,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-24 12:36:02',
+
+            updateTime: '2023-12-04 08:37:34',
+
+            menuId: 2024,
+
+            parentId: 1,
+
+            key: 2024,
+
+            name: 'Medicald',
+
+            orderNum: 1,
+
+            type: 0,
+
+            path: 'system',
+
+            component: 'user',
+
+            icon: 'userIcon',
+
+            remark: 'for managing the user',
+
+            hierarchy: 'system:system',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:18',
+
+            menuId: 100,
+
+            parentId: 1,
+
+            key: 100,
+
+            name: '用户管理',
+
+            orderNum: 1,
+
+            type: 1,
+
+            path: 'user',
+
+            component: 'system/user/index',
+
+            icon: 'user',
+
+            remark: '用户管理菜单',
+
+            hierarchy: 'system:user',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 8,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-24 12:49:10',
+
+            updateTime: '2023-12-04 08:37:37',
+
+            menuId: 2026,
+
+            parentId: 1,
+
+            key: 2026,
+
+            name: 'Medicald',
+
+            orderNum: 1,
+
+            type: 0,
+
+            path: 'cccc',
+
+            component: 'user',
+
+            icon: 'userIcon',
+
+            remark: 'for managing the user',
+
+            hierarchy: 'system:cccc',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:20',
+
+            menuId: 101,
+
+            parentId: 1,
+
+            key: 101,
+
+            name: '角色管理',
+
+            orderNum: 2,
+
+            type: 1,
+
+            path: 'role',
+
+            component: 'system/role/index',
+
+            icon: 'peoples',
+
+            remark: '角色管理菜单',
+
+            hierarchy: 'system:role',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:22',
+
+            menuId: 102,
+
+            parentId: 1,
+
+            key: 102,
+
+            name: '菜单管理',
+
+            orderNum: 3,
+
+            type: 1,
+
+            path: 'menu',
+
+            component: 'system/menu/index',
+
+            icon: 'tree-table',
+
+            remark: '菜单管理菜单',
+
+            hierarchy: 'system:menu',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:23',
+
+            menuId: 103,
+
+            parentId: 1,
+
+            key: 103,
+
+            name: '部门管理',
+
+            orderNum: 4,
+
+            type: 1,
+
+            path: 'dept',
+
+            component: 'system/dept/index',
+
+            icon: 'tree',
+
+            remark: '部门管理菜单',
+
+            hierarchy: 'system:dept',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:24',
+
+            menuId: 104,
+
+            parentId: 1,
+
+            key: 104,
+
+            name: '岗位管理',
+
+            orderNum: 5,
+
+            type: 1,
+
+            path: 'post',
+
+            component: 'system/post/index',
+
+            icon: 'post',
+
+            remark: '岗位管理菜单',
+
+            hierarchy: 'system:post',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:25',
+
+            menuId: 105,
+
+            parentId: 1,
+
+            key: 105,
+
+            name: '字典管理',
+
+            orderNum: 6,
+
+            type: 1,
+
+            path: 'dict',
+
+            component: 'system/dict/index',
+
+            icon: 'dict',
+
+            remark: '字典管理菜单',
+
+            hierarchy: 'system:dict',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:26',
+
+            menuId: 106,
+
+            parentId: 1,
+
+            key: 106,
+
+            name: '参数设置',
+
+            orderNum: 7,
+
+            type: 1,
+
+            path: 'config',
+
+            component: 'system/config/index',
+
+            icon: 'edit',
+
+            remark: '参数设置菜单',
+
+            hierarchy: 'system:config',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:28',
+
+            menuId: 107,
+
+            parentId: 1,
+
+            key: 107,
+
+            name: '通知公告',
+
+            orderNum: 8,
+
+            type: 1,
+
+            path: 'notice',
+
+            component: 'system/notice/index',
+
+            icon: 'message',
+
+            remark: '通知公告菜单',
+
+            hierarchy: 'system:notice',
+
+            children: [],
+
+            parentName: '系统管理'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:28',
+
+            menuId: 108,
+
+            parentId: 1,
+
+            key: 108,
+
+            name: '日志管理',
+
+            orderNum: 9,
+
+            type: 0,
+
+            path: 'log',
+
+            component: null,
+
+            icon: 'log',
+
+            remark: '日志管理菜单',
+
+            hierarchy: 'system:log',
+
+            children: [
+
+              {
+
+                status: 0,
+
+                delFlag: 0,
+
+                createBy: 0,
+
+                updateBy: 8,
+
+                createByName: 'aziz',
+
+                updateByName: 'aziz',
+
+                createTime: '2023-11-19 11:19:01',
+
+                updateTime: '2023-12-04 08:37:31',
+
+                menuId: 500,
+
+                parentId: 108,
+
+                key: 500,
+
+                name: '操作日志',
+
+                orderNum: 1,
+
+                type: 1,
+
+                path: 'operlog',
+
+                component: 'monitor/operlog/index',
+
+                icon: 'form',
+
+                remark: '操作日志菜单',
+
+                hierarchy: 'system:log:operlog',
+
+                children: [],
+
+                parentName: '日志管理'
+
+              },
+
+              {
+
+                status: 0,
+
+                delFlag: 0,
+
+                createBy: 8,
+
+                updateBy: 8,
+
+                createByName: 'aziz',
+
+                updateByName: 'aziz',
+
+                createTime: '2023-11-19 11:19:01',
+
+                updateTime: '2023-12-04 08:37:32',
+
+                menuId: 501,
+
+                parentId: 108,
+
+                key: 501,
+
+                name: '登录日志',
+
+                orderNum: 2,
+
+                type: 1,
+
+                path: 'logininfor',
+
+                component: 'monitor/logininfor/index',
+
+                icon: 'logininfor',
+
+                remark: '登录日志菜单',
+
+                hierarchy: 'system:log:logininfor',
+
+                children: [],
+
+                parentName: '日志管理'
+
+              }
+
+            ],
+
+            parentName: '系统管理'
+
+          }
+
+        ],
+
+        parentName: 'ROOT'
+
+      },
+
+      {
+
+        status: 0,
+
+        delFlag: 0,
+
+        createBy: 8,
+
+        updateBy: 2416241724182422,
+
+        createByName: 'aziz',
+
+        updateByName: 'alison',
+
+        createTime: '2023-11-27 14:35:47',
+
+        updateTime: '2023-11-27 14:35:47',
+
+        menuId: 2029,
+
+        parentId: 0,
+
+        key: 2029,
+
+        name: 'check edit',
+
+        orderNum: 1,
+
+        type: 0,
+
+        path: 'hi',
+
+        component: 'cc',
+
+        icon: 'x',
+
+        remark: null,
+
+        hierarchy: 'hi',
+
+        children: [],
+
+        parentName: 'ROOT'
+
+      },
+
+      {
+
+        status: 0,
+
+        delFlag: 0,
+
+        createBy: 0,
+
+        updateBy: 0,
+
+        createByName: 'aziz',
+
+        updateByName: 'aziz',
+
+        createTime: '2023-11-19 11:19:01',
+
+        updateTime: '2023-11-19 11:19:01',
+
+        menuId: 2,
+
+        parentId: 0,
+
+        key: 2,
+
+        name: '系统监控',
+
+        orderNum: 2,
+
+        type: 0,
+
+        path: 'monitor',
+
+        component: null,
+
+        icon: null,
+
+        remark: '系统监控目录',
+
+        hierarchy: 'monitor',
+
+        children: Array(6) [
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 109,
+
+            parentId: 2,
+
+            key: 109,
+
+            name: '在线用户',
+
+            orderNum: 1,
+
+            type: 1,
+
+            path: 'online',
+
+            component: 'monitor/online/index',
+
+            icon: 'online',
+
+            remark: '在线用户菜单',
+
+            hierarchy: 'monitor:online',
+
+            children: [],
+
+            parentName: '系统监控'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 110,
+
+            parentId: 2,
+
+            key: 110,
+
+            name: '定时任务',
+
+            orderNum: 2,
+
+            type: 1,
+
+            path: 'job',
+
+            component: 'monitor/job/index',
+
+            icon: 'job',
+
+            remark: '定时任务菜单',
+
+            hierarchy: 'monitor:job',
+
+            children: [],
+
+            parentName: '系统监控'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 111,
+
+            parentId: 2,
+
+            key: 111,
+
+            name: '数据监控',
+
+            orderNum: 3,
+
+            type: 1,
+
+            path: 'druid',
+
+            component: 'monitor/druid/index',
+
+            icon: 'druid',
+
+            remark: '数据监控菜单',
+
+            hierarchy: 'monitor:druid',
+
+            children: [],
+
+            parentName: '系统监控'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 112,
+
+            parentId: 2,
+
+            key: 112,
+
+            name: '服务监控',
+
+            orderNum: 4,
+
+            type: 1,
+
+            path: 'server',
+
+            component: 'monitor/server/index',
+
+            icon: 'server',
+
+            remark: '服务监控菜单',
+
+            hierarchy: 'monitor:server',
+
+            children: [],
+
+            parentName: '系统监控'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 113,
+
+            parentId: 2,
+
+            key: 113,
+
+            name: '缓存监控',
+
+            orderNum: 5,
+
+            type: 1,
+
+            path: 'cache',
+
+            component: 'monitor/cache/index',
+
+            icon: 'redis',
+
+            remark: '缓存监控菜单',
+
+            hierarchy: 'monitor:cache',
+
+            children: [],
+
+            parentName: '系统监控'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 8,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-12-04 08:37:45',
+
+            menuId: 114,
+
+            parentId: 2,
+
+            key: 114,
+
+            name: '缓存列表',
+
+            orderNum: 6,
+
+            type: 1,
+
+            path: 'cacheList',
+
+            component: 'monitor/cache/list',
+
+            icon: 'redis-list',
+
+            remark: '缓存列表菜单',
+
+            hierarchy: 'monitor:cacheList',
+
+            children: [],
+
+            parentName: '系统监控'
+
+          }
+
+        ],
+
+        parentName: 'ROOT'
+
+      },
+
+      {
+
+        status: 0,
+
+        delFlag: 0,
+
+        createBy: 0,
+
+        updateBy: 0,
+
+        createByName: 'aziz',
+
+        updateByName: 'aziz',
+
+        createTime: '2023-11-19 11:19:01',
+
+        updateTime: '2023-11-19 11:19:01',
+
+        menuId: 4,
+
+        parentId: 0,
+
+        key: 4,
+
+        name: '若依官网',
+
+        orderNum: 4,
+
+        type: 2,
+
+        path: 'http://ruoyi.vip',
+
+        component: null,
+
+        icon: null,
+
+        remark: '若依官网地址',
+
+        hierarchy: 'http://ruoyi.vip',
+
+        children: [],
+
+        parentName: 'ROOT'
+
+      },
+
+      {
+
+        status: 0,
+
+        delFlag: 0,
+
+        createBy: 0,
+
+        updateBy: 0,
+
+        createByName: 'aziz',
+
+        updateByName: 'aziz',
+
+        createTime: '2023-11-19 11:19:01',
+
+        updateTime: '2023-11-19 11:19:01',
+
+        menuId: 3,
+
+        parentId: 0,
+
+        key: 3,
+
+        name: '系统工具',
+
+        orderNum: 3,
+
+        type: 0,
+
+        path: 'tool',
+
+        component: null,
+
+        icon: null,
+
+        remark: '系统工具目录',
+
+        hierarchy: 'tool',
+
+        children: [
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 115,
+
+            parentId: 3,
+
+            key: 115,
+
+            name: '表单构建',
+
+            orderNum: 1,
+
+            type: 1,
+
+            path: 'build',
+
+            component: 'tool/build/index',
+
+            icon: 'build',
+
+            remark: '表单构建菜单',
+
+            hierarchy: 'tool:build',
+
+            children: [],
+
+            parentName: '系统工具'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 116,
+
+            parentId: 3,
+
+            key: 116,
+
+            name: '代码生成',
+
+            orderNum: 2,
+
+            type: 1,
+
+            path: 'gen',
+
+            component: 'tool/gen/index',
+
+            icon: 'code',
+
+            remark: '代码生成菜单',
+
+            hierarchy: 'tool:gen',
+
+            children: [],
+
+            parentName: '系统工具'
+
+          },
+
+          {
+
+            status: 0,
+
+            delFlag: 0,
+
+            createBy: 0,
+
+            updateBy: 0,
+
+            createByName: 'aziz',
+
+            updateByName: 'aziz',
+
+            createTime: '2023-11-19 11:19:01',
+
+            updateTime: '2023-11-19 11:19:01',
+
+            menuId: 117,
+
+            parentId: 3,
+
+            key: 117,
+
+            name: '系统接口',
+
+            orderNum: 3,
+
+            type: 1,
+
+            path: 'swagger',
+
+            component: 'tool/swagger/index',
+
+            icon: 'swagger',
+
+            remark: '系统接口菜单',
+
+            hierarchy: 'tool:swagger',
+
+            children: [],
+
+            parentName: '系统工具'
+
+          }
+
+        ],
+
+        parentName: 'ROOT'
+
+      }
+
+    ]
+
+  }
+
+}

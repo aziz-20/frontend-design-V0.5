@@ -1,0 +1,57 @@
+/* base color */
+:root {
+    --blue: #324157;
+    --light-blue: #3A71A8;
+    --red: #C03639;
+    --pink: #E65D6E;
+    --green: #30B08F;
+    --tiffany: #4AB7BD;
+    --yellow: #FEC171;
+    --panGreen: #30B08F;
+  }
+  
+  /* 默认菜单主题风格 */
+  :root {
+    --base-menu-color: #bfcbd9;
+    --base-menu-color-active: #f4f4f5;
+    --base-menu-background: #304156;
+    --base-logo-title-color: #ffffff;
+    --base-menu-light-color: rgba(0, 0, 0, 0.70);
+    --base-menu-light-background: #ffffff;
+    --base-logo-light-title-color: #001529;
+    --base-sub-menu-background: #1f2d3d;
+    --base-sub-menu-hover: #001528;
+  }
+  
+  /* 自定义暗色菜单风格 */
+  /**
+  :root {
+    --base-menu-color: hsla(0, 0%, 100%, 0.65);
+    --base-menu-color-active: #fff;
+    --base-menu-background: #001529;
+    --base-logo-title-color: #ffffff;
+    --base-menu-light-color: rgba(0, 0, 0, 0.70);
+    --base-menu-light-background: #ffffff;
+    --base-logo-light-title-color: #001529;
+    --base-sub-menu-background: #000c17;
+    --base-sub-menu-hover: #001528;
+  }
+  */
+  
+  :root {
+    --base-sidebar-width: 200px;
+  }
+  
+  /* the :export directive is the magic sauce for webpack */
+  :root {
+    --menuColor: var(--base-menu-color);
+    --menuLightColor: var(--base-menu-light-color);
+    --menuColorActive: var(--base-menu-color-active);
+    --menuBackground: var(--base-menu-background);
+    --menuLightBackground: var(--base-menu-light-background);
+    --subMenuBackground: var(--base-sub-menu-background);
+    --subMenuHover: var(--base-sub-menu-hover);
+    --sideBarWidth: var(--base-sidebar-width);
+    --logoTitleColor: var(--base-logo-title-color);
+    --logoLightTitleColor: var(--base-logo-light-title-color);
+  }

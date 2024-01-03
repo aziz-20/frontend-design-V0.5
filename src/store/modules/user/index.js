@@ -1,0 +1,124 @@
+// import { login, logout, getInfo } from '@/api/login'
+import { getToken, setToken, removeToken } from '@/utils/auth'
+import  User from '@/http/api/user'
+
+const user = {
+  state: {
+    token: getToken(),
+    id: '',
+    name: '',
+    avatar: '',
+    email: '',
+    roles: [],
+    permissions: []
+  },
+
+  mutations: {
+    SET_TOKEN: (state, token) => {
+      state.token = token
+    },
+    SET_ID: (state, id) => {
+      state.id = id
+    },
+    SET_NAME: (state, name) => {
+      state.name = name
+    },
+    SET_AVATAR: (state, avatar) => {
+      state.avatar = avatar
+    },
+    SET_ROLES: (state, roles) => {
+      state.roles = roles
+    },
+    SET_PERMISSIONS: (state, permissions) => {
+      state.permissions = permissions
+    },
+    SET_EMAIL: (state, email) => {
+      state.email = email
+    }
+  },
+
+  actions: {
+    // login
+    Login({ commit }, userInfo) {
+      // const username = userInfo.username.trim()
+      const form = {
+        email: userInfo.email,
+        password: userInfo.password,
+
+      }
+      return new Promise((resolve, reject) => {
+        User.login(form).then(res => {
+          setToken(res.result)
+          commit('SET_TOKEN', res.result)
+          commit('SET_EMAIL', userInfo.email)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 获取用户信息
+    GetInfo({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        User.getInfo().then(res => {
+          const user = res.result
+          commit('SET_ID', user.userId)
+          commit('SET_NAME', user.username)
+          console.log(user)
+          // const avatar = (user.avatar == "" || user.avatar == null) ? require("@/assets/images/profile.jpg") : process.env.VUE_APP_BASE_API + user.avatar;
+          // if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+          //   commit('SET_ROLES', res.roles)
+          //   commit('SET_PERMISSIONS', res.permissions)
+          // } else {
+          //   commit('SET_ROLES', ['ROLE_DEFAULT'])
+          // }
+          // commit('SET_ID', user.userId)
+          // commit('SET_NAME', user.userName)
+          // commit('SET_AVATAR', avatar)
+          resolve(res)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getperms({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        User.userperm().then(res => {
+          commit('SET_PERMISSIONS', res.result)
+          resolve(res)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 退出系统
+    LogOut({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        console.log('xx')
+        User.logout(state.email).then(() => {
+          console.log('xx')
+          commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
+          commit('SET_PERMISSIONS', [])
+          removeToken()
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 前端 登出
+    FedLogOut({ commit }) {
+      return new Promise(resolve => {
+        commit('SET_TOKEN', '')
+        removeToken()
+        resolve()
+      })
+    }
+  }
+}
+
+export default user
