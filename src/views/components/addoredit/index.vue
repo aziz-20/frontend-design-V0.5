@@ -236,7 +236,8 @@
               <el-form-item :label="field.name" :prop="field.name">
                 <el-row v-for="(item, index) in pairs" :key="index">
                   <el-col :span="12">
-                    <el-tree-select v-model="item.deptId" :props="{}" :data="field.data.Dept" />
+                    <el-tree-select v-model="item.deptId" :props="{}" :data="department" />
+      
                   </el-col>
                   <el-col :span="12">
                     <el-select v-model="item.userIds" multiple placeholder="User IDs">
@@ -285,6 +286,10 @@ export default {
 
   data() {
     return {
+      pairs: [
+        { deptId: 0, userIds: [] },
+      ],
+      usersName:[],
       verifyPassword: '',
       selectedCountryRegions: [],
       roles: [],
@@ -303,6 +308,7 @@ export default {
       form: {
         status: 0,
         delFlag: 0,
+        scoping: {}
       },
       countries: countriesAndregions.map(country => ({
         value: country.countryShortCode,
@@ -418,7 +424,26 @@ export default {
         this.form = { ...val };
         console.log(val)
         this.formFieldSelectData()
+        if(this.mode === 'edit'&& val.scoping){
+        this.pairs = Object.keys(val.scoping).map((item) => ({ deptId:  parseInt(item), userIds: val.scoping[item] }));
+        }
+        if(this.mode === 'add'){
+            console.log('')
+        }
 
+      },
+    },
+    pairs: {
+      deep: true,
+      handler(val) {
+        console.log(this.init)
+        if(val){
+        let obj = {}
+        val.forEach((item, index) => {
+          obj[item.deptId] = item.userIds
+          this.form.scoping = obj
+        })
+      }
       },
     },
 
@@ -448,6 +473,24 @@ export default {
 
       // Now you can safely push an item into the pairs array
       this.pairs.push({ deptId: '', userIds: [] });
+    },
+    optionaldata(type){
+      console.log(type)
+      if(type=== 'dept'){
+        this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+          if (res.result && res.result.data) {
+             const dept = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+             console.log(dept)
+             return dept
+             
+          }
+          else {
+            this.loading = false;
+            this.$message.error('Failed to load department list for the selection section');
+          }
+        });
+      }
+
     },
     formFieldSelectData() {
       this.fields.forEach(field => {
@@ -521,6 +564,30 @@ export default {
               }
 
             })
+          }
+          if(field.inputtype === 'dynamicFeild'){
+            console.log("I am here")
+            this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              if (res.result && res.result.data) {
+                this.department = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+              }
+              else {
+                this.loading = false;
+                this.$message.error('Failed to load department list for the selection section');
+              }
+            });
+            this.$http.MgUsers.listUsers({
+                "pageNo": 1,
+                "pageSize": 0
+            }).then(res => {
+
+              this.usersName = res?.result?.data.map((item) => {
+                    return { value: item.userId, label: item.username }
+                })
+                 
+                 
+            })
+            
           }
         }
         // Check subFields if they exist
