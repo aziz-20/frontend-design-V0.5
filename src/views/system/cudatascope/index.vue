@@ -29,17 +29,8 @@
             <el-table-column prop="updateBy" label="updateBy" width="150" />
             <el-table-column prop="createBy" label="createBy" column-key="defId " width="150" />
             <el-table-column prop="remark" label="remark" column-key="defId " width="150" />
-            <el-table-column prop="perms" label="permissions" width="300" aria-label="prems" column-key="permId">
-                <template #default="{ row, column, $index }">
-                    <el-tag class="tagpoint" v-for="perm in row.perms" :key="perm.permId" closable
-                        @click="handeltagclick(perm)" disable-transitions>
-                        {{ perm.name }}
-                    </el-tag>
-                </template>
-            </el-table-column>
 
-
-            <el-table-column fixed="right" label="oparation" align="center" width="150">
+            <el-table-column fixed="right" label="oparation" align="center" width="200">
                 <template #default="{ row, column, $index }">
 
                     <el-button size="small" icon="el-icon-edit" @click="handleUpdate(row)">edit</el-button>
@@ -149,11 +140,12 @@ export default {
                     inactiveValue: 1,
                 },
                 {
-                    "inputtype": "dynamicFeild", data: {
+                    "type": "dynamicFeild",
+                    inputtype: "dynamicFeild", data: {
                         Dept: undefined, userIds: undefined
-                    }, inputtype: "dynamicFeild", name: "scopping", placeholder: "Enter the permision remark", span: "col-6"
+                    },placeholder: "Enter the permision remark", span: "col-6"
                 },
-                { "type": "textarea", inputtype: "textarea", name: "remark", label: "remark", placeholder: "Enter the permision remark", span: "col-6" },
+                { "type": "textarea", inputtype: "textarea", name: "remark", label: "remark", placeholder: "Enter the permision remark", span: 24 },
 
 
             ],
