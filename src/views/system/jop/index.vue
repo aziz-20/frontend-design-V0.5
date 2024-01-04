@@ -330,6 +330,8 @@ export default {
           this.open = false;
           this.getList();
 
+        }).catch(message => {
+          this.$modal.msgSuccess("The error:*"+message+":*");
         });
 
       }
@@ -339,6 +341,8 @@ export default {
           this.$modal.msgSuccess("Update successful");
           this.open = false;
           this.getList();
+        }).catch(message => {
+          this.$modal.msgSuccess("The error:*"+message+":*");
         });
       }
     },
@@ -389,7 +393,6 @@ export default {
       this.selectedRows.forEach(row => {
         console.log(row.jobId, row.name); // logs the deptId and name of each selected row
       });
-
     },
 
   }

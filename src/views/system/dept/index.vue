@@ -57,8 +57,8 @@
               <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
                 v-hasPermi="['system:user:edit']">
                 Edit</el-button>
-              <el-button type="warning" :el-icon-plus="Delete" size="small" v-if="row.parentId != 0"
-                @click="handle_SideDelete(row)" v-hasPermi="['system:user:remove']">Delete</el-button>
+              <el-button type="warning" :el-icon-plus="Delete" size="small" @click="handle_SideDelete(row)"
+                v-hasPermi="['system:user:remove']" >Delete</el-button>
             </el-row>
           </template>
         </el-table-column>
@@ -86,20 +86,14 @@
 <script>
 import addoredit from "@/views/components/Test_addoredit/index.vue"
 import {
-  Check,
   Delete,
   Edit,
-  Message,
-  Search,
-  Star,
 } from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
 import { mapOnePropToObject, treeTransformerTwoValues } from '@/utils/dtControl/dTransformer'
 
-
-
 export default {
-  // name: "Dept",
+  name: "Dept",
   dicts: ['sys_normal_disable'],
 
   components: {
@@ -112,14 +106,9 @@ export default {
       mode: 'add',
       loading: true,
       showSearch: true,
-      // statuses: [
-      //   { label: 'ALL', value: '' },
-      //   { label: 'Enabled', value: '0' },
-      //   { label: 'Disabled', value: '1' }
-      // ],
       initialValuesEdit: undefined,
       initialValuesAdd: undefined,
-      isExpandAll: false,
+      isExpandAll: true,
       refreshTable: true,
       loading: false,
       displaySearch: true,
@@ -147,12 +136,12 @@ export default {
         phone: '',
         email: '',
         status: '',
-        userId:'',
+        userId: '',
       },
       queryParams: {
         deptId: undefined,
         status: '',
-        deptId:'',
+        deptId: '',
         createTime: undefined,
         leader: undefined,
         pageNo: 1,
@@ -172,8 +161,8 @@ export default {
 
           },
           {
-            "type": "treeSelect",
-            inputtype: "treeSelect",
+            "type": "departments",
+            inputtype: "departments",
             name: "parentId",
             label: "Department parent",
             placeholder: "Department selected",
@@ -271,13 +260,13 @@ export default {
             trigger: ["blur", "change"]
           }
         ],
-        // phone: [
-        //   {
-        //     pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-        //     message: "Please enter a valid phone number",
-        //     trigger: "blur"
-        //   }
-        // ]
+        phone: [
+          {
+            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+            message: "Please enter a valid phone number",
+            trigger: "blur"
+          }
+        ]
       }
       ,
       searchFields: [
@@ -300,16 +289,11 @@ export default {
           inputtype: "userField",
           name: 'userId',
           label: 'User Name',
-          // options: 'username',
           placeholder: "Enter username",
           style: 'width: 150px'
 
         },
-        // {
-        //   type: 'date-picker',
-        //   name: 'createTime',
-        //   label: 'Create Time',
-        // },
+
       ],
       searchButtonText: 'Search',
       resetButtonText: 'Reset',
@@ -329,23 +313,13 @@ export default {
     handlePageChange(newPage) {
       // Update the queryParams with the new page number
       this.queryParams.pageNo = newPage;
-
       // Fetch data for the new page
       this.getList();
-    },
-
-
-    selectable(row, index) {
-      return row.parentId !== 0; // returns false for the first parent
     },
 
     //********Node control**************************************************************************************** */
     getList() {
       this.loading = true;
-      // this.fetchDepartmentName();
-
-      // this.getQuarrySelection();
-      // console.log(this.transLeaderList)
       this.$http.dept.DeptlistHierarchy(this.queryParams).then(res => {
         if (res.result && res.result.data) {
           this.deptList = res.result.data;
@@ -361,7 +335,6 @@ export default {
       });
 
     },
-
     //************************************** */
     handleQuery(e) {
 
@@ -373,8 +346,7 @@ export default {
       this.queryParams.leader = ''
       this.queryParams.userId = ''
       this.queryParams.createTime = ''
-      this.queryParams.deptId=''
-      // this.queryParams.pageNum = ''
+      this.queryParams.deptId = ''
       this.handleQuery();
       this.getList();
     },
@@ -407,16 +379,13 @@ export default {
     handleAdd(row) {
       this.mode = 'add'
       console.log(this.form)
-      this.formFieldSelectData(),
-        this.open = true;
+      // this.formFieldSelectData(),
+      this.open = true;
       if (row.parentId !== undefined) {
-        // this.reset("form")
         console.log(row)
-        // console.log(this.deptOptions)
         this.open = true;
         this.initialValuesAdd = { "delFlag": "0", "parentId": row.deptId, "status": 0, }
         console.log(this.form)
-
       }
       else {
         this.open = true;
@@ -437,19 +406,6 @@ export default {
         this.deptOptions.push(noResultsOptions);
       }
     },
-    formFieldSelectData() {
-      this.Add_Edit.forEach((field, index) => {
-        if (field.name === 'parentId') {
-          this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(response => {
-            this.deptOptions = treeTransformerTwoValues(response.result.data, 'name', 'deptId');
-            console.log("I am here")
-            return this.Add_Edit[index].data = this.deptOptions;
-          })
-        }
-      });
-    },
-
-
 
     /**************************** Submit button**************************** */
     onSubmit(n) {
@@ -485,7 +441,6 @@ export default {
     },
     closeAddEdit() {
       this.open = false
-      // this.resetform();
     },
     //********************Reset************************************************ */
     resetform() {
@@ -547,8 +502,6 @@ export default {
         console.log('No data');
       }
     },
-
-
     //************Header control****************************************************************** */
     toggleExpandAll() {
       this.refreshTable = false;
