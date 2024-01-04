@@ -196,13 +196,23 @@ export default {
           inactiveValue: 1,
           span: 12,
         },
+        // {
+        //   "type": "customDataScop",
+        //   inputtype: "customDataScop",
+        //   name: "parentId",
+        //   label: "Custom Data Scop",
+        //   placeholder: "Department selected",
+        //   span: 12
+
+        // },
         {
-          "type": "customDataScop",
-          inputtype: "customDataScop",
-          name: "parentId",
+          inputtype: 'gpermision',
+          name: 'perms',
           label: "Custom Data Scop",
           placeholder: "Department selected",
-          span: 12
+          span: 12,
+          multiple: true,
+          // showMode: 'edit'
 
         },
         {
@@ -484,6 +494,7 @@ export default {
       this.initialValuesAdd = { "delFlag": "0", "status": 0 }
 
     },
+
     //***************************Edit control section**********************************/
     handleUpdate(row) {
       console.log(row.perms.map(item => item.groupId + item.permId))

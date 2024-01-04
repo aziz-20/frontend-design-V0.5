@@ -109,7 +109,7 @@ const permission = {
                 component: 'system/role',
               },
               {
-                id: 127,
+                id: 128,
                 name: 'MgUsers',
                 path: 'MgUsers',
                 meta: {
@@ -117,6 +117,16 @@ const permission = {
                   title: 'MgUsers',
                 },
                 component: 'system/MgUsers',
+              },
+              {
+                id: 129,
+                name: 'TaskControl',
+                path: 'TaskControl',
+                meta: {
+                  icon: 'log',
+                  title: 'TaskControl',
+                },
+                component: 'system/TaskControl',
               }
         
 

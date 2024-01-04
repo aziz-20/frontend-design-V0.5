@@ -101,28 +101,31 @@
                 </template>
                 <template v-if="field.inputtype === 'selectV'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="field.data"
-                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
+                    :max-collapse-tags="3" />
                 </template>
                 <!-------------------------------------------------------------------------------------  -->
                 <!-- System Fields selections -->
 
                 <!--Department Selecting Section -->
                 <template v-else-if="field.inputtype === 'departments'">
-                  <el-tree-select v-model="form[field.name]" :data="department" :multiple="field.multiple " :render-after-expand="true"
-                    :placeholder="field.placeholder" check-strictly check-on-click-node filterable />
+                  <el-tree-select v-model="form[field.name]" :data="department" :multiple="field.multiple"
+                    :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node
+                    filterable />
                   <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
                 </template>
 
                 <!-- Roles Selecting Section -->
                 <template v-if="field.inputtype === 'roles'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="roles"
-                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
+                    :max-collapse-tags="3" />
                   <!-- {{ this.role }} -->
                 </template>
                 <!-- Position Selecting Section -->
                 <template v-if="field.inputtype === 'Position'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="Position"
-                    style="width: 240px" :multiple="field.multiple " collapse-tags collapse-tags-tooltip
+                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
                     :max-collapse-tags="3" />
                 </template>
                 <!-- Menu Selecting Section -->
@@ -132,11 +135,15 @@
                     :multiple="field.multiple" :show-checkbox="field.showCheckbox" />
                 </template>
                 <!-- Group permissions -->
+
                 <template v-else-if="field.inputtype === 'gpermision'">
-                  <el-tree-select v-model="form[field.name]" :data="department" :render-after-expand="true"
+                  {{ console.log(this.GpermsOptions) }}
+                  <el-tree-select v-model="form[field.name]" :data="this.GpermsOptions" :render-after-expand="true"
                     :placeholder="field.placeholder" check-strictly check-on-click-node filterable
-                    :multiple="field.multiple " :show-checkbox="field.showCheckbox" />
+                    :multiple="field.multiple" :show-checkbox="field.showCheckbox"  />
+                  {{ console.log(this.GpermsOptions) }}
                 </template>
+
 
                 <!-- CustomData Scop -->
                 <template v-if="field.inputtype === 'customDataScop'">
@@ -236,7 +243,8 @@
               <el-form-item :label="field.name" :prop="field.name">
                 <el-row v-for="(item, index) in pairs" :key="index">
                   <el-col :span="12">
-                    <el-tree-select v-model="item.deptId" :props="{}" :data="field.data.Dept" />
+                    <el-tree-select v-model="item.deptId" :props="{}" :data="department" />
+
                   </el-col>
                   <el-col :span="12">
                     <el-select v-model="item.userIds" multiple placeholder="User IDs">
@@ -251,9 +259,6 @@
 
 
             <!-- --------------------------------------------------- -->
-
-
-
           </template>
           <!-- </template> -->
         </el-col>
@@ -277,7 +282,7 @@
 <script>
 
 
-import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject } from '@/utils/dtControl/dTransformer'
+import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject, treeTransformerMultiyvalue } from '@/utils/dtControl/dTransformer'
 import countriesAndregions from '@/utils/Countries&Regions/data'
 console.log("Countries", countriesAndregions)
 
@@ -285,6 +290,10 @@ export default {
 
   data() {
     return {
+      pairs: [
+        { deptId: 0, userIds: [] },
+      ],
+      usersName: [],
       verifyPassword: '',
       selectedCountryRegions: [],
       roles: [],
@@ -293,7 +302,7 @@ export default {
       department: [],
       ilteredData: [],
       fieldData: {},
-      GpermsOptions: {},
+      GpermsOptions: [],
       customdata: [],
       days: [],
       gander: [{ label: 'Man', value: 0 },
@@ -303,6 +312,7 @@ export default {
       form: {
         status: 0,
         delFlag: 0,
+        scoping: {}
       },
       countries: countriesAndregions.map(country => ({
         value: country.countryShortCode,
@@ -418,7 +428,26 @@ export default {
         this.form = { ...val };
         console.log(val)
         this.formFieldSelectData()
+        if (this.mode === 'edit' && val.scoping) {
+          this.pairs = Object.keys(val.scoping).map((item) => ({ deptId: parseInt(item), userIds: val.scoping[item] }));
+        }
+        if (this.mode === 'add') {
+          console.log('')
+        }
 
+      },
+    },
+    pairs: {
+      deep: true,
+      handler(val) {
+        console.log(this.init)
+        if (val) {
+          let obj = {}
+          val.forEach((item, index) => {
+            obj[item.deptId] = item.userIds
+            this.form.scoping = obj
+          })
+        }
       },
     },
 
@@ -440,6 +469,7 @@ export default {
 
 
   methods: {
+
     addScoping() {
       // Check if pairs array exists, if not, initialize it as an empty array
       if (!this.pairs) {
@@ -448,6 +478,25 @@ export default {
 
       // Now you can safely push an item into the pairs array
       this.pairs.push({ deptId: '', userIds: [] });
+    },
+
+    optionaldata(type) {
+      console.log(type)
+      if (type === 'dept') {
+        this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+          if (res.result && res.result.data) {
+            const dept = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+            console.log(dept)
+            return dept
+
+          }
+          else {
+            this.loading = false;
+            this.$message.error('Failed to load department list for the selection section');
+          }
+        });
+      }
+
     },
     formFieldSelectData() {
       this.fields.forEach(field => {
@@ -478,7 +527,6 @@ export default {
             console.log("CustomData Scop")
             this.$http.Job.listJob({ "pageNo": 1, "pageSize": 0 }).then(res => {
               this.Position = NormalmapTwoPropsToObject(res.result.data, 'name', 'jobId');
-              console.log(this.customdata)
             }).catch(error => {
               console.error(error);
             });
@@ -514,13 +562,39 @@ export default {
               if (res.result && res.result.data) {
                 console.log(res.result.data)
                 this.GpermsOptions = treeTransformerMultiyvalue(res.result.data, 'name', 'groupId', 'perms', 'name', 'permId');
-                console.log(this.permsOptions)
+                console.log(this.GpermsOptions)
+                console.log(typeof (this.GpermsOptions))
+
               } else {
                 this.loading = false;
                 this.$message.error('Failed to load Permission Group list for the selection section');
               }
 
             })
+          }
+          if (field.inputtype === 'dynamicFeild') {
+            console.log("I am here")
+            this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              if (res.result && res.result.data) {
+                this.department = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+              }
+              else {
+                this.loading = false;
+                this.$message.error('Failed to load department list for the selection section');
+              }
+            });
+            this.$http.MgUsers.listUsers({
+              "pageNo": 1,
+              "pageSize": 0
+            }).then(res => {
+
+              this.usersName = res?.result?.data.map((item) => {
+                return { value: item.userId, label: item.username }
+              })
+
+
+            })
+
           }
         }
         // Check subFields if they exist

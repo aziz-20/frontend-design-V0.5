@@ -9,6 +9,7 @@ import MgUsers from './MgUsers'
 import menu from './menu'
 import role from './role'
 import daysControl from './daysControl'
+import taskControl from './taskControl'
 
 
 export default {
@@ -24,6 +25,7 @@ export default {
   grpermision,
   cusdatascope,
   MgUsers,
+  taskControl,
 }
 
 

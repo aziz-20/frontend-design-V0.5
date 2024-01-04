@@ -50,6 +50,32 @@ export function TreemapTwoPropsToObject(temp_list, prop1, prop2) {
 }
 
 
+// export function treeTransformerMultiyvalue(data, labelKey, valueKey, permsKey, permsLabelKey, permsValueKey) {
+//   if (!data) return [];
+
+//   const transformNode = (node) => {
+//     const label = node[labelKey];
+//     const value = node[valueKey];
+//     const transformedNode = { label, value };
+
+//     if (node.children) {
+//       transformedNode.children = node.children.map(transformNode);
+//     }
+
+//     if (node[permsKey]) {
+//       const transformPerm = (perm) => ({
+//         label: perm[permsLabelKey],
+//         value: perm[permsValueKey],
+//       });
+
+//       transformedNode.children = (transformedNode.children || []).concat(node[permsKey].map(transformPerm));
+//     }
+
+//     return transformedNode;
+//   };
+
+//   return data.map(transformNode);
+// }
 export function treeTransformerMultiyvalue(data, labelKey, valueKey, permsKey, permsLabelKey, permsValueKey) {
   if (!data) return [];
 
@@ -60,6 +86,8 @@ export function treeTransformerMultiyvalue(data, labelKey, valueKey, permsKey, p
 
     if (node.children) {
       transformedNode.children = node.children.map(transformNode);
+      // Add a key-value pair for nodes with children
+      transformedNode.key = node[valueKey];
     }
 
     if (node[permsKey]) {
