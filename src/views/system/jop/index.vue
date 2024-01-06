@@ -324,9 +324,9 @@ export default {
       if (this.mode == 'add') {
         this.$http.Job.addJob(this.form).then(response => {
           console.log()
+          console.log(this.form)
           console.log('sssssssssssssssssssssss' + response.data)
           this.$modal.msgSuccess("Addition successful");
-          console.log(this.form)
           this.open = false;
           this.getList();
 
