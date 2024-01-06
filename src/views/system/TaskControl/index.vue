@@ -70,7 +70,7 @@
         </el-table>
         <!-- <s>ADD, EDIT</s> -->
         <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
-            initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
+            initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit" @emi="emitChange">
         </addoredit>
         <el-row justify="center">
             <el-col :span="24" :sm="12" :md="8">
@@ -261,9 +261,12 @@ export default {
     //**************Methods Control*********************************************** */
 
     methods: {
-        emitChange() {
-            this.$emit('fieldChanged', this.formData);
-            console.log(this.formData)
+        emitChange(x) {
+            // this.$emit('fieldChanged', this.formData);
+           const {triggerType} = x
+           console.log(triggerType)
+            this.generateForm(triggerType)
+            console.log(x)
         },
         //*****************Pagination control********************************** */
         handlePageChange(newPage) {
@@ -366,16 +369,9 @@ export default {
             this.initialValuesAdd
             console.log(this.form);
 
-            let triggerTypeValues;
-            // console.log(this.formData)
-            this.Add_Edit.forEach(item => {
-                if (item.name === 'triggerType') {
-                    triggerTypeValues = item.name;
-                }
-            });
             console.log(triggerTypeValues);
 
-            this.generateForm(triggerTypeValues);
+           
             console.log(this.form);
         },
 
