@@ -42,15 +42,15 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column  prop="taskGroup" label="Task Group" width="170" />
-            <el-table-column  prop="status" label="Status" width="120">
+            <el-table-column prop="taskGroup" label="Task Group" width="170" />
+            <el-table-column prop="status" label="Status" width="120">
                 <template #default="{ row }">
                     <el-tag :type="row.status === 0 ? 'success' : 'danger'">
                         {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column  prop="taskDetail" label="Task Details" width="200" />
+            <el-table-column prop="taskDetail" label="Task Details" width="200" />
             <el-table-column prop="updateTime" label="Last Update Time" width="200" />
             <el-table-column prop="startTime" label="Trigger Starting Time" width="200" />
             <el-table-column prop="endTime" label="Trigger Ending Time" width="200" />
@@ -66,6 +66,7 @@
                     </el-row>
                 </template>
             </el-table-column>
+            <!-- <div>{{ formData.triggerType }}</div> -->
         </el-table>
         <!-- <s>ADD, EDIT</s> -->
         <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
@@ -106,14 +107,18 @@ export default {
         addoredit,
         search_control
     },
+    props: {
+        formDataFromParent: Object
+    }, 
     data() {
         return {
             selectedRows: [],
             mode: 'add',
+            // switching:null,
             loading: true,
             showSearch: true,
             initialValuesEdit: undefined,
-            initialValuesAdd: undefined,
+            initialValuesAdd: { "delFlag": "0", triggerType: 0 },
             refreshTable: true,
             loading: false,
             displaySearch: true,
@@ -138,52 +143,59 @@ export default {
                 pageNo: 1,
                 pageSize: 30
             },
-            Add_Edit:
-                [
+            Add_Edit: [
+                {
+                    "type": "input",
+                    inputtype: "text",
+                    name: "taskName",
+                    label: "Name of the Task ",
+                    placeholder: "Please Enter the job Title",
+                    span: 24
 
-                    {
-                        "type": "input",
-                        inputtype: "text",
-                        name: "name",
-                        label: "Job Title",
-                        placeholder: "Please Enter the job Title",
-                        span: 24
+                },
+                {
+                    "type": "text",
+                    inputtype: "text",
+                    name: "targetTask",
+                    label: "Task Action",
+                    placeholder: "Enter Code for the Position",
+                    span: 12
 
-                    },
-                    {
-                        inputtype: 'switch',
-                        name: 'status',
-                        label: 'Job Status',
-                        switchOnColor: '#309f62',
-                        switchOffColor: '#ff4949',
-                        activeText: 'Activate',
-                        inactiveText: 'Disabled',
-                        activeValue: 0,
-                        inactiveValue: 1,
-                        span: 8
-                    },
+                },
+                {
+                    "type": "selectV",
+                    inputtype: "selectV",
+                    name: 'triggerType',
+                    label: "Type of the trigger Action",
+                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
+                    placeholder: "Please Select a Trigger",
+                    span: 12
 
-                    {
-                        "type": "text",
-                        inputtype: "text",
-                        name: "abbrev",
-                        label: "Position",
-                        placeholder: "Enter Code for the Position",
-                        span: 12
+                },
+                {
+                    inputtype: 'switch',
+                    name: 'status',
+                    label: 'Task Status',
+                    switchOnColor: '#309f62',
+                    switchOffColor: '#ff4949',
+                    activeText: 'Activate',
+                    inactiveText: 'Disabled',
+                    activeValue: 0,
+                    inactiveValue: 1,
+                    span: 8
+                },
 
-                    },
+                {
+                    "type": "textarea",
+                    inputtype: "textarea",
+                    name: "remark",
+                    label: "Job Description",
+                    placeholder: "Enter Description or Note of the Job ",
+                    span: 24
+                },
 
+            ],
 
-                    {
-                        "type": "textarea",
-                        inputtype: "textarea",
-                        name: "remark",
-                        label: "Job Description",
-                        placeholder: "Enter Description or Note of the Job ",
-                        span: 24
-                    },
-
-                ],
             fields_rules:
             {
                 abbrev:
@@ -241,6 +253,7 @@ export default {
 
         };
     },
+
     //**************Creating ************************************** */  
     created() {
         this.getList();
@@ -248,6 +261,10 @@ export default {
     //**************Methods Control*********************************************** */
 
     methods: {
+        emitChange() {
+            this.$emit('fieldChanged', this.formData);
+            console.log(this.formData)
+        },
         //*****************Pagination control********************************** */
         handlePageChange(newPage) {
             // Update the queryParams with the new page number
@@ -312,14 +329,54 @@ export default {
         },
 
         //**************** Add, Edit and delete control section******************************************* */
+        generateForm(triggerType) {
+            console.log(triggerType)
+            // this.Add_Edit = [
+
+            // ];
+            if (triggerType === 0) {
+                this.Add_Edit.push({
+                    "type": "text",
+                    inputtype: "text",
+                    name: "abbrev",
+                    label: "Position",
+                    placeholder: "Enter Code for the Position",
+                    span: 12
+                },
+                    {
+                        "type": "input",
+                        inputtype: "text",
+                        name: "taskGroup",
+                        label: "taskGroup Title",
+                        placeholder: "Please Enter the job Title",
+                        span: 24
+
+                    },
+                );
+            }
+
+            return this.Add_Edit;
+        },
 
 
         // *********************************ADDing*****************************
         handleAdd() {
             this.mode = "add"
             this.open = true;
-            this.initialValuesAdd = { "delFlag": "0" }
-            console.log(this.form)
+            this.initialValuesAdd
+            console.log(this.form);
+
+            let triggerTypeValues;
+            // console.log(this.formData)
+            this.Add_Edit.forEach(item => {
+                if (item.name === 'triggerType') {
+                    triggerTypeValues = item.name;
+                }
+            });
+            console.log(triggerTypeValues);
+
+            this.generateForm(triggerTypeValues);
+            console.log(this.form);
         },
 
         //*******************Edit control section**********************************/
@@ -360,19 +417,11 @@ export default {
 
         //********************Reset************************************************ */
 
-        // reset() {
-        //     this.form = {
-        //         name: '',
-        //         abbrev: '',
-        //         status: '',
-        //         hierarchy: '',
-        //         remark: '',
-        //     };
-        // },
+
 
         //*******************************************Delete Control Section************************************* */
         handle_SideDelete(row) {
-            if (row.jobId > 0) {
+            if (row.taskId > 0) {
                 this.$modal.confirm('Are you sure you want to delete the data Job/Jobs with the name "' + row.taskName + '"?').then(() => {
                     return this.$http.taskControl.deleteTask(row.taskId);
                 }).then(() => {
@@ -384,7 +433,7 @@ export default {
 
         handleDelete() {
             if (this.selectedRows.length > 0) {
-                this.$modal.confirm('WARNING: You are about to permanently delete the following Job/Jobs:{ '
+                this.$modal.confirm('WARNING: You are about to permanently delete the following Task/s:{ '
                     + this.selectedRows.map(row => row.taskName).join(', ')
                     + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
                         this.selectedRows.forEach(row => {
