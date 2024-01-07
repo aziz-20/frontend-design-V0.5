@@ -29,23 +29,20 @@
         </el-row>
 
         <!-- Table view  -->
-        <el-table flex :data="taskList" style="width:150%" row-key="taskId" v-loading="loading"
+        <el-table flex :data="taskLogsList" style="width:150%" row-key="taskId" v-loading="loading"
             element-loading-text="Loading..." :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
             element-loading-background="rgba(122, 122, 122, 0.8)" v-if="refreshTable"
             @selection-change="handleSelectionChange">
             <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
             <el-table-column fixed prop="taskName" label="Task Name" width="240" />
-            <el-table-column prop="orderNum" label="Structure order" width="150" />
-            <el-table-column prop="taskGroup" label="Task Group" width="240" />
-            <el-table-column prop="targetTask" label="Task Group" width="240" />
-            <el-table-column prop="triggerType" label="Trigger Type" width="110">
+            <el-table-column fixed prop="triggerType" label="Trigger Type" width="120">
                 <template #default="{ row }">
-                    <el-tag :type="row.triggerType === 0 ? 'default' : 'yellow'">
-                        {{ row.triggerType === 0 ? 'Simple' : 'Cron' }}
+                    <el-tag :type="row.status === 0 ? 'default' : 'yellow'">
+                        {{ row.status === 0 ? 'Simple' : 'Cron' }}
                     </el-tag>
                 </template>
             </el-table-column>
-            <!-- <el-table-column prop="taskGroup" label="Task Group" width="170" /> -->
+            <el-table-column prop="taskGroup" label="Task Group" width="170" />
             <el-table-column prop="status" label="Status" width="120">
                 <template #default="{ row }">
                     <el-tag :type="row.status === 0 ? 'success' : 'danger'">
@@ -53,17 +50,10 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="taskRun" label="Task is Active" width="150">
-                <template #default="{ row }">
-                    <el-tag :type="row.taskRun === 0 ? 'success' : 'danger'">
-                        {{ row.taskRun === 0 ? 'Enabled' : 'Disabled' }}
-                    </el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="taskCount" label="Number of triggers" width="160" />
-            <el-table-column prop="nextFireTime" label="Next trigger" width="165" />
+            <el-table-column prop="taskDetail" label="Task Details" width="200" />
+            <el-table-column prop="updateTime" label="Last Update Time" width="200" />
             <el-table-column prop="startTime" label="Trigger Starting Time" width="200" />
-            <el-table-column prop="remark" label="Note" width="200" />
+            <el-table-column prop="endTime" label="Trigger Ending Time" width="200" />
             <el-table-column fixed="right" label="Actions" width="250" align="center"
                 class-name="small-padding fixed-width">
                 <template #default="{ row, column, index }">
@@ -79,12 +69,10 @@
             <!-- <div>{{ formData.triggerType }}</div> -->
         </el-table>
         <!-- <s>ADD, EDIT</s> -->
-        <template v-if="open">
-            <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
-                initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
-                @emi="emitChange">
-            </addoredit>
-        </template>
+        <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+            initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
+            @emi="emitChange">
+        </addoredit>
         <el-row justify="center">
             <el-col :span="24" :sm="12" :md="8">
                 <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total"
@@ -243,13 +231,13 @@ export default {
 
         getList() {
             this.loading = true;
-            this.$http.taskControl.listTask(this.queryParams).then(res => {
+            this.$http.taskControl.listTaskLogs(this.queryParams).then(res => {
                 if (res.result && res.result.data) {
                     this.isHasNextPage = res.result.isHasNextPage;
                     this.isHasPreviousPage = res.result.isHasPreviousPage;
                     this.total = res.result.total;
-                    this.taskList = res.result.data;
-                    console.log(this.taskList)
+                    this.taskLogsList = res.result.data;
+                    console.log(this.taskLogsList)
                     this.loading = false;
                 } else {
                     this.loading = false;
@@ -335,6 +323,7 @@ export default {
                     span: 12
 
                 },
+
                 {
                     inputtype: 'switch',
                     name: 'status',
@@ -345,27 +334,55 @@ export default {
                     inactiveText: 'Disabled',
                     activeValue: 0,
                     inactiveValue: 1,
+                    span: 8
+                },
+                {
+                    "type": "sorting",
+                    inputtype: "sorting",
+                    name: "orderNum",
+                    label: "Task order",
+                    placeholder: "Enter Code for the Position",
+                    min: 1,
                     span: 12
                 },
 
             ];
             if (triggerType === 1) {
-                this.initialValuesAdd
                 console.log("I am here")
                 this.Add_Edit.push(
                     {
                         "type": "text",
                         inputtype: "text",
                         name: "cronExpression",
-                        label: "Cron Expiration",
-                        placeholder: "Please Enter Expiration for the Cron",
+                        label: "Position",
+                        placeholder: "Enter Code for the Position",
+                        span: 12
+                    },
+                    {
+                        inputtype: 'switch',
+                        name: 'taskConcurrent',
+                        label: 'Execute in concurrent way',
+                        switchOnColor: '#309f62',
+                        switchOffColor: '#ff4949',
+                        activeText: 'Enable',
+                        inactiveText: 'Disabled',
+                        activeValue: 0,
+                        inactiveValue: 1,
                         span: 12
                     },
                 );
+                // const m = { 'taskDuration': -1, 'taskCount': 0 }
+                let newProperties = { 'taskDuration': -1, 'taskCount': 0 };
+                if (this.mode === 'add' && this.open === true) {
+                    console.log("I am here")
+                    // this.initialValuesAdd = Object.assign(this.initialValuesAdd, newProperties);   
+                    for (let property in newProperties) {
+                        this.initialValuesAdd[property] = newProperties[property];
+                    }
+                }
             }
             if (triggerType === 0) {
                 this.Add_Edit.push(
-
                     {
                         "type": "sorting",
                         inputtype: "sorting",
@@ -387,31 +404,6 @@ export default {
                 );
             }
             this.Add_Edit.push(
-
-                {
-                    inputtype: 'switch',
-                    name: 'taskRun',
-                    label: 'RUN TaSK',
-                    switchOnColor: '#309f62',
-                    switchOffColor: '#ff4949',
-                    activeText: 'Enable',
-                    inactiveText: 'Disable',
-                    activeValue: 0,
-                    inactiveValue: 1,
-                    span: 12
-                },
-
-                {
-
-                    "type": "sorting",
-                    inputtype: "sorting",
-                    name: "orderNum",
-                    label: "Task order",
-                    placeholder: "Enter Code for the Position",
-                    min: 1,
-                    span: 12
-                },
-
                 {
                     "type": "selectV",
                     inputtype: "selectV",
@@ -461,7 +453,7 @@ export default {
         onSubmit(n) {
             this.form = n
             if (this.mode == 'add') {
-                this.$http.taskControl.addTask(this.form).then(response => {
+                this.$http.Job.addJob(this.form).then(response => {
                     console.log()
                     console.log('sssssssssssssssssssssss' + response.data)
                     this.$modal.msgSuccess("Addition successful");
@@ -475,7 +467,7 @@ export default {
 
             }
             else {
-                this.$http.taskControl.updateTask(this.form).then(response => {
+                this.$http.Job.updateJob(this.form).then(response => {
                     console.log('sssssssssssssssssssssss' + this.form)
                     this.$modal.msgSuccess("Update successful");
                     this.open = false;

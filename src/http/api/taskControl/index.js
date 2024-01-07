@@ -37,7 +37,7 @@ export default {
     //plan data
     listTask(data) {
         return request({
-            url: '/role/list',
+            url: '/task/list',
             method: 'post',
             data: data
         })

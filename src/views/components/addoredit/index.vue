@@ -67,7 +67,7 @@
                 <template v-else-if="field.inputtype === 'sorting'">
                   <el-row :class="field.row" flex>
                     <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                      :min="0" size="default" />
+                      :min="field.min || 0" size="default"  />
                   </el-row>
                 </template>
 
