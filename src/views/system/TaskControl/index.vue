@@ -126,6 +126,7 @@ export default {
     data() {
         return {
             selectedRows: [],
+            // hello:[{ label: 'ALL', value: null }, { label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
             mode: 'add',
             switching: null,
             loading: true,
@@ -152,7 +153,7 @@ export default {
                 startTime: undefined,
                 status: undefined,
                 taskDetail: undefined,
-                triggerType: null,
+                triggerType: undefined,
                 pageNo: 1,
                 pageSize: 30
             },
@@ -176,37 +177,31 @@ export default {
                 // Define your search field configurations here
                 // Example:
                 {
-                    type: 'Position',
-                    inputtype: "Position",
-                    name: 'name',
-                    label: 'Job Name',
-                    data: 'Position',
+                    type: 'tasks',
+                    inputtype: "tasks",
+                    name: 'taskName',
+                    label: 'Task Name',
+                    // data: 'Position',
                     style: 'width: 150px'
 
                 },
                 {
-                    type: 'Position',
-                    inputtype: "Position",
-                    name: 'abbrev',
-                    label: 'Job code',
-                    data: 'abbrev',
-                    style: 'width: 150px'
+                    "type": "selectV",
+                    inputtype: "selectV",
+                    name: 'triggerType',
+                    label: "Trigger Type",
+                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
+                    placeholder: "Please Select a Trigger",
+
 
                 },
 
                 {
                     type: 'StatusSelect',
                     name: 'status',
-                    label: 'Job Status',
+                    label: 'Task Status',
                 },
-                {
-                    "type": "departments",
-                    inputtype: "departments",
-                    name: "deptId",
-                    label: "Department",
-                    placeholder: "Selected Departments",
-                    span: 6,
-                },
+
             ],
             searchButtonText: 'Search',
             resetButtonText: 'Reset',
@@ -249,6 +244,7 @@ export default {
                     this.isHasPreviousPage = res.result.isHasPreviousPage;
                     this.total = res.result.total;
                     this.taskList = res.result.data;
+                    this.loading = false
                     console.log(this.taskList)
                     this.loading = false;
                 } else {
@@ -278,26 +274,33 @@ export default {
         /** Reset button operation */
 
         resetQuery() {
-            this.queryParams = {
-                targetTask: undefined,
-                taskGroup: null,
-                taskLogId: null,
-                taskName: undefined,
-                startTime: undefined,
-                status: undefined,
-                taskDetail: undefined,
-                triggerType: null,
-                pageNo: number,
-                pageSize: number
-            }
-            this.handleQuery();
+            this.queryParams.targetTask = undefined,
+                this.queryParams.taskGroup = null,
+                this.queryParams.taskLogId = null,
+                this.queryParams.taskName = undefined,
+                this.queryParams.startTime = undefined,
+                this.queryParams.status = undefined,
+                this.queryParams.taskDetail = undefined,
+                this.queryParams.triggerType = null,
+                this.handleQuery();
             this.getList();
         },
 
         //**************** Add, Edit and delete control section******************************************* */
         generateForm(triggerType) {
             console.log(triggerType)
+
             this.Add_Edit = [
+                {
+                    "type": "selectV",
+                    inputtype: "selectV",
+                    name: 'triggerType',
+                    label: "Type of the trigger Action",
+                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
+                    placeholder: "Please Select a Trigger",
+                    span: 24
+
+                },
                 {
                     "type": "input",
                     inputtype: "text",
@@ -325,16 +328,7 @@ export default {
                     span: 24
 
                 },
-                {
-                    "type": "selectV",
-                    inputtype: "selectV",
-                    name: 'triggerType',
-                    label: "Type of the trigger Action",
-                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
-                    placeholder: "Please Select a Trigger",
-                    span: 12
 
-                },
                 {
                     inputtype: 'switch',
                     name: 'status',
@@ -349,8 +343,28 @@ export default {
                 },
 
             ];
+            // if (this.mode === 'add' && this.open === true) {
+            //     this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
+            // }
+
             if (triggerType === 1) {
-                this.initialValuesAdd
+                if (this.mode === 'add' && this.open === true) {
+                    this.initialValuesAdd = {
+                        'delFlag': 0,
+                        'triggerType': 1,
+                        'status': 1,
+                        'taskRun': 1
+                    }
+                }
+                if (this.mode === 'Edit' && this.open === true) {
+                    this.initialValuesEdit = {
+                        'delFlag': 0,
+                        'triggerType': 1,
+                        'status': 1,
+                        'taskRun': 1
+                    }
+                }
+                // this.handleAdd()
                 console.log("I am here")
                 this.Add_Edit.push(
                     {
@@ -364,8 +378,24 @@ export default {
                 );
             }
             if (triggerType === 0) {
+                if (this.mode === 'add' && this.open === true) {
+                    this.initialValuesAdd = {
+                        'delFlag': 0,
+                        'triggerType': 0,
+                        'status': 1,
+                        'taskRun': 1
+                    }
+                }
+                if (this.mode === 'Edit' && this.open === true) {
+                    console.log('mmmmm')
+                    this.initialValuesEdit = {
+                        'delFlag': 0,
+                        'triggerType': 0,
+                        'status': 1,
+                        'taskRun': 1
+                    }
+                }
                 this.Add_Edit.push(
-
                     {
                         "type": "sorting",
                         inputtype: "sorting",
@@ -391,11 +421,23 @@ export default {
                 {
                     inputtype: 'switch',
                     name: 'taskRun',
-                    label: 'RUN TaSK',
+                    label: 'RUN TASK',
                     switchOnColor: '#309f62',
                     switchOffColor: '#ff4949',
                     activeText: 'Enable',
                     inactiveText: 'Disable',
+                    activeValue: 0,
+                    inactiveValue: 1,
+                    span: 12
+                },
+                {
+                    inputtype: 'switch',
+                    name: 'taskConcurrent',
+                    label: 'Run Task Concurrently ',
+                    switchOnColor: '#309f62',
+                    switchOffColor: '#ff4949',
+                    activeText: 'True',
+                    inactiveText: 'False',
                     activeValue: 0,
                     inactiveValue: 1,
                     span: 12
@@ -405,22 +447,31 @@ export default {
 
                     "type": "sorting",
                     inputtype: "sorting",
-                    name: "orderNum",
+                    name: "misFirePolicy",
                     label: "Task order",
                     placeholder: "Enter Code for the Position",
                     min: 1,
                     span: 12
                 },
-
                 {
-                    "type": "selectV",
-                    inputtype: "selectV",
-                    name: 'misFirePolicy',
+
+                    "type": "sorting",
+                    inputtype: "sorting",
+                    name: "orderNum",
                     label: "Task Policy",
-                    data: [{ label: 'MISFIRE_DEFAULT ', value: 0 }, { label: 'MISFIRE_IGNORE_MISFIRES', value: 1 }, { label: 'MISFIRE_FIRE_AND_PROCEED', value: 2 }, { label: 'MISFIRE_DO_NOTHING', value: 1 }],
-                    placeholder: "Please Select a Trigger",
+                    placeholder: "Enter Code for the Position",
                     span: 12
                 },
+
+                // {
+                //     "type": "selectV",
+                //     inputtype: "selectV",
+                //     name: 'misFirePolicy',
+                //     label: "Task Policy",
+                //     data: [{ label: 'MISFIRE_DEFAULT ', value: 0 }, { label: 'MISFIRE_IGNORE_MISFIRES', value: 1 }, { label: 'MISFIRE_FIRE_AND_PROCEED', value: 2 }, { label: 'MISFIRE_DO_NOTHING', value: 1 }],
+                //     placeholder: "Please Select a Trigger",
+                //     span: 12
+                // },
                 {
                     "type": "textarea",
                     inputtype: "textarea",
@@ -460,7 +511,7 @@ export default {
         /**************************** Submit button**************************** */
         onSubmit(n) {
             this.form = n
-            if (this.mode == 'add') {
+            if (this.mode === 'add') {
                 this.$http.taskControl.addTask(this.form).then(response => {
                     console.log()
                     console.log('sssssssssssssssssssssss' + response.data)
@@ -470,7 +521,7 @@ export default {
                     this.getList();
 
                 }).catch(message => {
-                    this.$modal.msgSuccess("The error:*" + message + ":*");
+                    ("The error:*" + message + ":*");
                 });
 
             }
@@ -481,7 +532,7 @@ export default {
                     this.open = false;
                     this.getList();
                 }).catch(message => {
-                    this.$modal.msgSuccess("The error:*" + message + ":*");
+                    ("The error:*" + message + ":*");
                 });
             }
         },
@@ -493,7 +544,7 @@ export default {
         //*******************************************Delete Control Section************************************* */
         handle_SideDelete(row) {
             if (row.taskId > 0) {
-                this.$modal.confirm('Are you sure you want to delete the data Job/Jobs with the name "' + row.taskName + '"?').then(() => {
+                this.$modal.confirm('Are you sure you want to delete the data of Task/Tasks with the name "' + row.taskName + '"?').then(() => {
                     return this.$http.taskControl.deleteTask(row.taskId);
                 }).then(() => {
                     this.getList();
@@ -533,7 +584,7 @@ export default {
             if (this.mode === 'add' && this.open === true) {
                 this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
             }
-            if (this.mode === 'edit' && this.open === true) {
+            if (this.mode === 'Edit' && this.open === true) {
                 this.handleUpdate(); // Call anotherMethod whenever `this.switching` changes
             }
         },

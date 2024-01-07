@@ -13,7 +13,7 @@ export default {
     addTask(data) {
         return request({
             url: '/task',
-            method: 'put',
+            method: 'post',
             data: data
         })
     }

@@ -1,6 +1,7 @@
 <template>
-  <el-dialog :before-close="beforeclose" :model-value="visble" :title="`${title}`" :visible.sync="open" :width="'68%'"
-    :closed="closemodel" :modal-class="'editAdd'">
+ 
+  <el-dialog ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`"
+    :visible.sync="open" :width="'68%'" :closed="closemodel" :modal-class="'editAdd'">
     <el-form :class="'col-12'" :model="form" ref="editForm" :rules="ru" label-position="top">
       <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
         <el-col :class="'col-12 row-s'" :span="calculateSpan(field)" v-for="(field, index) in fields" :key="index">
@@ -66,7 +67,7 @@
                 <template v-else-if="field.inputtype === 'sorting'">
                   <el-row :class="field.row" flex>
                     <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                      :min="0" size="default" />
+                      :min="field.min || 0 " size="default"  />
                   </el-row>
                 </template>
 
@@ -101,42 +102,49 @@
                 </template>
                 <template v-if="field.inputtype === 'selectV'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="field.data"
-                    style="width: 240px" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
+                    :max-collapse-tags="3" />
                 </template>
                 <!-------------------------------------------------------------------------------------  -->
                 <!-- System Fields selections -->
 
                 <!--Department Selecting Section -->
                 <template v-else-if="field.inputtype === 'departments'">
-                  <el-tree-select v-model="form[field.name]" :data="department" :render-after-expand="true"
-                    :placeholder="field.placeholder" check-strictly check-on-click-node filterable />
+                  <el-tree-select v-model="form[field.name]" :data="department" :multiple="field.multiple"
+                    :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node
+                    filterable />
                   <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
                 </template>
 
                 <!-- Roles Selecting Section -->
                 <template v-if="field.inputtype === 'roles'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="roles"
-                    style="width: 240px" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
+                    :max-collapse-tags="3" />
                   <!-- {{ this.role }} -->
                 </template>
                 <!-- Position Selecting Section -->
                 <template v-if="field.inputtype === 'Position'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="Position"
-                    style="width: 240px" :multiple="field.multiple || true" collapse-tags collapse-tags-tooltip
+                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
                     :max-collapse-tags="3" />
                 </template>
                 <!-- Menu Selecting Section -->
-                <template v-if="field.inputtype === 'menu'">
-                  <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="field.options"
-                    style="width: 240px" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
-                    :multiple="field.multiple || true" :show-checkbox="field.showCheckbox || true" />
+                <template v-else-if="field.inputtype === 'menu'">
+                  <el-tree-select v-model="form[field.name]" :data="menus" :render-after-expand="true"
+                    :placeholder="field.placeholder" check-strictly check-on-click-node filterable
+                    :multiple="field.multiple" :show-checkbox="field.showCheckbox" />
                 </template>
                 <!-- Group permissions -->
+
                 <template v-else-if="field.inputtype === 'gpermision'">
-                  <el-tree-select v-model="form[field.name]" :data="department" :render-after-expand="true"
-                    :placeholder="field.placeholder" multiple show-checkbox check-strictly check-on-click-node filterable
-                    :multiple="field.multiple || false" :show-checkbox="field.showCheckbox || false" />
+                  {{ console.log(this.GpermsOptions) }}
+                  <el-tree-select v-model="form[field.name]" :data="this.GpermsOptions" :render-after-expand="true"
+                    :placeholder="field.placeholder" check-strictly check-on-click-node filterable
+                    :multiple="field.multiple" :show-checkbox="field.showCheckbox" />
+                  {{ console.log(this.GpermsOptions) }}
                 </template>
+
 
                 <!-- CustomData Scop -->
                 <template v-if="field.inputtype === 'customDataScop'">
@@ -149,10 +157,9 @@
 
                 <!-------------------------------------------- --------------------------------------------- -->
                 <template v-else-if="field.inputtype === 'Gender'">
-                  <el-select-v2 v-model="form[field.name]" placeholder="Select Gander" :options="gander"
-                     />
-                    <!-- {{ typeof (field.name) }} -->
-                  </template>
+                  <el-select-v2 v-model="form[field.name]" placeholder="Select Gander" :options="gander" />
+                  <!-- {{ typeof (field.name) }} -->
+                </template>
 
                 <!-- Switch Field -->
                 <template v-else-if="field.inputtype === 'switch'">
@@ -174,8 +181,8 @@
             <!-- -------------------------------------------------------------------- -->
             <template v-if="field.inputtype === 'schedule'">
               <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
-                <el-col :class="'col-12 row-s'" flex :span="calculateSpan(subField)" v-for="(subField, index) in field.data"
-                  :key="index">
+                <el-col :class="'col-12 row-s'" flex :span="calculateSpan(subField)"
+                  v-for="(subField, index) in field.data" :key="index">
                   <!-- <template v-if="1"> -->
                   <template v-if="shouldShowField(subField)">
                     <el-form-item :label="subField.label">
@@ -237,32 +244,41 @@
               <el-form-item :label="field.name" :prop="field.name">
                 <el-row v-for="(item, index) in pairs" :key="index">
                   <el-col :span="12">
-                    <!-- <el-select v-model="item.deptId" multiple placeholder="User IDs">
-                        <el-option v-for="item in field.data.Dept" :label="item" :value="item"></el-option>
-                      </el-select> -->
-                    <el-tree-select v-model="item.deptId" :props="{}" :data="field.data.Dept" />
+                    <el-tree-select v-model="item.deptId" :props="{}" :data="department" />
+
                   </el-col>
-                  <!-- <el-col :span="12">
-                      <el-input v-model="item.deptId" :placeholder="field.placeholder" :key="item" :label="item" />
-                    </el-col> -->
                   <el-col :span="12">
                     <el-select v-model="item.userIds" multiple placeholder="User IDs">
                       <el-option v-for="item in field.data.userIds" :key='item.value' :label="item.label"
                         :value="item.value"></el-option>
-
                     </el-select>
                   </el-col>
                 </el-row>
                 <el-button @click="addScoping" type="primary" icon="el-icon-plus">Add Scoping</el-button>
-                <!-- <el-button type="primary" @click="addDynamicFeild(field.name)">Add</el-button>
-                  <el-button type="danger" @click="removeDynamicFeild(field.name)">Remove</el-button> -->
               </el-form-item>
-
             </template>
+            <!-- -------------------------------------------------------------------------------------------- -->
+            <!-- Add this template block to your existing component -->
+            <template v-else-if="field.inputtype === 'dynamicFieldWithOptions'">
+              <el-form-item :label="field.label">
+                <el-select v-model="form[field.name]" :placeholder="field.placeholder" @change="handleOptionChange">
+                  <el-option v-for="option in field.options" :key="option.value" :label="option.label"
+                    :value="option.value"></el-option>
+                </el-select>
 
+                <!-- Conditionally render sub-fields based on the selected option -->
+                <template v-if="form[field.name] === 'A'">
+                  <el-input v-model="form.subField1" placeholder="Sub Field 1"></el-input>
+                  <el-input v-model="form.subField2" placeholder="Sub Field 2"></el-input>
+                </template>
+                <template v-else-if="form[field.name] === 'B'">
+                  <el-input v-model="form.subField4" placeholder="Sub Field 4"></el-input>
+                  <el-input v-model="form.subField5" placeholder="Sub Field 5"></el-input>
+                </template>
+                <!-- Add more conditions based on your requirements -->
 
-            <!-- --------------------------------------------------- -->
-
+              </el-form-item>
+            </template>
 
 
           </template>
@@ -288,7 +304,7 @@
 <script>
 
 
-import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject } from '@/utils/dtControl/dTransformer'
+import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject, treeTransformerMultiyvalue } from '@/utils/dtControl/dTransformer'
 import countriesAndregions from '@/utils/Countries&Regions/data'
 console.log("Countries", countriesAndregions)
 
@@ -296,15 +312,19 @@ export default {
 
   data() {
     return {
+      pairs: [
+        { deptId: 0, userIds: [] },
+      ],
+      usersName: [],
       verifyPassword: '',
       selectedCountryRegions: [],
       roles: [],
-      menu: [],
+      menus: {},
       Position: [],
       department: [],
       ilteredData: [],
       fieldData: {},
-      GpermsOptions: {},
+      GpermsOptions: [],
       customdata: [],
       days: [],
       gander: [{ label: 'Man', value: 0 },
@@ -314,7 +334,9 @@ export default {
       form: {
         status: 0,
         delFlag: 0,
-      },
+        scoping: {}
+      },   
+
       countries: countriesAndregions.map(country => ({
         value: country.countryShortCode,
         label: country.countryName,
@@ -421,15 +443,49 @@ export default {
     f() {
       return this.form
     },
+    formData() {
+      return this.form
+    }
+
   },
   watch: {
+    form:{
+      deep: true,
+      handler(val) {
+        this.$emit('emi',val)
+      }
+    }
+    ,
+
     init: {
       immediate: true,
+      
       handler(val) {
         this.form = { ...val };
+        console.log('sss')
         console.log(val)
+        // this.emitFormData()
         this.formFieldSelectData()
+        if (this.mode === 'edit' && val.scoping) {
+          this.pairs = Object.keys(val.scoping).map((item) => ({ deptId: parseInt(item), userIds: val.scoping[item] }));
+        }
+        if (this.mode === 'add') {
+          console.log('')
+        }
 
+      },
+    },
+    pairs: {
+      deep: true,
+      handler(val) {
+        console.log(this.init)
+        if (val) {
+          let obj = {}
+          val.forEach((item, index) => {
+            obj[item.deptId] = item.userIds
+            this.form.scoping = obj
+          })
+        }
       },
     },
 
@@ -445,6 +501,7 @@ export default {
         console.log('Mode changed:', newMode);
         console.log(this.mode)
         console.log(typeof (this.option))
+        console.log(this.formData)
       },
     },
   },
@@ -452,7 +509,32 @@ export default {
 
   methods: {
     addScoping() {
+      // Check if pairs array exists, if not, initialize it as an empty array
+      if (!this.pairs) {
+        this.pairs = [];
+      }
+
+      // Now you can safely push an item into the pairs array
       this.pairs.push({ deptId: '', userIds: [] });
+    },
+
+    optionaldata(type) {
+      console.log(type)
+      if (type === 'dept') {
+        this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+          if (res.result && res.result.data) {
+            const dept = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+            console.log(dept)
+            return dept
+
+          }
+          else {
+            this.loading = false;
+            this.$message.error('Failed to load department list for the selection section');
+          }
+        });
+      }
+
     },
     formFieldSelectData() {
       this.fields.forEach(field => {
@@ -483,7 +565,6 @@ export default {
             console.log("CustomData Scop")
             this.$http.Job.listJob({ "pageNo": 1, "pageSize": 0 }).then(res => {
               this.Position = NormalmapTwoPropsToObject(res.result.data, 'name', 'jobId');
-              console.log(this.customdata)
             }).catch(error => {
               console.error(error);
             });
@@ -499,16 +580,28 @@ export default {
                 console.error('res.result.data is not an array');
               }
             })
-
           }
+          if (field.inputtype === 'menu') {
+            console.log("I am here")
+            this.$http.menu.MenuHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              console.log(res)
+              if (Array.isArray(res.result.data)) {
+                this.menus = treeTransformerTwoValues(res.result.data, 'name', 'menuId');
+                console.log(this.menus)
+              } else {
+                console.error('res.result.data is not an array');
+              }
+            })
+          }
+
           if (field.inputtype === 'gpermision') {
             console.log("in gpermision")
             this.$http.grpermision.permlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
               if (res.result && res.result.data) {
                 console.log(res.result.data)
                 this.GpermsOptions = treeTransformerMultiyvalue(res.result.data, 'name', 'groupId', 'perms', 'name', 'permId');
-                console.log(this.permsOptions)
-                // this.searchFields[3].data = treeTransformerMultiyvalue(res.result.data, 'name', 'groupId', 'perms', 'name', 'permId');
+                console.log(this.GpermsOptions)
+                console.log(typeof (this.GpermsOptions))
 
               } else {
                 this.loading = false;
@@ -517,25 +610,52 @@ export default {
 
             })
           }
+          if (field.inputtype === 'dynamicFeild') {
+            console.log("I am here")
+            this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              if (res.result && res.result.data) {
+                this.department = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+              }
+              else {
+                this.loading = false;
+                this.$message.error('Failed to load department list for the selection section');
+              }
+            });
+            this.$http.MgUsers.listUsers({
+              "pageNo": 1,
+              "pageSize": 0
+            }).then(res => {
+
+              this.usersName = res?.result?.data.map((item) => {
+                return { value: item.userId, label: item.username }
+              })
+
+
+            })
+
+          }
         }
         // Check subFields if they exist
-        if (field.data) {
-          field.data.forEach(subField => {
-            if (this.shouldShowField(subField)) {
-              if (subField.inputtype === 'DaysWeek') {
-                console.log("I am in")
-                this.$http.daysControl.daysList({ "pageNo": 1, "pageSize": 0 }).then(res => {
-                  this.days = NormalmapTwoPropsToObject(res.result.data, 'name', 'dayId');
-                  console.log(days)
-                }).catch(error => {
-                  console.error(error);
-                });
+        if (Array.isArray(field.data)) {
+          if (field.data) {
+            field.data.forEach(subField => {
+              if (this.shouldShowField(subField)) {
+                if (subField.inputtype === 'DaysWeek') {
+                  console.log("I am in")
+                  this.$http.daysControl.daysList({ "pageNo": 1, "pageSize": 0 }).then(res => {
+                    this.days = NormalmapTwoPropsToObject(res.result.data, 'name', 'dayId');
+                    console.log(days)
+                  }).catch(error => {
+                    console.error(error);
+                  });
+                }
               }
-            }
-          });
-        }
+            });
+          }
 
+        }
       });
+
 
     },
 
@@ -592,7 +712,7 @@ export default {
         })
         .catch(_ => { });
     },
-
+    
 
     onSubmit() {
       console.log(this.form)

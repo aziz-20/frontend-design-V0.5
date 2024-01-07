@@ -15,11 +15,9 @@
             :inactive-value="field.inactiveValue">
           </el-switch>
         </template>
-        <template v-else-if="field.inputtype === 'select'">
-          <el-select v-model="queryParams[field.name]" :label="field.label">
-            <el-option v-model="queryParams[field.name]" :data="field.data" filterable :style="field.style">
-            </el-option>
-          </el-select>
+        <template v-if="field.inputtype === 'selectV'">
+          <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="field.data"
+            style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
         </template>
         <template v-if="field.inputtype === 'StatusSelect'">
           <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="statuses"
@@ -64,6 +62,13 @@
         <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder"
           :options="field.name === 'userId' ? username : email" style="width: 240px" collapse-tags collapse-tags-tooltip
           :max-collapse-tags="3" filterable />
+      </template>
+
+      <!-- Task fields -->
+      <template v-if="field.inputtype === 'tasks'">
+        <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="taskname"
+          style="width: 150px" collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+        <!-- {{ this.role }} -->
       </template>
 
       <!-------------------------------------------- --------------------------------------------- -->
@@ -118,6 +123,9 @@ export default {
       //UserManagements
       username: [],
       email: [],
+
+      //Tasks
+      taskname: [],
 
 
       days: [],
@@ -191,7 +199,7 @@ export default {
             this.$http.daysControl.daysList({ "pageNo": 1, "pageSize": 0 }).then(res => {
               this.days = mapOnePropToObject(res.result.data, 'name', 'dayId');
               console.log(days)
-            }).catch(error => {
+            }).catch(message => {
               console.error(error);
             });
           }
@@ -210,12 +218,21 @@ export default {
           if (field.inputtype === 'menu') {
             this.$http.menu.MenuHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
               if (res.result && res.result.data) {
-                this.menu = mapOnePropToObject(res.result.data, 'name','menuId')
+                this.menu = mapOnePropToObject(res.result.data, 'name', 'menuId')
               }
               else {
                 this.loading = false;
                 this.$message.error('Failed to load Menu list for the Quarry Selection Section');
               }
+            });
+          }
+          if (field.inputtype === 'tasks') {
+            console.log("I am in")
+            this.$http.taskControl.listTask({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              this.taskname = mapOnePropToObject(res.result.data, 'taskName', 'taskId');
+              console.log(days)
+            }).catch(message => {
+              // console.error(error);
             });
           }
         }

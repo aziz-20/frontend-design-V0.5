@@ -58,7 +58,7 @@
                 v-hasPermi="['system:user:edit']">
                 Edit</el-button>
               <el-button type="warning" :el-icon-plus="Delete" size="small" @click="handle_SideDelete(row)"
-                v-hasPermi="['system:user:remove']" >Delete</el-button>
+                v-hasPermi="['system:user:remove']">Delete</el-button>
             </el-row>
           </template>
         </el-table-column>
@@ -364,17 +364,17 @@ export default {
       }
     },
     //*****************Find name by using Id ************************************** */
-    getdptNameId(parentId) {
-      if (parentId === undefined) {
-        const response = this.$http.dept.getDeptyid(parentId);
-        console.log(response)
-        const parent = response.result.data.find(item => item.deptId === parentId);
-        console.log(parent)
-        return parent ? parent.name : null;
-      } else {
-        return this.$modal.msgError(`Could not open the the add :${this.selectedRows.map(row => row.name).join(', ')}`);
-      }
-    },
+    // getdptNameId(parentId) {
+    //   if (parentId === undefined) {
+    //     const response = this.$http.dept.getDeptyid(parentId);
+    //     console.log(response)
+    //     const parent = response.result.data.find(item => item.deptId === parentId);
+    //     console.log(parent)
+    //     return parent ? parent.name : null;
+    //   } else {
+    //     return this.$modal.msgError(`Could not open the the add :${this.selectedRows.map(row => row.name).join(', ')}`);
+    //   }
+    // },
     //****************Retrieving making list with value*********************************** */
     handleAdd(row) {
       this.mode = 'add'
@@ -418,7 +418,10 @@ export default {
           console.log(this.form)
           this.open = false;
           this.getList();
+        }).catch(message => {
+          ("The error:*" + message + ":*");
         });
+
         this.resetform();
       }
       else {
@@ -429,7 +432,10 @@ export default {
             this.open = false;
             this.getList();
 
+          }).catch(message => {
+            ("The error:*" + message + ":*");
           });
+
         }
         console.log(this.form)
       }
