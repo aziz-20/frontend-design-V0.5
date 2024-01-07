@@ -1,4 +1,5 @@
 <template>
+ 
   <el-dialog ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`"
     :visible.sync="open" :width="'68%'" :closed="closemodel" :modal-class="'editAdd'">
     <el-form :class="'col-12'" :model="form" ref="editForm" :rules="ru" label-position="top">
@@ -66,7 +67,7 @@
                 <template v-else-if="field.inputtype === 'sorting'">
                   <el-row :class="field.row" flex>
                     <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                      :min="0" size="default" />
+                      :min="field.min || 0" size="default"  />
                   </el-row>
                 </template>
 
@@ -448,10 +449,20 @@ export default {
 
   },
   watch: {
+    form:{
+      deep: true,
+      handler(val) {
+        this.$emit('emi',val)
+      }
+    }
+    ,
+
     init: {
       immediate: true,
+      
       handler(val) {
         this.form = { ...val };
+        console.log('sss')
         console.log(val)
         // this.emitFormData()
         this.formFieldSelectData()
@@ -701,7 +712,7 @@ export default {
         })
         .catch(_ => { });
     },
-
+    
 
     onSubmit() {
       console.log(this.form)
