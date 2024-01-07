@@ -60,7 +60,7 @@
           <template #default="{ row, column, index }">
             <el-row class="mb-4">
               <el-button size="mini" type="text" @click="handleAdd(row, index)" :el-icon-plus="Add"
-                v-hasPermi="['system:user:add']">
+                v-hasPermi="['system:user:add']" v-if="row.type === 0">
                 Add</el-button>
               <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
                 v-hasPermi="['system:user:edit']">
@@ -101,8 +101,7 @@ import {
   Star,
 } from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
-import { mapOnePropToObject, treeTransformerTwoValues } from '@/utils/dtControl/dTransformer'
-// import IconSelect from "@/components/IconSelect";
+
 
 
 
@@ -178,7 +177,7 @@ export default {
             name: "type",
             label: "Enter the Type ",
             placeholder: "Select the Type ",
-            data: [{ label: 'Directory', value: 0 }, { label: 'menu', value: 1 }, { label: 'Button', value: 2 }],  
+            data: [{ label: 'Directory', value: 0 }, { label: 'menu', value: 1 }, { label: 'Button', value: 2 }],
             span: 24,
             multiple: false
           },
@@ -375,8 +374,15 @@ export default {
     handleAdd(row) {
       this.mode = "add"
       this.open = true;
-      this.initialValuesAdd = { "delFlag": "0","parentId":row.menuId, }
+      if(row.parentId === null)
+      this.initialValuesAdd = { "delFlag": "0", "parentId": 0, 
+    }
+    else{
+      if(row.parentId !== null)
+      this.initialValuesAdd = { "delFlag": "0", "parentId": row.parentId }
+    }
     },
+
     //*******************Edit control section**********************************/
     handleUpdate(row) {
       this.mode = "Edit"
@@ -395,6 +401,8 @@ export default {
           this.$modal.msgSuccess("Addition successful");
           this.open = false;
           this.getList();
+        }).catch(message => {
+          ("The error:*" + message + ":*");
         });
 
       }
@@ -404,6 +412,8 @@ export default {
           this.$modal.msgSuccess("Update successful");
           this.open = false;
           this.getList();
+        }).catch(message => {
+          ("The error:*" + message + ":*");
         });
       }
     },
@@ -433,7 +443,7 @@ export default {
           this.$modal.confirm('Are you sure you want to delete the following : ' + this.selectedRows.map(row => row.name).join(', ') + '?').then(() => {
             this.selectedRows.forEach(row => {
               // Assuming this.$http.dept.deleteDeptid can take a deptId and delete the corresponding department
-              this.$http.menu.deleteMenuid(row.deptId);
+              this.$http.menu.deleteMenuid(row.menuId);
             });
             this.getList();
             this.$modal.msgSuccess("Deletion successful");
@@ -452,7 +462,7 @@ export default {
           + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
             this.selectedRows.forEach(row => {
               // Delete the department
-              this.$http.menu.deleteMenuid(row.jobId);
+              this.$http.menu.deleteMenuid(row.menuId);
               // If the department has children, delete them as well
             });
             this.getList();
@@ -476,7 +486,7 @@ export default {
     handleSelectionChange(selection) {
       this.selectedRows = selection;
       this.selectedRows.forEach(row => {
-        console.log(row.jobId, row.name); // logs the deptId and name of each selected row
+        console.log(row.menuId, row.name); // logs the deptId and name of each selected row
       });
 
     },

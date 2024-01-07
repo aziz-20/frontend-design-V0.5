@@ -329,10 +329,10 @@ export default {
           this.$modal.msgSuccess("Addition successful");
           this.open = false;
           this.getList();
-
         }).catch(message => {
-          this.$modal.msgSuccess("The error:*"+message+":*");
+          ("The error:*" + message + ":*");
         });
+
 
       }
       else {
@@ -342,8 +342,9 @@ export default {
           this.open = false;
           this.getList();
         }).catch(message => {
-          this.$modal.msgSuccess("The error:*"+message+":*");
+          ("The error:*" + message + ":*");
         });
+
       }
     },
 
