@@ -10,18 +10,6 @@
 
 
         <el-row class="mb-4" :gutter="10">
-            <el-col :span="1.5">
-                <el-button color="#626aef" :dark="isDark" plain type="primary" :icon="Add" size="mini"
-                    @click="handleAdd">NEW</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="info" :icon="el - icon - sort" size="mini"
-                    @click="toggleExpandAll">Expand/collaps</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button size="mini" @click="handleDelete" v-hasPermi="['system:post:remove']" color="red" :dark="isDark"
-                    plain>Delete</el-button>
-            </el-col>
             <el-col :span="1.5" :offset="22.5" :class="{ 'show-search': showSearch }">
                 <el-button v-if="!showSearch" @click="showSearch = true" style="float: right;">Show Filter</el-button>
                 <el-button v-else @click="showSearch = false" style="float: right;">Hide Filter</el-button>
@@ -51,10 +39,10 @@
                 </template>
             </el-table-column>
             <el-table-column prop="taskDetail" label="Task Details" width="200" />
-            <el-table-column prop="updateTime" label="Last Update Time" width="200" />
-            <el-table-column prop="startTime" label="Trigger Starting Time" width="200" />
+            <!-- <el-table-column prop="updateTime" label="Last Update Time" width="200" /> -->
+            <el-table-column fixed="right" prop="startTime" label="Trigger Starting Time" width="200" />
             <el-table-column prop="endTime" label="Trigger Ending Time" width="200" />
-            <el-table-column fixed="right" label="Actions" width="250" align="center"
+            <!-- <el-table-column fixed="right" label="Actions" width="250" align="center"
                 class-name="small-padding fixed-width">
                 <template #default="{ row, column, index }">
                     <el-row class="mb-4">
@@ -65,14 +53,14 @@
                             @click="handle_SideDelete(row)" v-hasPermi="['system:user:remove']">Delete</el-button>
                     </el-row>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <!-- <div>{{ formData.triggerType }}</div> -->
         </el-table>
         <!-- <s>ADD, EDIT</s> -->
-        <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+        <!-- <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
             initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
             @emi="emitChange">
-        </addoredit>
+        </addoredit> -->
         <el-row justify="center">
             <el-col :span="24" :sm="12" :md="8">
                 <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total"
@@ -88,16 +76,16 @@
   
 <script >
 import addoredit from "@/views/components/addoredit/index.vue"
-import {
-    Check,
-    Delete,
-    Edit,
-    Message,
-    Search,
-    Star,
-} from '@element-plus/icons-vue'
+// import {
+//     Check,
+//     Delete,
+//     Edit,
+//     Message,
+//     Search,
+//     Star,
+// } from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
-import { mapOnePropToObject } from '@/utils/dtControl/dTransformer'
+// import { mapOnePropToObject } from '@/utils/dtControl/dTransformer'
 
 
 export default {
@@ -164,37 +152,32 @@ export default {
                 // Define your search field configurations here
                 // Example:
                 {
-                    type: 'Position',
-                    inputtype: "Position",
-                    name: 'name',
-                    label: 'Job Name',
-                    data: 'Position',
+                    type: 'tasks',
+                    inputtype: "tasks",
+                    name: 'taskName',
+                    label: 'Task Name',
+                    // data: 'Position',
                     style: 'width: 150px'
 
                 },
                 {
-                    type: 'Position',
-                    inputtype: "Position",
-                    name: 'abbrev',
-                    label: 'Job code',
-                    data: 'abbrev',
-                    style: 'width: 150px'
+                    "type": "selectV",
+                    inputtype: "selectV",
+                    name: 'triggerType',
+                    label: "Trigger Type",
+                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
+                    placeholder: "Please Select a Trigger",
+
 
                 },
 
                 {
-                    type: 'StatusSelect',
+                    inputtype: 'StatusSelect',
                     name: 'status',
-                    label: 'Job Status',
+                    label: 'Log Status',
+
                 },
-                {
-                    "type": "departments",
-                    inputtype: "departments",
-                    name: "deptId",
-                    label: "Department",
-                    placeholder: "Selected Departments",
-                    span: 6,
-                },
+
             ],
             searchButtonText: 'Search',
             resetButtonText: 'Reset',
@@ -211,14 +194,14 @@ export default {
     //**************Methods Control*********************************************** */
 
     methods: {
-        emitChange(x) {
-            // this.$emit('fieldChanged', this.formData);
-            const { triggerType } = x
-            this.switching = triggerType
-            console.log(this.switching)
-            // this.generateForm(triggerType)
-            console.log(x)
-        },
+        // emitChange(x) {
+        //     // this.$emit('fieldChanged', this.formData);
+        //     const { triggerType } = x
+        //     this.switching = triggerType
+        //     console.log(this.switching)
+        //     // this.generateForm(triggerType)
+        //     console.log(x)
+        // },
         //*****************Pagination control********************************** */
         handlePageChange(newPage) {
             // Update the queryParams with the new page number
@@ -248,16 +231,16 @@ export default {
 
         //****************** */ Open and Close***************************************
 
-        openAddEdit() {
-            this.open = true
-            // this.reset();
-            // this.reset(this.form)
+        // openAddEdit() {
+        //     this.open = true
+        //     // this.reset();
+        //     // this.reset(this.form)
 
-        },
-        closeAddEdit() {
-            this.open = false
-            // this.reset(this.form);
-        },
+        // },
+        // closeAddEdit() {
+        //     this.open = false
+        //     // this.reset(this.form);
+        // },
         //************************************** */
         handleQuery(e) {
             this.getList();
@@ -266,270 +249,257 @@ export default {
         /** Reset button operation */
 
         resetQuery() {
-            this.queryParams = {
-                targetTask: undefined,
-                taskGroup: null,
-                taskLogId: null,
-                taskName: undefined,
-                startTime: undefined,
-                status: undefined,
-                taskDetail: undefined,
-                triggerType: null,
-                pageNo: number,
-                pageSize: number
-            }
-            this.handleQuery();
+            this.queryParams.targetTask = undefined,
+                this.queryParams.taskGroup = null,
+                this.queryParams.taskLogId = null,
+                this.queryParams.taskName = undefined,
+                this.queryParams.startTime = undefined,
+                this.queryParams.status = undefined,
+                this.queryParams.taskDetail = undefined,
+                this.queryParams.triggerType = null,
+                this.handleQuery();
             this.getList();
         },
 
         //**************** Add, Edit and delete control section******************************************* */
-        generateForm(triggerType) {
-            console.log(triggerType)
-            this.Add_Edit = [
-                {
-                    "type": "input",
-                    inputtype: "text",
-                    name: "taskGroup",
-                    label: "Task Group ",
-                    placeholder: "Please Enter the Task Group name",
-                    span: 24
+        // generateForm(triggerType) {
+        //     console.log(triggerType)
+        //     this.Add_Edit = [
+        //         {
+        //             "type": "input",
+        //             inputtype: "text",
+        //             name: "taskGroup",
+        //             label: "Task Group ",
+        //             placeholder: "Please Enter the Task Group name",
+        //             span: 24
 
-                },
-                {
-                    "type": "input",
-                    inputtype: "text",
-                    name: "taskName",
-                    label: "Name of the Task ",
-                    placeholder: "Please Enter the job Title",
-                    span: 24
+        //         },
+        //         {
+        //             "type": "input",
+        //             inputtype: "text",
+        //             name: "taskName",
+        //             label: "Name of the Task ",
+        //             placeholder: "Please Enter the job Title",
+        //             span: 24
 
-                },
-                {
-                    "type": "text",
-                    inputtype: "text",
-                    name: "targetTask",
-                    label: "Task Action",
-                    placeholder: "Please Enter Task Action",
-                    span: 24
+        //         },
+        //         {
+        //             "type": "text",
+        //             inputtype: "text",
+        //             name: "targetTask",
+        //             label: "Task Action",
+        //             placeholder: "Please Enter Task Action",
+        //             span: 24
 
-                },
-                {
-                    "type": "selectV",
-                    inputtype: "selectV",
-                    name: 'triggerType',
-                    label: "Type of the trigger Action",
-                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
-                    placeholder: "Please Select a Trigger",
-                    span: 12
+        //         },
+        //         {
+        //             "type": "selectV",
+        //             inputtype: "selectV",
+        //             name: 'triggerType',
+        //             label: "Type of the trigger Action",
+        //             data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
+        //             placeholder: "Please Select a Trigger",
+        //             span: 12
 
-                },
+        //         },
 
-                {
-                    inputtype: 'switch',
-                    name: 'status',
-                    label: 'Task Status',
-                    switchOnColor: '#309f62',
-                    switchOffColor: '#ff4949',
-                    activeText: 'Activate',
-                    inactiveText: 'Disabled',
-                    activeValue: 0,
-                    inactiveValue: 1,
-                    span: 8
-                },
-                {
-                    "type": "sorting",
-                    inputtype: "sorting",
-                    name: "orderNum",
-                    label: "Task order",
-                    placeholder: "Enter Code for the Position",
-                    min: 1,
-                    span: 12
-                },
+        //         {
+        //             inputtype: 'switch',
+        //             name: 'status',
+        //             label: 'Task Status',
+        //             switchOnColor: '#309f62',
+        //             switchOffColor: '#ff4949',
+        //             activeText: 'Activate',
+        //             inactiveText: 'Disabled',
+        //             activeValue: 0,
+        //             inactiveValue: 1,
+        //             span: 8
+        //         },
+        //         {
+        //             "type": "sorting",
+        //             inputtype: "sorting",
+        //             name: "orderNum",
+        //             label: "Task order",
+        //             placeholder: "Enter Code for the Position",
+        //             min: 1,
+        //             span: 12
+        //         },
 
-            ];
-            if (triggerType === 1) {
-                console.log("I am here")
-                this.Add_Edit.push(
-                    {
-                        "type": "text",
-                        inputtype: "text",
-                        name: "cronExpression",
-                        label: "Position",
-                        placeholder: "Enter Code for the Position",
-                        span: 12
-                    },
-                    {
-                        inputtype: 'switch',
-                        name: 'taskConcurrent',
-                        label: 'Execute in concurrent way',
-                        switchOnColor: '#309f62',
-                        switchOffColor: '#ff4949',
-                        activeText: 'Enable',
-                        inactiveText: 'Disabled',
-                        activeValue: 0,
-                        inactiveValue: 1,
-                        span: 12
-                    },
-                );
-                // const m = { 'taskDuration': -1, 'taskCount': 0 }
-                let newProperties = { 'taskDuration': -1, 'taskCount': 0 };
-                if (this.mode === 'add' && this.open === true) {
-                    console.log("I am here")
-                    // this.initialValuesAdd = Object.assign(this.initialValuesAdd, newProperties);   
-                    for (let property in newProperties) {
-                        this.initialValuesAdd[property] = newProperties[property];
-                    }
-                }
-            }
-            if (triggerType === 0) {
-                this.Add_Edit.push(
-                    {
-                        "type": "sorting",
-                        inputtype: "sorting",
-                        name: "taskDuration",
-                        label: "Duration",
-                        placeholder: "Enter Code for the Position",
-                        min: 1,
-                        span: 12
-                    },
-                    {
-                        "type": "sorting",
-                        inputtype: "sorting",
-                        name: "taskCount",
-                        label: "Number of time",
-                        // placeholder: "Enter Code for the Position",
-                        min: 1,
-                        span: 12
-                    },
-                );
-            }
-            this.Add_Edit.push(
-                {
-                    "type": "selectV",
-                    inputtype: "selectV",
-                    name: 'misFirePolicy',
-                    label: "Task Policy",
-                    data: [{ label: 'MISFIRE_DEFAULT ', value: 0 }, { label: 'MISFIRE_IGNORE_MISFIRES', value: 1 }, { label: 'MISFIRE_FIRE_AND_PROCEED', value: 2 }, { label: 'MISFIRE_DO_NOTHING', value: 1 }],
-                    placeholder: "Please Select a Trigger",
-                    span: 12
-                },
-                {
-                    "type": "textarea",
-                    inputtype: "textarea",
-                    name: "remark",
-                    label: "Job Description",
-                    placeholder: "Enter Description or Note of the Job ",
-                    span: 24
-                },
+        //     ];
+        //     if (triggerType === 1) {
+        //         console.log("I am here")
+        //         this.Add_Edit.push(
+        //             {
+        //                 "type": "text",
+        //                 inputtype: "text",
+        //                 name: "cronExpression",
+        //                 label: "Position",
+        //                 placeholder: "Enter Code for the Position",
+        //                 span: 12
+        //             },
+        //             {
+        //                 inputtype: 'switch',
+        //                 name: 'taskConcurrent',
+        //                 label: 'Execute in concurrent way',
+        //                 switchOnColor: '#309f62',
+        //                 switchOffColor: '#ff4949',
+        //                 activeText: 'Enable',
+        //                 inactiveText: 'Disabled',
+        //                 activeValue: 0,
+        //                 inactiveValue: 1,
+        //                 span: 12
+        //             },
+        //         );
+        //         // // const m = { 'taskDuration': -1, 'taskCount': 0 }
+        //         // let newProperties = { 'taskDuration': -1, 'taskCount': 0 };
+        //         // if (this.mode === 'add' && this.open === true) {
+        //         //     console.log("I am here")
+        //         //     // this.initialValuesAdd = Object.assign(this.initialValuesAdd, newProperties);   
+        //         //     for (let property in newProperties) {
+        //         //         this.initialValuesAdd[property] = newProperties[property];
+        //         //     }
+        //         // }
+        //     }
+        //     if (triggerType === 0) {
+        //         this.Add_Edit.push(
+        //             {
+        //                 "type": "sorting",
+        //                 inputtype: "sorting",
+        //                 name: "taskDuration",
+        //                 label: "Duration",
+        //                 placeholder: "Enter Code for the Position",
+        //                 min: 1,
+        //                 span: 12
+        //             },
+        //             {
+        //                 "type": "sorting",
+        //                 inputtype: "sorting",
+        //                 name: "taskCount",
+        //                 label: "Number of time",
+        //                 // placeholder: "Enter Code for the Position",
+        //                 min: 1,
+        //                 span: 12
+        //             },
+        //         );
+        //     }
+        //     this.Add_Edit.push(
+        //         {
+        //             "type": "selectV",
+        //             inputtype: "selectV",
+        //             name: 'misFirePolicy',
+        //             label: "Task Policy",
+        //             data: [{ label: 'MISFIRE_DEFAULT ', value: 0 }, { label: 'MISFIRE_IGNORE_MISFIRES', value: 1 }, { label: 'MISFIRE_FIRE_AND_PROCEED', value: 2 }, { label: 'MISFIRE_DO_NOTHING', value: 1 }],
+        //             placeholder: "Please Select a Trigger",
+        //             span: 12
+        //         },
+        //         {
+        //             "type": "textarea",
+        //             inputtype: "textarea",
+        //             name: "remark",
+        //             label: "Job Description",
+        //             placeholder: "Enter Description or Note of the Job ",
+        //             span: 24
+        //         },
 
-            );
-            console.log(this.initialValuesAdd)
+        //     );
+        //     console.log(this.initialValuesAdd)
 
-            return this.Add_Edit;
-        },
+        //     return this.Add_Edit;
+        // },
 
 
         // *********************************ADDing*****************************
-        handleAdd() {
-            this.mode = "add"
-            this.generateForm(this.switching)
-            this.open = true;
-            this.initialValuesAdd
-            console.log(this.switching);
+        // handleAdd() {
+        //     this.mode = "add"
+        //     this.generateForm(this.switching)
+        //     this.open = true;
+        //     this.initialValuesAdd
+        //     console.log(this.switching);
 
-            console.log(this.form);
-        },
+        //     console.log(this.form);
+        // },
 
         //*******************Edit control section**********************************/
-        handleUpdate(row) {
-            this.mode = "Edit"
-            this.initialValuesEdit = row
-            console.log(row)
-            this.generateForm(this.switching)
-            this.open = true
-        },
+        // handleUpdate(row) {
+        //     this.mode = "Edit"
+        //     this.initialValuesEdit = row
+        //     console.log(row)
+        //     this.generateForm(this.switching)
+        //     this.open = true
+        // },
 
         /**************************** Submit button**************************** */
-        onSubmit(n) {
-            this.form = n
-            if (this.mode == 'add') {
-                this.$http.Job.addJob(this.form).then(response => {
-                    console.log()
-                    console.log('sssssssssssssssssssssss' + response.data)
-                    this.$modal.msgSuccess("Addition successful");
-                    console.log(this.form)
-                    this.open = false;
-                    this.getList();
+        // onSubmit(n) {
+        //     this.form = n
+        //     if (this.mode == 'add') {
+        //         this.$http.Job.addJob(this.form).then(response => {
+        //             console.log()
+        //             console.log('sssssssssssssssssssssss' + response.data)
+        //             this.$modal.msgSuccess("Addition successful");
+        //             console.log(this.form)
+        //             this.open = false;
+        //             this.getList();
 
-                }).catch(message => {
-                    this.$modal.msgSuccess("The error:*" + message + ":*");
-                });
+        //         }).catch(message => {
+        //             this.$modal.msgSuccess("The error:*" + message + ":*");
+        //         });
 
-            }
-            else {
-                this.$http.Job.updateJob(this.form).then(response => {
-                    console.log('sssssssssssssssssssssss' + this.form)
-                    this.$modal.msgSuccess("Update successful");
-                    this.open = false;
-                    this.getList();
-                }).catch(message => {
-                    this.$modal.msgSuccess("The error:*" + message + ":*");
-                });
-            }
-        },
+        //     }
+        //     else {
+        //         this.$http.Job.updateJob(this.form).then(response => {
+        //             console.log('sssssssssssssssssssssss' + this.form)
+        //             this.$modal.msgSuccess("Update successful");
+        //             this.open = false;
+        //             this.getList();
+        //         }).catch(message => {
+        //             this.$modal.msgSuccess("The error:*" + message + ":*");
+        //         });
+        //     }
+        // },
 
         //********************Reset************************************************ */
 
 
 
         //*******************************************Delete Control Section************************************* */
-        handle_SideDelete(row) {
-            if (row.taskId > 0) {
-                this.$modal.confirm('Are you sure you want to delete the data Job/Jobs with the name "' + row.taskName + '"?').then(() => {
-                    return this.$http.taskControl.deleteTask(row.taskId);
-                }).then(() => {
-                    this.getList();
-                    this.$modal.msgSuccess("Deletion successful");
-                }).catch(() => { });
-            }
-        },
+        // handle_SideDelete(row) {
+        //     if (row.taskId > 0) {
+        //         this.$modal.confirm('Are you sure you want to delete the data Job/Jobs with the name "' + row.taskName + '"?').then(() => {
+        //             return this.$http.taskControl.deleteTask(row.taskId);
+        //         }).then(() => {
+        //             this.getList();
+        //             this.$modal.msgSuccess("Deletion successful");
+        //         }).catch(() => { });
+        //     }
+        // },
 
-        handleDelete() {
-            if (this.selectedRows.length > 0) {
-                this.$modal.confirm('WARNING: You are about to permanently delete the following Task/s:{ '
-                    + this.selectedRows.map(row => row.taskName).join(', ')
-                    + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
-                        this.selectedRows.forEach(row => {
-                            // Delete the Selected Jobs
-                            this.$http.taskControl.deleteTask(row.taskId);
-                        });
-                        this.getList();
-                        this.$modal.msgSuccess("Deletion successful");
-                    }).catch(() => { });
-            } else {
-                console.log('No data');
-            }
-        },
+        // handleDelete() {
+        //     if (this.selectedRows.length > 0) {
+        //         this.$modal.confirm('WARNING: You are about to permanently delete the following Task/s:{ '
+        //             + this.selectedRows.map(row => row.taskName).join(', ')
+        //             + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
+        //                 this.selectedRows.forEach(row => {
+        //                     // Delete the Selected Jobs
+        //                     this.$http.taskControl.deleteTask(row.taskId);
+        //                 });
+        //                 this.getList();
+        //                 this.$modal.msgSuccess("Deletion successful");
+        //             }).catch(() => { });
+        //     } else {
+        //         console.log('No data');
+        //     }
+        // },
 
         //*************handle selection section************************* */
-        handleSelectionChange(selection) {
-            this.selectedRows = selection;
-            this.selectedRows.forEach(row => {
-                console.log(row.taskId, row.taskName); // logs the deptId and name of each selected row
-            });
-        },
+        // handleSelectionChange(selection) {
+        //     this.selectedRows = selection;
+        //     this.selectedRows.forEach(row => {
+        //         console.log(row.taskId, row.taskName); // logs the deptId and name of each selected row
+        //     });
+        // },
 
     },
-    watch: {
-        switching(newVal, oldVal) {
-            if (this.mode === 'add' && this.open === true) {
-                this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
-            }
-            if (this.mode === 'edit' && this.open === true) {
-                this.handleUpdate(); // Call anotherMethod whenever `this.switching` changes
-            }
-        },
-    },
+ 
 };
 </script>
   

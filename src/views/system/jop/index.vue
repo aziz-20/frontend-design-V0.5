@@ -61,7 +61,7 @@
       </el-table-column>
     </el-table>
     <!-- <s>ADD, EDIT</s> -->
-    <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+    <addoredit ref="form"  :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
       initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
     </addoredit>
     <el-row justify="center">

@@ -127,10 +127,20 @@ const permission = {
                   title: 'TaskControl',
                 },
                 component: 'system/TaskControl',
-              }
-        
+              },
+              {
+                id: 130,
+                name: 'taskLogs',
+                path: 'taskLogs',
+                meta: 
+                {
+                  icon: 'log',
+                  title: 'TaskLogs',
+                },
+                component: 'system/taskLogs',
+              }   
 
-
+              
             ]
 
           }

@@ -2,12 +2,10 @@
   <div class="app-container">
     <div class="flex" v-if="showSearch">
       <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-        :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
-        :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
-        :resetIcon="resetIcon">
+        :handleQuery="handleQuery" :resetQuery="resetQuery" :searchButtonText="searchButtonText"
+        :resetButtonText="resetButtonText" :searchIcon="searchIcon" :resetIcon="resetIcon">
       </search_control>
     </div>
-
     <!-- Table Header -->
     <el-row class="mb-4" :gutter="10">
       <el-col :span="1.5">
@@ -64,7 +62,7 @@
         </el-table-column>
       </el-table>
       <!-- <s>ADD, EDIT</s> -->
-      <addoredit ref="form" style="width:40%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+      <addoredit ref="form"  :rules="rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
         initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
       </addoredit>
 
@@ -73,7 +71,7 @@
     <el-row justify="center">
       <el-col :span="24" :sm="12" :md="8">
         <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total"
-          :page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize" :layout="paginationLayout"
+          :page.sync="queryParams.pageNo"  :page-size.sync="queryParams.pageSize" :layout="paginationLayout"
           @current-change="handlePageChange" />
       </el-col>
     </el-row>
@@ -84,7 +82,7 @@
 </template>
 
 <script>
-import addoredit from "@/views/components/Test_addoredit/index.vue"
+import addoredit from "@/views/components/addoredit/index.vue"
 import {
   Delete,
   Edit,
@@ -112,8 +110,6 @@ export default {
       refreshTable: true,
       loading: false,
       displaySearch: true,
-      temp_list: [],
-      NameList: [],
       open: false,
       inivalu: [],
       form: {},
@@ -151,18 +147,8 @@ export default {
       Add_Edit:
         [
           {
-            "type": "input",
-            inputtype: "text",
-            name: "name",
-            label: "New Head Department ",
-            placeholder: "Department selected",
-            span: 12,
-            showMode: 'add'
-
-          },
-          {
-            "type": "departments",
-            inputtype: "departments",
+            "type": "treeSelect",
+            inputtype: "departmentNew",
             name: "parentId",
             label: "Department parent",
             placeholder: "Department selected",
@@ -179,14 +165,15 @@ export default {
 
           },
           {
-            "type": "text",
-            inputtype: "text",
+            // type: 'select',
+            inputtype: "userField",
             name: "leader",
             label: "Department Manger",
-            placeholder: "Enter email",
-            span: 12
+            placeholder: "Please add the department Manger",
+            style: 'width: 150px'
 
           },
+
           {
             "type": "email",
             inputtype: "email",
@@ -229,24 +216,12 @@ export default {
           },
 
         ],
-      fields_rules:
+      rules:
       {
-        // parentId: [
-        //   {
-        //     validator: (rule, parentId, callback) => {
-        //       if (parentId === null) {
-        //         callback(new Error('Your About To Make New Head Department'));
-        //       } else {
-        //         callback(new Error('Your About To Make New Head Department, Please Select Parent'));
-        //       }
-        //     },
-        //     trigger: ''
-        //   }
-        // ],
-        // parentId:
-        //   [
-        //     { required: true, message: "Parent Department cannot be empty", trigger: "change" }
-        //   ],
+        parentId:
+          [
+            { required: true, message: "Parent Department cannot be empty", trigger: "change" }
+          ],
         name: [
           { required: true, message: "Department name cannot be empty", trigger: "blur" }
         ],
@@ -300,7 +275,7 @@ export default {
       searchIcon: 'el-icon-search',
       resetIcon: 'el-icon-refresh',
 
-    };
+    }
   },
   //**************Creating ************************************** */  
   created() {
@@ -363,35 +338,24 @@ export default {
 
       }
     },
-    //*****************Find name by using Id ************************************** */
-    // getdptNameId(parentId) {
-    //   if (parentId === undefined) {
-    //     const response = this.$http.dept.getDeptyid(parentId);
-    //     console.log(response)
-    //     const parent = response.result.data.find(item => item.deptId === parentId);
-    //     console.log(parent)
-    //     return parent ? parent.name : null;
-    //   } else {
-    //     return this.$modal.msgError(`Could not open the the add :${this.selectedRows.map(row => row.name).join(', ')}`);
-    //   }
-    // },
     //****************Retrieving making list with value*********************************** */
     handleAdd(row) {
       this.mode = 'add'
       console.log(this.form)
       // this.formFieldSelectData(),
       this.open = true;
-      if (row.parentId !== undefined) {
-        console.log(row)
-        this.open = true;
-        this.initialValuesAdd = { "delFlag": "0", "parentId": row.deptId, "status": 0, }
-        console.log(this.form)
-      }
-      else {
-        this.open = true;
-        console.log(this.form)
-        this.initialValuesAdd = { "delFlag": 0, "status": 0, }
-      }
+      this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": row.deptId }
+      // if (row.parentId !== undefined) {
+      //   console.log(row)
+      //   this.open = true;
+      //   this.initialValuesAdd = { "delFlag": "0", "parentId": row.deptId, "status": 0, }
+      //   console.log(this.form)
+      // }
+      // else {
+      //   this.open = true;
+      //   console.log(this.form)
+      //   this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": 0 }
+      // }
     },
 
     //*******************Edit control section**********************************/
@@ -527,11 +491,11 @@ export default {
 
       console.log('test' + selection)
 
-      if (this.selectedRows.length > 0) {
-        // console.log('Data exists');
-      } else {
-        // console.log('No data');
-      }
+      // if (this.selectedRows.length > 0) {
+      //   // console.log('Data exists');
+      // } else {
+      //   // console.log('No data');
+      // }
     },
 
 

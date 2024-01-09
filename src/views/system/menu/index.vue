@@ -73,7 +73,8 @@
       </el-table>
       <!-- <s>ADD, EDIT</s> -->
       <addoredit ref="form" style="width:40%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
-        initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
+        initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
+        @emi="emitChange">
       </addoredit>
     </el-config-provider>
     <el-row justify="center">
@@ -120,7 +121,8 @@ export default {
       mode: 'add',
       loading: true,
       showSearch: true,
-      initialValuesEdit: undefined,
+      switching: undefined,
+      initialValuesEdit:undefined ,
       initialValuesAdd: undefined,
       isExpandAll: true,
       refreshTable: true,
@@ -177,7 +179,7 @@ export default {
             name: "type",
             label: "Enter the Type ",
             placeholder: "Select the Type ",
-            data: [{ label: 'Directory', value: 0 }, { label: 'menu', value: 1 }, { label: 'Button', value: 2 }],
+            data: [{ label: 'Directory', value: 0 }, { label: 'menu', value: 1 }, { label: 'Link', value: 2 }],
             span: 24,
             multiple: false
           },
@@ -310,6 +312,16 @@ export default {
   //**************Methods Control*********************************************** */
 
   methods: {
+    //Watch the form input
+    emitChange(x) {
+      // this.$emit('fieldChanged', this.formData);
+      console.log(x)
+      const { type } = x
+      this.switching = type
+      console.log(this.switching)
+      // this.generateForm(triggerType)
+      console.log(x)
+    },
     //*****************Pagination control********************************** */
     handlePageChange(newPage) {
       // Update the queryParams with the new page number
@@ -369,25 +381,149 @@ export default {
       this.getList();
     },
     //**************** Add, Edit and delete control section******************************************* */
+    //***************************Fields************************************************************/
+    generateForm(type) {
+      console.log(type)
+      this.Add_Edit =
+        [
+          {
+            "type": "selectV",
+            inputtype: "selectV",
+            name: "type",
+            label: "Enter the Type ",
+            placeholder: "Select the Type ",
+            data: [{ label: 'Directory', value: 0 }, { label: 'File', value: 1 }, { label: 'External Link', value: 2 }],
+            span: 24,
+            multiple: false
+          }
+        ]
+
+      if (type === 0 || type === 1) {
+        console.log("Hellow")
+        this.Add_Edit.push(
+          {
+            "type": "text",
+            inputtype: "text",
+            name: "component",
+            label: "component Name ",
+            placeholder: "Enter the component name",
+            span: 24
+          },
+          // {
+          //   "type": "menu",
+          //   inputtype: "menu",
+          //   name: "parentId",
+          //   label: "Parent Menu",
+          //   placeholder: "Selected Departments",
+          //   span: 12,
+          // },
+
+          {
+            "type": "text",
+            inputtype: "text",
+            name: "name",
+            label: "Menu Name ",
+            placeholder: "Select an Icon",
+            span: 24
+          },
+
+        )
+      }
+
+      if (type === 2) {
+        if (this.mode === 'add' && this.open === true) {
+          this.initialValuesAdd = {
+            'delFlag': 0,
+            'status': 1,
+            'type': 2,
+            'parentId':0
+          }
+        }
+        // if (this.mode === 'Edit' && this.open === true) {
+        //   this.initialValuesEdit = {
+        //     'delFlag': 0,
+        //     'triggerType': 1,
+        //     'status': 1,
+        //     'taskRun': 1
+        //   }
+        // }
+      }
+
+      this.Add_Edit.push(
+        {
+          inputtype: "text",
+          name: "path",
+          label: "Please add a Path",
+          placeholder: "Enter Description ",
+          span: 24
+        },
+        {
+          "type": "text",
+          inputtype: "text",
+          name: "icon",
+          label: "Icon Name ",
+          placeholder: "Enter an Icon",
+          span: 24
+        },
+        {
+          "type": "sorting",
+          inputtype: "sorting",
+          name: "orderNum",
+          label: "Sorting Position",
+          placeholder: "Display Sorting",
+          span: 24
+        },
+        {
+          inputtype: 'switch',
+          name: 'status',
+          label: 'menu Status',
+          switchOnColor: '#309f62',
+          switchOffColor: '#ff4949',
+          activeText: 'Activate',
+          inactiveText: 'Disabled',
+          activeValue: 0,
+          inactiveValue: 1,
+          span: 24
+        },
+        {
+          "type": "textarea",
+          inputtype: "textarea",
+          name: "remark",
+          label: "Menu Note/Description",
+          placeholder: "Please enter a description or note ",
+          span: 24
+        },
+      )
+
+
+
+    },
 
     // *********************************ADDing*****************************
     handleAdd(row) {
       this.mode = "add"
       this.open = true;
-      if(row.parentId === null)
-      this.initialValuesAdd = { "delFlag": "0", "parentId": 0, 
-    }
-    else{
-      if(row.parentId !== null)
-      this.initialValuesAdd = { "delFlag": "0", "parentId": row.parentId }
-    }
+      console.log(row.parentId)
+      if (row.parentId === undefined) {
+      console.log(" I am here")
+      this.initialValuesAdd = { "delFlag": "0", 'type': 0,"parentId": 0}
+      // this.generateForm(this.switching)
+      }
+
+      if (row.parentId !== undefined) {
+        console.log(row)
+        this.initialValuesAdd = { "delFlag": "0", "parentId": row.menuId }
+        // this.generateForm(this.switching)
+      }
     },
 
     //*******************Edit control section**********************************/
     handleUpdate(row) {
       this.mode = "Edit"
       this.open = true
-      this.initialValuesEdit = row
+      
+      this.initialValuesEdit = {...row}
+      // this.generateForm(this.switching)
       this.open = true
     },
 
@@ -490,8 +626,17 @@ export default {
       });
 
     },
-
-  }
+  },
+  // watch: {
+  //   switching(newVal, oldVal) {
+  //     if (this.mode === 'add' && this.open === true) {
+  //       this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
+  //     }
+  //     if (this.mode === 'edit' && this.open === true) {
+  //       this.handleUpdate(); // Call anotherMethod whenever `this.switching` changes
+  //     }
+  //   },
+  // },
 };
 </script>
   

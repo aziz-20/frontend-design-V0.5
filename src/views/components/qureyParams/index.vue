@@ -17,8 +17,12 @@
         </template>
         <template v-if="field.inputtype === 'selectV'">
           <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="field.data"
-            style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+            style="width: 140px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
         </template>
+        <!-- <template v-if="field.inputtype === 'StatusSelect'">
+          <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="field.data"
+            style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+        </template> -->
         <template v-if="field.inputtype === 'StatusSelect'">
           <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="statuses"
             style="width: 150px" collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
