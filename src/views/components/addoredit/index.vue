@@ -1,7 +1,6 @@
 <template>
- 
-  <el-dialog ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`"
-    :visible.sync="open" :width="'68%'" :closed="closemodel" :modal-class="'editAdd'">
+  <el-dialog ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`" :visible.sync="open"
+    :width="'68%'" :closed="closemodel" :modal-class="'editAdd'">
     <el-form :class="'col-12'" :model="form" ref="editForm" :rules="ru" label-position="top">
       <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
         <el-col :class="'col-12 row-s'" :span="calculateSpan(field)" v-for="(field, index) in fields" :key="index">
@@ -67,7 +66,7 @@
                 <template v-else-if="field.inputtype === 'sorting'">
                   <el-row :class="field.row" flex>
                     <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                    :min="field.min || 0 " size="default" />
+                      :min="field.min || 0" size="default" />
                   </el-row>
                 </template>
 
@@ -115,6 +114,12 @@
                     filterable />
                   <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
                 </template>
+                <template v-else-if="field.inputtype === 'departmentNew'">
+                  <el-tree-select v-model="form[field.name]" :data="departmentNew" :multiple="field.multiple"
+                    :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node
+                    filterable />
+                  <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
+                </template>
 
                 <!-- Roles Selecting Section -->
                 <template v-if="field.inputtype === 'roles'">
@@ -153,8 +158,11 @@
                     :multiple="field.multiple || false" :show-checkbox="field.showCheckbox || false" />
                   {{ this.role }}
                 </template>
-
-
+                <!-----------------------------User Name-------------------- -->
+                <template v-if="field.inputtype === 'userField'">
+                  <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="username"
+                    style="width: 240px" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" filterable />
+                </template>
                 <!-------------------------------------------- --------------------------------------------- -->
                 <template v-else-if="field.inputtype === 'Gender'">
                   <el-select-v2 v-model="form[field.name]" placeholder="Select Gander" :options="gander" />
@@ -304,7 +312,7 @@
 <script>
 
 
-import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject, treeTransformerMultiyvalue } from '@/utils/dtControl/dTransformer'
+import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject, treeTransformerMultiyvalue, treeTransformerTwoValuesAndNew } from '@/utils/dtControl/dTransformer'
 import countriesAndregions from '@/utils/Countries&Regions/data'
 console.log("Countries", countriesAndregions)
 
@@ -322,6 +330,8 @@ export default {
       menus: {},
       Position: [],
       department: [],
+      departmentNew: [],
+      username: {},
       ilteredData: [],
       fieldData: {},
       GpermsOptions: [],
@@ -335,7 +345,7 @@ export default {
         status: 0,
         delFlag: 0,
         scoping: {}
-      },   
+      },
 
       countries: countriesAndregions.map(country => ({
         value: country.countryShortCode,
@@ -412,8 +422,7 @@ export default {
 
       },
     }
-  }
-  ,
+  },
   props: {
 
     // fields: Array,
@@ -449,17 +458,19 @@ export default {
 
   },
   watch: {
-    form:{
+    form: {
       deep: true,
       handler(val) {
-        this.$emit('emi',val)
+        console.log(val)
+        this.$emit('emi', val)
+
       }
     }
     ,
 
     init: {
       immediate: true,
-      
+
       handler(val) {
         this.form = { ...val };
         console.log('sss')
@@ -505,9 +516,21 @@ export default {
       },
     },
   },
+  mounted() {
+    // Add resize event listener when the component is mounted
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeDestroy() {
+    // Remove resize event listener before the component is destroyed
+    window.removeEventListener('resize', this.handleResize);
+  },
 
 
   methods: {
+    handleResize() {
+      // Force the component to update when the window is resized
+      this.$forceUpdate();
+    },
     addScoping() {
       // Check if pairs array exists, if not, initialize it as an empty array
       if (!this.pairs) {
@@ -546,6 +569,18 @@ export default {
             this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
               if (res.result && res.result.data) {
                 this.department = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
+              }
+              else {
+                this.loading = false;
+                this.$message.error('Failed to load department list for the selection section');
+              }
+            });
+          }
+          if (field.inputtype === 'departmentNew') {
+            console.log("departmentNew")
+            this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              if (res.result && res.result.data) {
+                this.departmentNew = treeTransformerTwoValuesAndNew(res.result.data, 'name', 'deptId');
               }
               else {
                 this.loading = false;
@@ -610,6 +645,16 @@ export default {
 
             })
           }
+
+          if (field.inputtype === 'userField') {
+            this.$http.MgUsers.listUsers({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              this.username = NormalmapTwoPropsToObject(res.result.data, 'username', 'userId')
+              // this.email = mapOnePropToObject(res.result.data, 'email');
+            }).catch(message => {
+              ("The error:*" + message + ":*");
+            })
+          }
+
           if (field.inputtype === 'dynamicFeild') {
             console.log("I am here")
             this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
@@ -672,7 +717,15 @@ export default {
       return false
     },
     calculateSpan(field) {
-      return this.shouldShowField(field) ? (field.span || 12) : 0;
+      if (window.innerWidth < 700) {
+        // If so, set the span to 24 for all fields
+        console.log("I am here")
+        return 24;
+      } else {
+        console.log("I am here")
+        // Otherwise, use the existing span logic
+        return this.shouldShowField(field) ? (field.span || 12) : 0;
+      }
     },
     mapSexValueToLabel(value) {
       console.log(value)
@@ -712,7 +765,7 @@ export default {
         })
         .catch(_ => { });
     },
-    
+
 
     onSubmit() {
       console.log(this.form)

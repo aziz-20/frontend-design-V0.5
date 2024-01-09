@@ -181,7 +181,6 @@ export default {
                     inputtype: "tasks",
                     name: 'taskName',
                     label: 'Task Name',
-                    // data: 'Position',
                     style: 'width: 150px'
 
                 },
@@ -197,11 +196,11 @@ export default {
                 },
 
                 {
-                    type: 'StatusSelect',
+                    inputtype: 'StatusSelect',
                     name: 'status',
-                    label: 'Task Status',
-                },
+                    label: 'Log Status',
 
+                },
             ],
             searchButtonText: 'Search',
             resetButtonText: 'Reset',
@@ -220,6 +219,7 @@ export default {
     methods: {
         emitChange(x) {
             // this.$emit('fieldChanged', this.formData);
+            console.log(x)
             const { triggerType } = x
             this.switching = triggerType
             console.log(this.switching)
@@ -347,7 +347,8 @@ export default {
             //     this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
             // }
 
-            if (triggerType === 1) {
+            if (triggerType === 1) 
+            {
                 if (this.mode === 'add' && this.open === true) {
                     this.initialValuesAdd = {
                         'delFlag': 0,

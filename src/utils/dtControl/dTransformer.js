@@ -22,6 +22,33 @@ export function treeTransformerTwoValues(data, labelKey, valueKey) {
   return options;
 }
 
+export function treeTransformerTwoValuesAndNew(data, labelKey, valueKey) {
+  if (!data) return [];
+
+  // Prepend the specific object at the beginning
+  const options = [{ label: 'New', value: 0 }];
+
+  for (const node of data) {
+    const label = node[labelKey];
+    const value = node[valueKey];
+    console.log(valueKey);
+    // console.log(parentLabel)
+
+    const option = { label, value };
+
+    if (node.children) {
+      const childOptions = treeTransformerTwoValues(node.children, labelKey, valueKey);
+      option.children = childOptions;
+    }
+
+    options.push(option);
+  }
+  console.log(options)
+
+  return options;
+}
+
+
 
 export function mapOnePropToObject(temp_list, prop) {
   if (!Array.isArray(temp_list)) {
