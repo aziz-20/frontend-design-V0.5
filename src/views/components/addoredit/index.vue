@@ -1,9 +1,9 @@
 <template>
-  <el-dialog ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`" :visible.sync="open"
+  <el-dialog :class="'d'" ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`" :visible.sync="open"
     :width="'68%'" :closed="closemodel" :modal-class="'editAdd'">
-    <el-form :class="'col-12'" :model="form" ref="editForm" :rules="ru" label-position="top">
-      <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
-        <el-col :class="'col-12 row-s'" :span="calculateSpan(field)" v-for="(field, index) in fields" :key="index">
+    <el-form :class="'form'" :model="form" ref="editForm" :rules="ru" label-position="top">
+      <div :class="'r'"> 
+        <div :class="'col-12'" v-for="(field, index) in fields" :key="index">
           <!-- <template v-if="1"> -->
           <template v-if="shouldShowField(field)">
             <template v-if="field.type !== 'address'">
@@ -291,8 +291,8 @@
 
           </template>
           <!-- </template> -->
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </el-form>
     {{ f }}
     {{ visble }}
@@ -716,6 +716,9 @@ export default {
       }
       return false
     },
+    colclass(feild){
+        
+    },
     calculateSpan(field) {
       if (window.innerWidth < 700) {
         // If so, set the span to 24 for all fields
@@ -789,6 +792,24 @@ export default {
 
 </script>
 
+<style>
+.r{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 5px;
+   
+}
+
+
+@media (max-width: 720px ){
+     .d{
+     width: 90% !important ; 
+}
+}
+
+</style>
 
 
 

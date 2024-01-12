@@ -75,13 +75,19 @@
   </style>
    -->
    <template>
-    <section class="app-main">
+    <!-- <section class="app-main">
       <transition name="fade-transform" mode="out-in">
         <keep-alive :include="cachedViews">
           <router-view />
         </keep-alive>
       </transition>
       <iframe-toggle />
+    </section> -->
+     <section class="app-main">
+     
+          <router-view />
+      
+  
     </section>
   </template>
   
