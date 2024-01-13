@@ -32,8 +32,8 @@
         @selection-change="handleSelectionChange">
 
         <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
-        <el-table-column fixed prop="name" label="Department Name" width="240" />
-        <el-table-column fixed prop="orderNum" label="Structure order" width="150" />
+        <el-table-column fixed prop="name" label="Department Name" width="150" />
+        <el-table-column fixed prop="orderNum" label="Order" width="150" />
         <el-table-column fixed prop="status" label="Status" width="120">
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'success' : 'danger'">
@@ -41,11 +41,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column type="Calender" prop="createTime" label="Registry Data" width="200" />
-        <el-table-column prop="updateTime" label="Last Update Time" width="200" />
         <el-table-column prop="leader" label="Head of the Department" width="200" />
         <el-table-column prop="phone" label="Phone" width="170" />
         <el-table-column prop="email" label="Email" width="170" />
+        <el-table-column type="Calender" prop="createTime" label="Create Data" width="200" />
+        <el-table-column prop="updateTime" label="Last Update Time" width="200" />
         <el-table-column fixed="right" label="Actions" width="180" align="center" class-name="small-padding fixed-width">
           <template #default="{ row, column, index }">
             <el-row class="mb-4">

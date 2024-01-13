@@ -1,15 +1,21 @@
 <template>
-  <el-dialog ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`" :visible.sync="open"
-    :width="'68%'" :closed="closemodel" :modal-class="'editAdd'">
-    <el-form :class="'col-12'" :model="form" ref="editForm" :rules="ru" label-position="top">
-      <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
-        <el-col :class="'col-12 row-s'" :span="calculateSpan(field)" v-for="(field, index) in fields" :key="index">
+  <el-dialog :class="'d'" ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`"
+    :visible.sync="open" :width="'60%'" :closed="closemodel" :modal-class="'editAdd'">
+    <el-form :class="'form'" :model="form" ref="editForm" :rules="ru" label-position="top">
+      <div :class="'row'">
+        <div :class="field.class || 'col-16'" v-for="(field, index) in fields" :key="index">
           <!-- <template v-if="1"> -->
           <template v-if="shouldShowField(field)">
             <template v-if="field.type !== 'address'">
               <el-form-item :label="field.label" :prop="field.prop" :style="field.style">
                 <template v-if="field.inputtype === 'email'">
                   <el-input :type="'email'" v-model="form[field.name]" :placeholder="field.placeholder" size="default" />
+                </template>
+                <template v-if="field.type === 'photo'">
+                  <div>
+                    <el-avatar v-model="form[field.name]" shape="square" :size="100" :fit="fit"
+                      :src="this.$http.photos.image(form[field.name])" />
+                  </div>
                 </template>
                 <template v-else-if="field.inputtype === 'text'">
                   <el-input :type="'text'" v-model="form[field.name]" :placeholder="field.placeholder" size="default"
@@ -64,10 +70,10 @@
 
                 <!-- Sorting Field -->
                 <template v-else-if="field.inputtype === 'sorting'">
-                  <el-row :class="field.row" flex>
+                  <!-- <el-row :class="field.row" flex> -->
                     <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                      :min="field.min || 0" size="default" />
-                  </el-row>
+                      :min="field.min || 0" :max="field.max" size="default" />
+                  <!-- </el-row> -->
                 </template>
 
                 <!-- Selection Fields -->
@@ -101,8 +107,7 @@
                 </template>
                 <template v-if="field.inputtype === 'selectV'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="field.data"
-                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
-                    :max-collapse-tags="3" />
+                    :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
                 </template>
                 <!-------------------------------------------------------------------------------------  -->
                 <!-- System Fields selections -->
@@ -143,10 +148,10 @@
                 <!-- Group permissions -->
 
                 <template v-else-if="field.inputtype === 'gpermision'">
-                  {{ console.log(this.GpermsOptions) }}
-                  <el-tree-select v-model="form[field.name]" :data="this.GpermsOptions" :render-after-expand="true"
-                    :placeholder="field.placeholder" check-strictly check-on-click-node filterable
-                    :multiple="field.multiple" :show-checkbox="field.showCheckbox" />
+                  <el-tree-select v-model="field.name" ref="myTreeSelect" :data="this.GpermsOptions"
+                    :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node
+                    filterable :multiple="field.multiple" :show-checkbox="field.showCheckbox"
+                    @check-change="organizeSelection(field.name)" />
                   {{ console.log(this.GpermsOptions) }}
                 </template>
 
@@ -188,9 +193,8 @@
 
             <!-- -------------------------------------------------------------------- -->
             <template v-if="field.inputtype === 'schedule'">
-              <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
-                <el-col :class="'col-12 row-s'" flex :span="calculateSpan(subField)"
-                  v-for="(subField, index) in field.data" :key="index">
+              <div :class="'row'">
+                <div :class="'col-16'" v-for="(subField, index) in field.data" :key="index">
                   <!-- <template v-if="1"> -->
                   <template v-if="shouldShowField(subField)">
                     <el-form-item :label="subField.label">
@@ -206,21 +210,18 @@
                         <!-- {{ "Hello " + form['schedule'][subField.name] }} -->
                       </template>
                       <template v-else-if="subField.inputtype === 'sorting'">
-                        <el-row :class="subField.row" flex>
-                          <el-input-number v-model="form[field.name]" :placeholder="field.placeholder"
-                            controls-position="right" :min="0" size="default" />
-                        </el-row>
+                        <el-input-number v-model="form['schedule'][subField.name]" :placeholder="field.placeholder"
+                          controls-position="right" :min="subField.min || 0" :max="subField.max" size="default" />
                       </template>
                     </el-form-item>
                   </template>
-                </el-col>
-              </el-row>
+                </div>
+              </div>
             </template>
 
             <template v-if="field.inputtype === 'address'">
-              <el-row :class="'col-12'" :gutter="24" flex flex-direction="column">
-                <el-col :class="'col-12 row-s'" :span="calculateSpan(subField)" v-for="(subField, index) in field.data"
-                  :key="index">
+              <div :class="'row'">
+                <div :class="'col-16'" v-for="(subField, index) in field.data" :key="index">
                   <!-- <template v-if="1"> -->
                   <template v-if="shouldShowField(subField)">
                     <el-form-item :label="subField.label">
@@ -244,8 +245,8 @@
                       </template>
                     </el-form-item>
                   </template>
-                </el-col>
-              </el-row>
+                </div>
+              </div>
             </template>
             <!------------ Dynamic Field Control------------------ -->
             <template v-else-if="field.inputtype === 'dynamicFeild'">
@@ -291,8 +292,8 @@
 
           </template>
           <!-- </template> -->
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </el-form>
     {{ f }}
     {{ visble }}
@@ -337,15 +338,25 @@ export default {
       GpermsOptions: [],
       customdata: [],
       days: [],
-      gander: [{ label: 'Man', value: 0 },
-      { label: 'Women', value: 1 }],
+      gander: [{ label: 'Male', value: 0 },
+      { label: 'Female', value: 1 }],
       selectedValues: {}, // Selected values storage
       query: '',
       form: {
         status: 0,
         delFlag: 0,
-        scoping: {}
+        scoping: {},
+        address: {
+          delFlag: 0,
+          status: 0,
+          country: '',
+          state: '',
+          city: '',
+          zipcode: '',
+          detail: ''
+        }
       },
+      url: 'http://181.215.79.209:9005',
 
       countries: countriesAndregions.map(country => ({
         value: country.countryShortCode,
@@ -448,6 +459,7 @@ export default {
     visble() {
       return this.open
 
+
     },
     f() {
       return this.form
@@ -459,6 +471,7 @@ export default {
   },
   watch: {
     form: {
+
       deep: true,
       handler(val) {
         console.log(val)
@@ -472,6 +485,7 @@ export default {
       immediate: true,
 
       handler(val) {
+        // this.someMethod()
         this.form = { ...val };
         console.log('sss')
         console.log(val)
@@ -498,7 +512,9 @@ export default {
           })
         }
       },
-    },
+    }
+    ,
+
 
     rules: {
       immediate: true,
@@ -516,17 +532,80 @@ export default {
       },
     },
   },
-  mounted() {
-    // Add resize event listener when the component is mounted
-    window.addEventListener('resize', this.handleResize);
-  },
-  beforeDestroy() {
-    // Remove resize event listener before the component is destroyed
-    window.removeEventListener('resize', this.handleResize);
-  },
 
 
   methods: {
+    // someMethod() {
+    //   if (!this.form.address) {
+    //     console.log("I am in address")
+    //     this.form.address =
+    //     {
+    //       delFlag: 0,
+    //       status: 0,
+    //       country: '',
+    //       state: '',
+    //       city: '',
+    //       zipcode: '',
+    //       detail: ''
+    //     };
+    //   }
+    // },
+    organizeSelection(selectedValues) {
+      const organizedData = {};
+      // Helper function to find the parent of a given value
+      const findParent = (value, options) => {
+        for (const option of options) {
+          if (option.children && option.children.some(child => child.value === value)) {
+            return option.value;
+          }
+          if (option.children) {
+            const found = findParent(value, option.children);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+      // Helper function to check if a value is also a parent
+      const isParent = (value, options) => {
+        for (const option of options) {
+          if (option.value === value && option.children && option.children.length > 0) {
+            return true;
+          }
+          if (option.children) {
+            const found = isParent(value, option.children);
+            if (found) return true;
+          }
+        }
+        return false;
+      };
+      for (const value of selectedValues) {
+        // Check if the value is a parent
+        if (isParent(value, this.GpermsOptions)) {
+          organizedData[value] = []; // Treat as a separate parent
+          continue;
+        }
+        const parent = findParent(value, this.GpermsOptions);
+        if (parent && selectedValues.includes(parent)) { // Check if the parent is also selected
+          if (!organizedData[parent]) {
+            organizedData[parent] = [];
+          }
+          organizedData[parent].push(value);
+        } else {
+          // If no parent, or the parent is not selected, treat as a separate parent
+          organizedData[value] = [];
+        }
+      }
+      console.log(organizedData);
+      // this.form.forEach((field, index) => {
+      //   if (field.name === 'perms') {
+      //     console.log(typeof (this.permsOptions))
+      //     return this.Add_Edit[index].data = this.permsOptions;
+      //   }
+      // });
+      this.form['perms'] = organizedData
+      return organizedData;
+    },
+
     handleResize() {
       // Force the component to update when the window is resized
       this.$forceUpdate();
@@ -629,7 +708,8 @@ export default {
             })
           }
 
-          if (field.inputtype === 'gpermision') {
+          if (field.inputtype === 'gpermision') 
+          {
             console.log("in gpermision")
             this.$http.grpermision.permlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
               if (res.result && res.result.data) {
@@ -716,6 +796,9 @@ export default {
       }
       return false
     },
+    colclass(feild) {
+
+    },
     calculateSpan(field) {
       if (window.innerWidth < 700) {
         // If so, set the span to 24 for all fields
@@ -789,6 +872,29 @@ export default {
 
 </script>
 
+<style>
+.row {
+  display: flex;
+  /* flex-direction: row; */
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 5px;
+
+}
+
+
+@media (max-width: 720px) {
+  .d {
+    width: 90% !important;
+  }
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
 
 
 

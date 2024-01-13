@@ -44,9 +44,9 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column type="Calender" prop="createTime" label="Registry Data" width="200" />
-      <el-table-column prop="updateTime" label="Last Update Time" width="200" />
       <el-table-column prop="remark" label="Note" width="200" />
+      <el-table-column type="Calender" prop="createTime" label="Create Data" width="200" />
+      <el-table-column prop="updateTime" label="Last Update Time" width="200" />
       <!-- <el-table-column prop="email" label="Email" width="170" /> -->
       <el-table-column fixed="right" label="Actions" width="250" align="center" class-name="small-padding fixed-width">
         <template #default="{ row, column, index }">
@@ -61,7 +61,7 @@
       </el-table-column>
     </el-table>
     <!-- <s>ADD, EDIT</s> -->
-    <addoredit ref="form"  :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+    <addoredit ref="form" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
       initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
     </addoredit>
     <el-row justify="center">
@@ -124,6 +124,7 @@ export default {
         name: undefined,
         jobId: null,
         status: '',
+        userId: '',
         createTime: undefined,
         leader: undefined,
         deptId: undefined,
@@ -214,7 +215,7 @@ export default {
         },
 
         {
-          type: 'StatusSelect',
+          inputtype: 'StatusSelect',
           name: 'status',
           label: 'Job Status',
         },
@@ -225,6 +226,15 @@ export default {
           label: "Department",
           placeholder: "Selected Departments",
           span: 6,
+        },
+        {
+          type: 'userField',
+          inputtype: "userField",
+          name: 'userId',
+          label: 'User Name',
+          placeholder: "Enter username",
+          style: 'width: 150px'
+
         },
       ],
       searchButtonText: 'Search',

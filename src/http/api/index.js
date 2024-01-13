@@ -10,7 +10,7 @@ import menu from './menu'
 import role from './role'
 import daysControl from './daysControl'
 import taskControl from './taskControl'
-
+import photos from './photos'
 
 export default {
 
@@ -26,6 +26,7 @@ export default {
   cusdatascope,
   MgUsers,
   taskControl,
+  photos
 }
 
 

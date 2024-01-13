@@ -30,7 +30,7 @@
 
     <!-- Table view  -->
     <el-config-provider>
-      <el-table flex :data="menuList" style="width:200%" row-key="menuId" v-loading="loading"
+      <el-table flex :data="menuList" style="width:200%" row-key="parentId" v-loading="loading"
         element-loading-text="Loading..." :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
         :default-expand-all="isExpandAll" element-loading-background="rgba(122, 122, 122, 0.8)" v-if="refreshTable"
         @selection-change="handleSelectionChange">
@@ -77,14 +77,6 @@
         @emi="emitChange">
       </addoredit>
     </el-config-provider>
-    <el-row justify="center">
-      <el-col :span="24" :sm="12" :md="8">
-        <el-pagination v-show="total > 0" style="width:65%" background layout="prev, pager, next" :total="total"
-          :page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize" :layout="paginationLayout"
-          @current-change="handlePageChange" />
-      </el-col>
-    </el-row>
-
 
   </div>
 </template>
@@ -145,8 +137,9 @@ export default {
         parentId: null,
         deptId: undefined,
         userId: undefined,
+        jobId: undefined,
         pageNo: 1,
-        pageSize: 20
+        pageSize: 0
       },
 
       Add_Edit:
@@ -295,7 +288,16 @@ export default {
           name: 'userId',
           label: 'UserName',
           data: 'username',
-          style: 'width: 150px'
+          // style: 'width: 150px'
+        },
+        {
+          type: 'Position',
+          inputtype: "Position",
+          name: 'jobId',
+          label: 'Job Name',
+          data: 'Position',
+          // style: 'width: 150px'
+
         },
       ],
       searchButtonText: 'Search',
@@ -340,9 +342,9 @@ export default {
       this.$http.menu.MenuHierarchy(this.queryParams).then(res => {
         if (res.result && res.result.data) {
           this.menuList = res.result.data;
-          this.isHasNextPage = res.result.isHasNextPage;
-          this.isHasPreviousPage = res.result.isHasPreviousPage;
-          this.total = res.result.total;
+          // this.isHasNextPage = res.result.isHasNextPage;
+          // this.isHasPreviousPage = res.result.isHasPreviousPage;
+          // this.total = res.result.total;
           console.log(this.menuList)
           this.loading = false;
         } else {
@@ -522,7 +524,7 @@ export default {
       this.mode = "Edit"
       this.open = true
       
-      this.initialValuesEdit = {...row}
+      this.initialValuesEdit = row
       // this.generateForm(this.switching)
       this.open = true
     },

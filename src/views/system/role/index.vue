@@ -159,6 +159,8 @@ export default {
       paginationLayout: 'prev, pager, next', // Customize the layout based on your needs
       isHasNextPage: false,
       isHasPreviousPage: false,
+      custom:[
+        { label: 'Personal ', value: 1 }, { label: 'Department', value: 2 }, { label: 'Department hierarchy', value: 3 }, { label: 'ALL', value: 4 }, { label: 'Custom', value: 5 }],
       form: {},
       title: "", // Default title for the dialog
       usersList: [],
@@ -205,6 +207,16 @@ export default {
         //   span: 12
 
         // },
+        {
+          "type": "selectV",
+          inputtype: "selectV",
+          name: 'scopeId',
+          label: "Type of the trigger Action",
+          data: [{ label: 'Personal ', value: 1 }, { label: 'Department', value: 2 }, { label: 'Department hierarchy', value: 3 }, { label: 'ALL', value: 4 }, { label: 'Custom', value: 5 }],
+          placeholder: "Please Select a Trigger",
+          span: 24
+
+        },
         {
           inputtype: 'gpermision',
           name: 'perms',
@@ -501,7 +513,7 @@ export default {
       console.log(row)
 
       this.initialValuesEdit = {
-        row,
+        ...row,
         perms: row.perms.map(item => item.permId)
       }
       // this.formFieldSelectData()
