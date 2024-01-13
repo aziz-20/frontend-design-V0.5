@@ -32,8 +32,7 @@ export default {
             url: '/task/' + id,
             method: 'delete'
         })
-    }
-    ,
+    },
     //plan data
     listTask(data) {
         return request({
@@ -44,7 +43,6 @@ export default {
         
     },
     listTaskLogs(data) {
-        
         return request({
             url: '/taskLog/list',
             method: 'post',

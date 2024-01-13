@@ -15,6 +15,7 @@ export default {
     MgUsers:api.MgUsers,
     daysControl: api.daysControl,
     taskControl: api.taskControl,
+    photos: api.photos,
 
 
 }
