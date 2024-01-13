@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!item.hidden">
+  <div v-if="item.hidden === 1">
     <template
       v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
       <el-menu-item class="menu-item" :index="item.id">
@@ -14,8 +14,8 @@
       </el-menu-item>
     </template>
     <el-sub-menu v-else ref="subMenu" :index="item" popper-append-to-body>
-      <template slot="title">
-        <Item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
+      <template #title>
+        <Item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" /> 
       </template>
       <sidebar-item v-for="child in item.children" :key="child.path" :is-nest="true" :item="child"
         :base-path="resolvePath(child.path)" class="nest-menu" />
@@ -76,7 +76,7 @@ export default {
       children = children || [];
 
       const showingChildren = children.filter(item => {
-        if (item.hidden) {
+        if (item.hidden  == 0) {
           console.log(item)
           return false;
         } else {
