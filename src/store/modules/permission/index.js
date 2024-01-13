@@ -42,6 +42,7 @@ const permission = {
             id: 1545,
 
             path: '/system',
+            hidden: 1,
             meta: {
               icon: 'dashboard',
               title: 'grpermission',
@@ -52,6 +53,7 @@ const permission = {
                 id: 1223,
                 name: 'grpermission',
                 path: 'grpermission',
+                hidden: 1,
                 meta: {
                   icon: 'dashboard',
                   title: 'grpermission',
@@ -62,6 +64,7 @@ const permission = {
                 id: 123,
                 name: 'cudatascope',
                 path: 'cudatascope',
+                hidden: 1,
                 meta: {
                   icon: 'dashboard',
                   title: 'cudatascope',
@@ -72,6 +75,7 @@ const permission = {
                 id: 124,
                 name: 'jop',
                 path: 'jop',
+                hidden: 1,
                 meta: {
                   icon: 'job',
                   title: 'jop',
@@ -82,6 +86,7 @@ const permission = {
                 id: 125,
                 name: 'dept',
                 path: 'dept',
+                hidden: 1,
                 meta: {
                   icon: 'tab',
                   title: 'dept',
@@ -92,6 +97,7 @@ const permission = {
                 id: 126,
                 name: 'menu',
                 path: 'menu',
+                hidden: 1,
                 meta: {
                   icon: 'nested',
                   title: 'menu',
@@ -102,6 +108,7 @@ const permission = {
                 id: 127,
                 name: 'role',
                 path: 'role',
+                hidden: 1,
                 meta: {
                   icon: 'skill',
                   title: 'role',
@@ -112,6 +119,7 @@ const permission = {
                 id: 128,
                 name: 'MgUsers',
                 path: 'MgUsers',
+                hidden: 1,
                 meta: {
                   icon: 'user',
                   title: 'MgUsers',
@@ -122,6 +130,7 @@ const permission = {
                 id: 129,
                 name: 'TaskControl',
                 path: 'TaskControl',
+                hidden: 1,
                 meta: {
                   icon: 'log',
                   title: 'TaskControl',
@@ -132,6 +141,7 @@ const permission = {
                 id: 131,
                 name: 'taskLogs',
                 path: 'taskLogs',
+                hidden: 1,
                 meta: 
                 {
                   icon: 'log',
@@ -158,7 +168,8 @@ const permission = {
 
           }
           sdata.push(r)
-          const sidebarRoutes = convertToSidebarRouters(sdata, 0)
+          const sidebarRoutes = convertToSidebarRouters(sdata)
+          console.log(sidebarRoutes)
           const rewriteRoutes =filterAsyncRouter(sdata,false,false) 
           const a = filterAsyncRouter([r],false,false)
           sidebarRoutes.push(r)
@@ -427,6 +438,8 @@ function convertToSidebarRouters(data, targetType = null) {
             id: item.menuId,
             name: item.name,
             path: item.path,
+            hidden: item.hidden,
+            redirect: item.redirect,
             meta: {
               icon: item.icon,
               title: item.name,
@@ -456,6 +469,8 @@ function convertToSidebarRouters(data, targetType = null) {
         id: item.menuId,
         name: item.name,
         path: item.path,
+        hidden: item.hidden,
+        redirect: item.redirect,
         meta: {
           icon: item.icon,
           title: item.name,
