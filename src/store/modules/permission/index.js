@@ -138,7 +138,7 @@ const permission = {
                 component: 'system/TaskControl',
               },
               {
-                id: 130,
+                id: 131,
                 name: 'taskLogs',
                 path: 'taskLogs',
                 hidden: 1,
@@ -148,8 +148,21 @@ const permission = {
                   title: 'TaskLogs',
                 },
                 component: 'system/taskLogs',
-              }   
-
+              } , 
+               {
+                id: 65,
+                path : 'permission',
+                name : 'permission',
+                component : 'system/permission',
+                meta : {title : 'permission', icon : 'dashboard'}
+              }  ,
+              {
+                id: 888,
+                name : 'defaultpermission',
+                path : 'defaultpermission',
+                component :'system/defaultpermission',
+                meta : {title : 'defaultpermission', icon : 'dashboard'}
+              }
               
             ]
 

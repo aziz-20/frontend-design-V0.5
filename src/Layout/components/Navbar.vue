@@ -6,12 +6,8 @@
       <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
   
       <div class="right-menu">
-        <template v-if="device!=='mobile'">
-        
+       
   
-        </template>
-  
-      
       </div>
     </div>
   </template>

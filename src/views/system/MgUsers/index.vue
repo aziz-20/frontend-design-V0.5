@@ -55,7 +55,7 @@
                             <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
                             <el-table-column fixed prop="avatar" label="Photo" width="80">
                                 <template v-slot="{ row }">
-                                    <img :src="`http://181.215.79.209:9005${row.avatar}`" class="icon"
+                                    <img :src=this.$http.photos.image(row.avatar) class="icon"
                                         style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;" />
                                 </template>
                             </el-table-column>
@@ -141,8 +141,8 @@
 
                     <el-row justify="center">
                         <el-col :span="24" :sm="12" :md="8">
-                            <el-pagination v-show="total > 0" style="width:50%" background layout="prev, pager, next" :total="total"
-                                :page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize"
+                            <el-pagination v-show="total > 0" style="width:50%" background layout="prev, pager, next"
+                                :total="total" :page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize"
                                 :layout="paginationLayout" @current-change="handlePageChange" />
                         </el-col>
                     </el-row>
@@ -181,7 +181,7 @@ export default {
             showSearch: true,
             initialValuesEdit: null,
             initialValuesAdd: undefined,
-            showSide: true,
+            showSide: false,
             isExpandAll: true,
             refreshTable: true,
             loading: false,
@@ -221,12 +221,27 @@ export default {
                 leader: undefined,
                 deptId: undefined,
                 userId: undefined,
+                roleId: undefined,
                 sideSearchToAdd: '',
+                jobId: '',
                 email: '',
                 pageNo: 1,
                 pageSize: 20
             },
             Add_Edit: [
+                {
+
+                    "type": "photo",
+                    inputtype: "photo",
+                    name: "avatar",
+                    // label: "Username",
+                    // placeholder: "Please Enter the User name",
+                    // span: 12,
+                    showMode: 'edit',
+                    class: 'col-12',
+                    // style:'img'
+
+                },
                 {
 
                     "type": "upload",
@@ -360,7 +375,7 @@ export default {
                 {
                     inputtype: "address",
                     name: "address", // This will be the name of the object
-                    label:"Address",
+                    label: "Address",
                     span: 24,
                     data: [
                         {
@@ -370,6 +385,7 @@ export default {
                             placeholder: "Please select an option",
                             span: 12,
                             // showMode: 'edit'
+                            // showMode: 'add'
 
                         },
                         {
@@ -379,6 +395,7 @@ export default {
                             placeholder: "Please select an option",
                             span: 12,
                             // showMode: 'edit'
+                            // showMode: 'add'
 
                         },
                         {
@@ -386,21 +403,24 @@ export default {
                             name: "city",
                             label: "City",
                             placeholder: "Please enter a value",
-                            span: 12
+                            span: 12,
+                            // showMode: 'add'
                         },
                         {
                             inputtype: "text",
                             name: "zipcode",
                             label: "Zip code",
                             placeholder: "Please enter a value",
-                            span: 12
+                            span: 12,
+                            // showMode: 'add'
                         },
                         {
                             inputtype: "text",
                             name: "detail",
                             label: "Street/Home Address",
                             placeholder: "Please enter a value",
-                            span: 12
+                            span: 12,
+                            // showMode: 'add'
                         },
                         // Add more sub-fields as needed
                     ],
@@ -417,23 +437,23 @@ export default {
                             name: 'dayIds',
                             label: "Select Day/s",
                             placeholder: "Please select an option",
-                            span: 6,
+                            // span: 6,
                             // showMode: 'edit'
 
                         },
                         {
-                            inputtype: "text",
+                            inputtype: "sorting",
                             name: "startHour",
                             label: "Starting Hour",
                             placeholder: "Please enter a value",
-                            span: 6
+                            max: 23
                         },
                         {
-                            inputtype: "text",
+                            inputtype: "sorting",
                             name: "endHour",
                             label: "Ending Hour",
                             placeholder: "Please enter a value",
-                            span: 6
+                            max: 23
                         },
                         // Add more sub-fields as needed
                     ],
@@ -482,6 +502,24 @@ export default {
                     label: 'Users Email',
                     placeholder: "Select Email",
                     style: 'width: 150px'
+                },
+                {
+                    type: 'Position',
+                    inputtype: "Position",
+                    name: 'jobId',
+                    label: 'Job Name',
+                    data: 'Position',
+                    // style: 'width: 150px'
+
+                },
+                {
+                    'type': 'roles',
+                    inputtype: "roles",
+                    name: 'roleId',
+                    label: 'Role',
+                    placeholder: 'Select Role',
+                    style: 'width: 150px'
+
                 },
             ],
             searchButtonText: 'Search',
@@ -546,8 +584,7 @@ export default {
         resetSideQuery() {
             this.queryParams.deptId = '',
                 this.queryParams.sideSearchToAdd = '',
-                console.log("I am here" + this.queryParams.deptId)
-            this.getList();
+                this.getList();
         },
 
         //****************************************handle side search********************************************************* */
@@ -572,12 +609,12 @@ export default {
         getList() {
             this.loading = true;
             this.$http.MgUsers.listUsers(this.queryParams).then(res => {
+                // console.log( this.$http.photos.image())
                 console.log(this.queryParams)
                 if (res.result && res.result.data) {
                     this.isHasNextPage = res.result.isHasNextPage;
                     this.isHasPreviousPage = res.result.isHasPreviousPage;
                     this.total = res.result.total;
-
                     this.usersList = res.result.data;
                     console.log(this.usersList)
                     this.loading = false;
@@ -614,6 +651,7 @@ export default {
             this.queryParams.email = ""
             this.queryParams.jobId = ''
             this.queryParams.userId = ''
+            this.queryParams.roleId = ''
             this.queryParams.abbrev = ''
             this.queryParams.createTime = ''
             this.queryParams.pageNum = ''
@@ -629,7 +667,6 @@ export default {
             this.title = "Adding User"
             this.open = true;
             this.modeType = "add";
-            // this.formFieldSelectData(),
             this.initialValuesAdd = {
                 status: 0,
                 delFlag: 0,
@@ -653,57 +690,97 @@ export default {
         },
         //***************************Edit control section**********************************/
         handleUpdate(row) {
+            console.log(row)
 
             this.modeType = "edit"
             this.title = "Editing User: " + row.username
-            const { country, state, city, zipcode, detail } = row.address;
-            console.log("Country:", country)
+            // const { country, state, city, zipcode, detail } = row.address;
 
 
-            // console.log(row)
+            console.log(row)
             let jobData = row.jobs.map(item => item.jobId);
 
             console.log(row.roleIds)
 
-            let roleData = []
-            if (row.roleIds && Array.isArray(row.roleIds) && row.roleIds.length) {
-                return roleData = row.roleIds.map(item => item.roleId);
-                // Now you can use roleIds
-            } else {
-                roleData = []
+            // let roleData = []
+            // if (row.roleIds && Array.isArray(row.roleIds) && row.roleIds.length) {
+            //     return roleData = row.roleIds.map(item => item.roleId);
+            //     // Now you can use roleIds
+            // } else {
+            //     roleData = []
+            // }
+
+            let department = ''
+            if (row.dept !== null) {
+                console.log("I am here" + row.dept.deptId)
+                department = row.dept.deptId;
             }
-            console.log(roleData)
 
-            this.initialValuesEdit =
-            {
-                delFlag: 0,
-                avatar: row.avatar,
-                deptId: row.dept.deptId,
-                userId: row.userId,
-                status: row.status,
-                capacity: row.capacity,
-                jobs: jobData,
-                email: row.email,
-                sex: row.sex,
-                phoneNumber: row.phoneNumber,
-                schedule: {
+            console.log(department)
 
-                    dayIds: row.schedule.days,
-                    startHour: row.schedule.startHour,
-                    endHour: row.schedule.endHour
-
-                },
-                address: {
+            if (row.address !== null) {
+                this.initialValuesEdit =
+                {
                     delFlag: 0,
-                    state: row.address.state,
-                    city: row.address.city,
-                    status: row.address.status,
-                    country: row.address.country,
-                    zipcode: row.address.zipcode,
-                    detail: row.address.detail
+                    avatar: row.avatar,
+                    deptId: department,
+                    userId: row.userId,
+                    status: row.status,
+                    capacity: row.capacity,
+                    jobs: jobData,
+                    email: row.email,
+                    sex: row.sex,
+                    phoneNumber: row.phoneNumber,
+                    schedule: {
+                        dayIds: row.schedule.days,
+                        startHour: row.schedule.startHour,
+                        endHour: row.schedule.endHour
+                    },
+                    address: {
+                        delFlag: 0,
+                        status: 0,
+                        state: row.address.state,
+                        city: row.address.city,
+                        status: row.address.status,
+                        country: row.address.country,
+                        zipcode: row.address.zipcode,
+                        detail: row.address.detail
+                    }
                 }
-                ,
             }
+            else {
+                this.initialValuesEdit =
+                {
+                    delFlag: 0,
+                    avatar: row.avatar,
+                    deptId: department,
+                    userId: row.userId,
+                    status: row.status,
+                    capacity: row.capacity,
+                    jobs: jobData,
+                    email: row.email,
+                    sex: row.sex,
+                    phoneNumber: row.phoneNumber,
+                    schedule: {
+                        dayIds: row.schedule.days,
+                        startHour: row.schedule.startHour,
+                        endHour: row.schedule.endHour
+                    },
+                    address: {
+                        delFlag: 0,
+                        status: 0,
+                        city: '',
+                        state: '',
+                        status: '',
+                        country: '',
+                        zipcode: '',
+                        detail: ''
+                    }
+                }
+
+            }
+
+
 
             this.open = true
         },
@@ -829,4 +906,11 @@ export default {
 
 </script>
 
+<style>
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
 
