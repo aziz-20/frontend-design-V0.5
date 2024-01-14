@@ -6,82 +6,63 @@
         :resetButtonText="resetButtonText" :searchIcon="searchIcon" :resetIcon="resetIcon">
       </search_control>
     </div>
-    <!-- Table Header -->
-    <el-row class="mb-4" :gutter="10">
-      <el-col :span="1.5">
-        <el-button type="primary" :icon="Add" size="mini" @click="handleAdd">NEW</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="info" :icon="el - icon - sort" size="mini" @click="toggleExpandAll">Expand/collaps</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="mini" :icon="Delete" type="primary" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['system:post:remove']" color="red" :dark="isDark" plain>Delete</el-button>
-      </el-col>
-      <el-col :span="1.5" :offset="22.5" :class="{ 'show-search': showSearch }">
-        <el-button v-if="!showSearch" @click="showSearch = true" style="float: right;">Show Filter</el-button>
-        <el-button v-else @click="showSearch = false" style="float: right;">Hide Filter</el-button>
-      </el-col>
-    </el-row>
-
+    <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+      :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }" :handleAdd="handleAdd"
+      :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+      :showSearch="showSearch" @toggleFilter="showSearch = !showSearch" :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     <!-- Table view  -->
-    <el-config-provider>
-      <el-table :data="deptList" style="width:150%" row-key="deptId" v-loading="loading" element-loading-text="Loading..."
-        :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
-        element-loading-background="rgba(122, 122, 122, 0.8)" :default-expand-all="isExpandAll" v-if="refreshTable"
-        @selection-change="handleSelectionChange">
-
-        <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
-        <el-table-column fixed prop="name" label="Department Name" width="150" />
-        <el-table-column fixed prop="orderNum" label="Order" width="150" />
-        <el-table-column fixed prop="status" label="Status" width="120">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">
-              {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="leader" label="Head of the Department" width="200" />
-        <el-table-column prop="phone" label="Phone" width="170" />
-        <el-table-column prop="email" label="Email" width="170" />
-        <el-table-column type="Calender" prop="createTime" label="Create Data" width="200" />
-        <el-table-column prop="updateTime" label="Last Update Time" width="200" />
-        <el-table-column fixed="right" label="Actions" width="180" align="center" class-name="small-padding fixed-width">
-          <template #default="{ row, column, index }">
-            <el-row class="mb-4">
-              <el-button size="mini" type="text" @click="handleAdd(row, index)" :el-icon-plus="Add"
-                v-hasPermi="['system:user:add']">
-                Add</el-button>
-              <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
-                v-hasPermi="['system:user:edit']">
-                Edit</el-button>
-              <el-button type="warning" :el-icon-plus="Delete" size="small" @click="handle_SideDelete(row)"
-                v-hasPermi="['system:user:remove']">Delete</el-button>
-            </el-row>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- <s>ADD, EDIT</s> -->
-      <addoredit ref="form"  :rules="rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
-        initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
-      </addoredit>
-
-    </el-config-provider>
-
-    <el-row justify="center">
-      <el-col :span="24" :sm="12" :md="8">
-        <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total"
-          :page.sync="queryParams.pageNo"  :page-size.sync="queryParams.pageSize" :layout="paginationLayout"
-          @current-change="handlePageChange" />
-      </el-col>
-    </el-row>
-
+    <!-- <el-config-provider> -->
+    <el-table :data="deptList" style="width:100%" row-key="deptId" v-loading="loading" element-loading-text="Loading..."
+      :element-loading-spinner="svg" :default-expand-all="isExpandAll" v-if="refreshTable"
+      @selection-change="handleSelectionChange">
+      <el-table-column :selectable="selectable" type="selection"></el-table-column>
+      <el-table-column fixed prop="name" label="Name">
+        <template #default="{ row }">
+          <div
+            :class="['table-row', { 'child-row': row.isChild, 'row-with-children': row.children && row.children.length > 0 }]">
+            {{ row.name }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column  prop="orderNum" label="Order" />
+      <el-table-column  prop="status" label="Status">
+        <template #default="{ row }">
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">
+            {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="leader" label="Leader" />
+      <el-table-column prop="phone" label="Phone" />
+      <el-table-column prop="email" label="Email" />
+      <el-table-column type="Calender" prop="createTime" label="Create Data" />
+      <el-table-column prop="updateTime" label="Last Update Time" width="200" />
+      <el-table-column fixed="right" label="Actions" align="center" class-name="small-padding fixed-width">
+        <template #default="{ row, column, index }">
+          <div class="table-button-container">
+            <el-button size="mini" type="text" @click="handleAdd(row, index)" :el-icon-plus="Add"
+              v-hasPermi="['system:user:add']">
+              Add</el-button>
+            <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
+              v-hasPermi="['system:user:edit']">
+              Edit</el-button>
+            <el-button type="warning" :el-icon-plus="Delete" size="small" @click="handle_SideDelete(row)"
+              v-hasPermi="['system:user:remove']">Delete</el-button>
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- <s>ADD, EDIT</s> -->
+    <addoredit ref="form" :rules="rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+      initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
+    </addoredit>
 
 
   </div>
 </template>
 
 <script>
+import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import addoredit from "@/views/components/addoredit/index.vue"
 import {
   Delete,
@@ -96,7 +77,8 @@ export default {
 
   components: {
     addoredit,
-    search_control
+    search_control,
+    tableHeader
   },
   data() {
     return {
@@ -141,7 +123,7 @@ export default {
         createTime: undefined,
         leader: undefined,
         pageNo: 1,
-        pageSize: 20
+        pageSize: 0
       },
 
       Add_Edit:
@@ -152,7 +134,7 @@ export default {
             name: "parentId",
             label: "Department parent",
             placeholder: "Department selected",
-            span: 12
+            // span: 12
 
           },
           {
@@ -161,7 +143,7 @@ export default {
             name: "name",
             label: "Department name",
             placeholder: "Department selected",
-            span: 12
+            // span: 12
 
           },
           {
@@ -170,7 +152,7 @@ export default {
             name: "leader",
             label: "Department Manger",
             placeholder: "Please add the department Manger",
-            style: 'width: 150px'
+            // style: 'width: 150px'
 
           },
 
@@ -181,7 +163,7 @@ export default {
             label: "Department Email",
             placeholder: "Enter email",
             data: [{ value: 'email', label: 'email' }],
-            span: 12
+            // span: 12
 
           },
           {
@@ -190,7 +172,7 @@ export default {
             name: "phone",
             label: "Contact Number ",
             placeholder: "Please add phone number",
-            span: 12
+            // span: 12
           },
 
           {
@@ -199,7 +181,7 @@ export default {
             name: "orderNum",
             label: "Department Sorting",
             placeholder: "Display Sorting",
-            span: 12
+            // span: 12
 
           },
           {
@@ -212,7 +194,7 @@ export default {
             inactiveText: 'Disabled',
             activeValue: 0,
             inactiveValue: 1,
-            span: 12
+            // span: 12
           },
 
         ],
@@ -298,10 +280,10 @@ export default {
       this.$http.dept.DeptlistHierarchy(this.queryParams).then(res => {
         if (res.result && res.result.data) {
           this.deptList = res.result.data;
-          this.isHasNextPage = res.result.isHasNextPage;
-          this.isHasPreviousPage = res.result.isHasPreviousPage;
-          this.total = res.result.total;
-          console.log(this.queryParams)
+          // this.isHasNextPage = res.result.isHasNextPage;
+          // this.isHasPreviousPage = res.result.isHasPreviousPage;
+          // this.total = res.result.total;
+          console.log(this.deptList)
           this.loading = false;
         } else {
           this.loading = false;
@@ -345,17 +327,6 @@ export default {
       // this.formFieldSelectData(),
       this.open = true;
       this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": row.deptId }
-      // if (row.parentId !== undefined) {
-      //   console.log(row)
-      //   this.open = true;
-      //   this.initialValuesAdd = { "delFlag": "0", "parentId": row.deptId, "status": 0, }
-      //   console.log(this.form)
-      // }
-      // else {
-      //   this.open = true;
-      //   console.log(this.form)
-      //   this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": 0 }
-      // }
     },
 
     //*******************Edit control section**********************************/
@@ -509,3 +480,34 @@ export default {
 
 
 </script>
+
+<style>
+.table-row {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.child-row {
+  padding-left: 20px;
+  /* Adjust as needed */
+}
+
+.row-with-children {
+  background-color: rgb(206, 216, 206);
+}
+
+.table-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+ } 
+
+/* @media (max-width: 1000px) {
+  .table-button-container {
+    flex-direction: column;
+  }
+} */
+
+
+</style>

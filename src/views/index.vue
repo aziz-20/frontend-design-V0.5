@@ -1,6 +1,6 @@
 <template>
                <h1 v-for="(route, index) in sidebarRouters">
-                     {{ route.path }}
+                     {{ route.name }}
                </h1>
               
 
