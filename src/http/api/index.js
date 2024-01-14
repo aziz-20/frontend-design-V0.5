@@ -11,6 +11,8 @@ import role from './role'
 import daysControl from './daysControl'
 import taskControl from './taskControl'
 import photos from './photos'
+import upload from './upload'
+
 
 export default {
 
@@ -26,7 +28,8 @@ export default {
   cusdatascope,
   MgUsers,
   taskControl,
-  photos
+  photos,
+  upload
 }
 
 

@@ -22,8 +22,8 @@
                     :suffix-icon="field.icon ?? ''" />
                 </template>
                 <template v-else-if="field.inputtype === 'upload'">
-                  <el-upload v-model:fileList="form[field.name]" class="upload-demo" :action="field.action"
-                    :on-preview="handlePreview" :on-remove="handleRemove" :beforeUpload="field.beforeUpload"
+                  <!-- <el-upload v-model:fileList="form[field.name]" class="upload-demo" :action="field.action"
+                    :on-preview="handlePreview" :on-remove="handleRemove" :before-upload="beforeAvatarUpload"
                     :list-type="field.listType" :auto-upload="field.autoUpload" :limit="field.limit">
                     <el-button type="primary"> {{ field.buttonText || "Click to upload" }}</el-button>
                     <template #tip>
@@ -32,6 +32,13 @@
                           || "Please Enter A tip If exist if not pleas lef the (tip) empty to stop the message" }}
                       </div>
                     </template>
+                  </el-upload> -->
+                  <el-upload  class="avatar-uploader" action="#"
+                    :show-file-list="false" :http-request="requestUpload" :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                    <el-icon v-else class="avatar-uploader-icon">
+                     {{ '+' }}
+                    </el-icon>
                   </el-upload>
                 </template>
 
@@ -71,8 +78,8 @@
                 <!-- Sorting Field -->
                 <template v-else-if="field.inputtype === 'sorting'">
                   <!-- <el-row :class="field.row" flex> -->
-                    <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                      :min="field.min || 0" :max="field.max" size="default" />
+                  <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
+                    :min="field.min || 0" :max="field.max" size="default" />
                   <!-- </el-row> -->
                 </template>
 
@@ -315,7 +322,9 @@
 
 import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject, treeTransformerMultiyvalue, treeTransformerTwoValuesAndNew } from '@/utils/dtControl/dTransformer'
 import countriesAndregions from '@/utils/Countries&Regions/data'
+import { Plus } from '@element-plus/icons-vue'
 console.log("Countries", countriesAndregions)
+console.log(Plus)
 
 export default {
 
@@ -324,6 +333,7 @@ export default {
       pairs: [
         { deptId: 0, userIds: [] },
       ],
+      imageUrl: '',
       usersName: [],
       verifyPassword: '',
       selectedCountryRegions: [],
@@ -550,6 +560,44 @@ export default {
     //     };
     //   }
     // },
+    requestUpload(file) {
+      console.log("I am in requestUpload")
+      console.log(file.file)
+      let formData = new FormData();
+      formData.append('file', file.file);
+      formData.append('bucketName', 'useravatar');
+    
+
+      this.$http.upload.uploadImage(formData).then(res => {
+        console.log(res)
+        if (res.result) {
+          this.$message.success('Upload successfully');
+          return res.result;
+        } else {
+          this.$message.error('Upload failed');
+        }
+      }).catch(error => {
+        console.error(error);
+      });
+
+    },
+    handleAvatarSuccess(res, file) {
+      console.log(res)
+      console.log(file)
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      console.log(file)
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isJPG) {
+        this.$message.error('Picture must be JPG format!');
+      }
+      if (!isLt2M) {
+        this.$message.error('Picture size can not exceed 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
     organizeSelection(selectedValues) {
       const organizedData = {};
       // Helper function to find the parent of a given value
@@ -708,8 +756,7 @@ export default {
             })
           }
 
-          if (field.inputtype === 'gpermision') 
-          {
+          if (field.inputtype === 'gpermision') {
             console.log("in gpermision")
             this.$http.grpermision.permlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
               if (res.result && res.result.data) {
@@ -894,9 +941,30 @@ img {
   margin-left: auto;
   margin-right: auto;
 }
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+}
 </style>
-
-
-
-
 

@@ -6,6 +6,7 @@ import modal from '@/plugins/modal'
 
 export let isRelogin = { show: false };
 export function requestIntersept(config) {
+ 
 
     const isToken = (config.headers || {}).isToken === false
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
