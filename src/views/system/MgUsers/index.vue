@@ -17,62 +17,38 @@
                         </search_control>
                     </div>
                     <!-- Table Header -->
-                    <el-row class="mb-4" :gutter="10">
-                        <el-col :span="1.5">
-                            <el-button type="primary" :icon="Add" size="mini" v-hasPermi="['system:user:add']"
-                                @click="handleAdd">NEW</el-button>
-                        </el-col>
-                        <el-col :span="1.5">
-                            <el-button type="info" :icon="el - icon - sort" size="mini"
-                                @click="toggleExpandAll">Expand/collaps</el-button>
-                        </el-col>
-                        <el-col :span="1.5">
-                            <el-button size="mini" :icon="Delete" type="primary" :disabled="multiple" @click="handleDelete"
-                                v-hasPermi="['system:post:remove']" color="red" :dark="isDark" plain>Delete</el-button>
-                        </el-col>
-                        <el-col :span="1.5" :offset="22.5" :class="{ 'show-search': showSearch }">
-                            <el-button v-if="!showSearch" @click="showSearch = true" style="float: right;">Show
-                                Filter</el-button>
-                            <el-button v-else @click="showSearch = false" style="float: right;">Hide Filter</el-button>
-                        </el-col>
-                        <el-col :span="1.5" :offset="22.5">
-                            <el-button @click="resetSideQuery" style="float: right;">Reset Side Filter
-                            </el-button>
-                        </el-col>
-                        <el-col :span="1.5">
-                            <el-button v-if="!showSide" @click="showSide = true">Show Side</el-button>
-                            <el-button v-else @click="showSide = false" style="float: left;">Hide Side</el-button>
-                        </el-col>
-                    </el-row>
+                    <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+                        :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
+                        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+                        :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+                        :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
                     <!-- Table view  -->
                     <el-config-provider>
-                        <el-table :data="usersList" style="width:150%" row-key="userId" v-loading="loading"
-                            element-loading-text="Loading..." :element-loading-spinner="svg"
-                            element-loading-svg-view-box="-10, -10, 50, 50"
-                            element-loading-background="rgba(122, 122, 122, 0.8)" :default-expand-all="isExpandAll"
-                            v-if="refreshTable" @selection-change="handleSelectionChange">
-                            <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
-                            <el-table-column fixed prop="avatar" label="Photo" width="80">
+                        <el-table :data="usersList" style="width:100%" row-key="userId" v-loading="loading"
+                            element-loading-text="Loading..." :default-expand-all="isExpandAll" v-if="refreshTable"
+                            @selection-change="handleSelectionChange">
+                            <el-table-column :selectable="selectable" type="selection"></el-table-column>
+                            <el-table-column fixed prop="avatar" label="Photo">
                                 <template v-slot="{ row }">
                                     <img :src=this.$http.photos.image(row.avatar) class="icon"
                                         style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;" />
                                 </template>
                             </el-table-column>
-                            <el-table-column fixed prop="username" label="User Name" width="150" />
-                            <el-table-column prop="sex" label="Gander" width="100">
+                            <el-table-column fixed prop="username" label="User Name" />
+                            <el-table-column prop="sex" label="Gander">
                                 <template #default="{ row }">
                                     {{ row.sex === 0 ? 'Man' : 'Woman' }}
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="status" label="Status" width="120">
+                            <el-table-column prop="status" label="Status">
                                 <template #default="{ row }">
                                     <el-tag :type="row.status === 0 ? 'success' : 'danger'">
                                         {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
                                     </el-tag>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="Department/s" width="130">
+                            <el-table-column label="Department/s">
                                 <template #default="scope">
                                     <div v-if="scope.row.dept">
                                         {{ scope.row.dept.name }}
@@ -96,10 +72,10 @@
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column type="Calender" prop="createTime" label="Registry Data" width="200" />
-                            <el-table-column prop="updateTime" label="Last Update Time" width="200" />
-                            <el-table-column prop="phoneNumber" label="Phone" width="170" />
-                            <el-table-column label="Job/s" width="150">
+                            <el-table-column type="Calender" prop="createTime" label="Registry Data" />
+                            <el-table-column prop="updateTime" label="Last Update Time" />
+                            <el-table-column prop="phoneNumber" label="Phone" />
+                            <el-table-column label="Job/s">
                                 <template #default="scope">
                                     <div v-if="scope.row.jobs && scope.row.jobs.length > 0">
                                         <el-tooltip effect="dark" :content="getJobNames(scope.row.jobs)">
@@ -114,8 +90,8 @@
                                 </template>
                             </el-table-column>
 
-                            <el-table-column prop="email" label="Email" width="200" />
-                            <el-table-column fixed="right" label="Actions" width="180" align="center"
+                            <el-table-column prop="email" label="Email" />
+                            <el-table-column fixed="right" label="Actions" align="center"
                                 class-name="small-padding fixed-width">
                                 <template #default="{ row, column, index }">
                                     <el-row class="mb-4">
@@ -138,20 +114,18 @@
                             :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
                         </addoredit>
                     </template>
-
-                    <el-row justify="center">
-                        <el-col :span="24" :sm="12" :md="8">
-                            <el-pagination v-show="total > 0" style="width:50%" background layout="prev, pager, next"
-                                :total="total" :page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize"
-                                :layout="paginationLayout" @current-change="handlePageChange" />
-                        </el-col>
-                    </el-row>
                 </el-main>
             </el-container>
+            <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
+                :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout"
+                @page-change="handlePageChange">
+            </custom-pagination>
         </div>
     </div>
 </template>
 <script>
+import tableHeader from "@/views/components/headerAndfooter/tableHeader"
+import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import addoredit from "@/views/components/addoredit/index.vue"
 import {
     Check,
@@ -171,7 +145,9 @@ export default {
     components: {
         addoredit,
         search_control,
-        ElAside
+        ElAside,
+        CustomPagination,
+        tableHeader
     },
     data() {
         return {
@@ -854,8 +830,8 @@ export default {
         //************************************************Delete Control Section***********************************************/
         handle_SideDelete(row) {
             if (row.jobId > 0) {
-                this.$modal.confirm('Are you sure you want to delete the data User/Users with the name "' + row.name + '"?').then(() => {
-                    return this.$http.MgUsers.deleteJob(row.jobId);
+                this.$modal.confirm('Are you sure you want to delete the data User/Users with the name "' + row.username + '"?').then(() => {
+                    return this.$http.MgUsers.deleteJob(row.userId);
                 }).then(() => {
                     this.getList();
                     this.$modal.msgSuccess("Deletion successful");
@@ -866,11 +842,11 @@ export default {
         handleDelete() {
             if (this.selectedRows.length > 0) {
                 this.$modal.confirm('WARNING: You are about to permanently delete the following User/Users:{ '
-                    + this.selectedRows.map(row => row.name).join(', ')
+                    + this.selectedRows.map(row => row.username).join(', ')
                     + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
                         this.selectedRows.forEach(row => {
                             // Delete the Selected Jobs
-                            this.$http.MgUsers.deleteJob(row.jobId);
+                            this.$http.MgUsers.deleteJob(row.userId);
                         });
                         this.getList();
                         this.$modal.msgSuccess("Deletion successful");
@@ -893,7 +869,7 @@ export default {
         handleSelectionChange(selection) {
             this.selectedRows = selection;
             this.selectedRows.forEach(row => {
-                console.log(row.jobId, row.name); // logs the deptId and name of each selected row
+                console.log(row.userId, row.username); // logs the deptId and name of each selected row
             });
         },
 

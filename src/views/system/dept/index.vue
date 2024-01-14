@@ -9,7 +9,8 @@
     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
       :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }" :handleAdd="handleAdd"
       :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
-      :showSearch="showSearch" @toggleFilter="showSearch = !showSearch" :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
+      :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+      :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     <!-- Table view  -->
     <!-- <el-config-provider> -->
     <el-table :data="deptList" style="width:100%" row-key="deptId" v-loading="loading" element-loading-text="Loading..."
@@ -24,8 +25,8 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column  prop="orderNum" label="Order" />
-      <el-table-column  prop="status" label="Status">
+      <el-table-column prop="orderNum" label="Order" />
+      <el-table-column prop="status" label="Status">
         <template #default="{ row }">
           <el-tag :type="row.status === 0 ? 'success' : 'danger'">
             {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
@@ -52,11 +53,10 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- <s>ADD, EDIT</s> -->
-    <addoredit ref="form" :rules="rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
-      initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
+    <addoredit ref="form"  :rules="fields_rules" :open="open" :mode="modeType" :title="title"
+      :init="modeType === 'add' ? initialValuesAdd : initialValuesEdit" :visible="isFormVisible" :fields="Add_Edit"
+      @close="closeAddEdit" @submit="onSubmit">
     </addoredit>
-
 
   </div>
 </template>
@@ -78,7 +78,8 @@ export default {
   components: {
     addoredit,
     search_control,
-    tableHeader
+    tableHeader,
+
   },
   data() {
     return {
@@ -280,9 +281,6 @@ export default {
       this.$http.dept.DeptlistHierarchy(this.queryParams).then(res => {
         if (res.result && res.result.data) {
           this.deptList = res.result.data;
-          // this.isHasNextPage = res.result.isHasNextPage;
-          // this.isHasPreviousPage = res.result.isHasPreviousPage;
-          // this.total = res.result.total;
           console.log(this.deptList)
           this.loading = false;
         } else {
@@ -332,7 +330,6 @@ export default {
     //*******************Edit control section**********************************/
     handleUpdate(row) {
       this.mode = "Edit"
-      // this.open = true
       this.initialValuesEdit = row
       this.open = true
       console.log(this.deptOptions)
@@ -501,13 +498,11 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
- } 
+}
 
 /* @media (max-width: 1000px) {
   .table-button-container {
     flex-direction: column;
   }
 } */
-
-
 </style>

@@ -8,47 +8,34 @@
       </search_control>
     </div>
 
+    <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+      :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
+      :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+      :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+      :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
-    <el-row class="mb-4" :gutter="10">
-      <el-col :span="1.5">
-        <el-button color="#626aef" :dark="isDark" plain type="primary" :icon="Add" size="mini"
-          @click="handleAdd">NEW</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="info" :icon="el - icon - sort" size="mini" @click="toggleExpandAll">Expand/collaps</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="mini" @click="handleDelete" v-hasPermi="['system:post:remove']" color="red" :dark="isDark"
-          plain>Delete</el-button>
-      </el-col>
-      <el-col :span="1.5" :offset="22.5" :class="{ 'show-search': showSearch }">
-        <el-button v-if="!showSearch" @click="showSearch = true" style="float: right;">Show Filter</el-button>
-        <el-button v-else @click="showSearch = false" style="float: right;">Hide Filter</el-button>
-      </el-col>
-    </el-row>
 
     <!-- Table view  -->
-    <el-table flex :data="jobtList" style="width:150%" row-key="jobId" v-loading="loading"
-      element-loading-text="Loading..." :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
-      element-loading-background="rgba(122, 122, 122, 0.8)" v-if="refreshTable" @selection-change="handleSelectionChange">
+    <el-table flex :data="jobtList" style="width:100%" row-key="jobId" v-loading="loading"
+      element-loading-text="Loading..." v-if="refreshTable" @selection-change="handleSelectionChange">
 
 
-      <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
-      <el-table-column fixed prop="name" label="Position Name" width="240" />
+      <el-table-column :selectable="selectable" type="selection"></el-table-column>
+      <el-table-column fixed prop="name" label="Position Name"  />
       <!-- <el-table-column fixed prop="jobId" label="Job ID" width="150" /> -->
-      <el-table-column fixed prop="abbrev" label="Job code" width="170" />
-      <el-table-column fixed prop="status" label="Status" width="120">
+      <el-table-column fixed prop="abbrev" label="Job code"  />
+      <el-table-column fixed prop="status" label="Status" >
         <template #default="{ row }">
           <el-tag :type="row.status === 0 ? 'success' : 'danger'">
             {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="Note" width="200" />
-      <el-table-column type="Calender" prop="createTime" label="Create Data" width="200" />
+      <el-table-column prop="remark" label="Note"  />
+      <el-table-column type="Calender" prop="createTime" label="Create Data"  />
       <el-table-column prop="updateTime" label="Last Update Time" width="200" />
       <!-- <el-table-column prop="email" label="Email" width="170" /> -->
-      <el-table-column fixed="right" label="Actions" width="250" align="center" class-name="small-padding fixed-width">
+      <el-table-column fixed="right" label="Actions"  align="center" class-name="small-padding fixed-width">
         <template #default="{ row, column, index }">
           <el-row class="mb-4">
             <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
@@ -64,20 +51,17 @@
     <addoredit ref="form" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
       initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
     </addoredit>
-    <el-row justify="center">
-      <el-col :span="24" :sm="12" :md="8">
-        <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total"
-          :page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize" :layout="paginationLayout"
-          @current-change="handlePageChange" />
-      </el-col>
-    </el-row>
-
+    <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
+      :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout" @page-change="handlePageChange">
+    </custom-pagination>
   </div>
 </template>
 
 
 
 <script >
+import tableHeader from "@/views/components/headerAndfooter/tableHeader"
+import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import addoredit from "@/views/components/addoredit/index.vue"
 import {
   Check,
@@ -97,7 +81,9 @@ export default {
 
   components: {
     addoredit,
-    search_control
+    search_control,
+    CustomPagination,
+    tableHeader,
   },
   data() {
     return {
@@ -130,7 +116,7 @@ export default {
         deptId: undefined,
         userId: undefined,
         pageNo: 1,
-        pageSize: 30
+        pageSize: 20
       },
       Add_Edit:
         [

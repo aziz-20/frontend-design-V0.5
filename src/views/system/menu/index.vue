@@ -10,53 +10,42 @@
     </div>
 
     <!-- Table Header -->
-    <el-row class="mb-4" :gutter="10">
-      <el-col :span="1.5">
-        <el-button color="#626aef" :dark="isDark" plain type="primary" :icon="Add" size="mini"
-          @click="handleAdd">NEW</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="info" :icon="el - icon - sort" size="mini" @click="toggleExpandAll">Expand/collaps</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="mini" @click="handleDelete" v-hasPermi="['system:post:remove']" color="red" :dark="isDark"
-          plain>Delete</el-button>
-      </el-col>
-      <el-col :span="1.5" :offset="22.5" :class="{ 'show-search': showSearch }">
-        <el-button v-if="!showSearch" @click="showSearch = true" style="float: right;">Show Filter</el-button>
-        <el-button v-else @click="showSearch = false" style="float: right;">Hide Filter</el-button>
-      </el-col>
-    </el-row>
+    <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+            :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
+            :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+            :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+            :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
+
 
     <!-- Table view  -->
     <el-config-provider>
-      <el-table flex :data="menuList" style="width:200%" row-key="parentId" v-loading="loading"
-        element-loading-text="Loading..." :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
-        :default-expand-all="isExpandAll" element-loading-background="rgba(122, 122, 122, 0.8)" v-if="refreshTable"
+      <el-table flex :data="menuList" style="width:100%" row-key="parentId" v-loading="loading"
+        element-loading-text="Loading..." 
+        :default-expand-all="isExpandAll"  v-if="refreshTable"
         @selection-change="handleSelectionChange">
 
-        <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
-        <el-table-column fixed prop="name" label="Name" width="180" />
-        <el-table-column fixed prop="type" label="Type" width="120" />
-        <el-table-column prop="icon" label="Icon" align="center" width="100">
+        <el-table-column :selectable="selectable" type="selection" ></el-table-column>
+        <el-table-column fixed prop="name" label="Name"  />
+        <el-table-column fixed prop="type" label="Type"  />
+        <el-table-column prop="icon" label="Icon" align="center" >
           <template slot-scope="scope">
             <!-- <svg-icon :icon-class="scope.row.icon" /> -->
           </template>
         </el-table-column>
-        <el-table-column fixed prop="orderNum" label="Order" width="150" />
-        <el-table-column fixed prop="status" label="Status" width="120">
+        <el-table-column fixed prop="orderNum" label="Order"  />
+        <el-table-column fixed prop="status" label="Status" >
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'success' : 'danger'">
               {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="component" label="Component" width="120" />
-        <el-table-column prop="path" label="Path" width="200" />
+        <el-table-column prop="component" label="Component"  />
+        <el-table-column prop="path" label="Path"  />
         <!-- <el-table-column type="icon" prop="Icon " label="Icons" width="200" /> -->
-        <el-table-column prop="remark" label="Note" width="200" />
-        <el-table-column prop="createBy" label="ADD By " width="200" />
-        <el-table-column fixed="right" label="Actions" width="180" align="center" class-name="small-padding fixed-width">
+        <el-table-column prop="remark" label="Note"  />
+        <el-table-column prop="createBy" label="ADD By "  />
+        <el-table-column fixed="right" label="Actions"  align="center" class-name="small-padding fixed-width">
           <template #default="{ row, column, index }">
             <el-row class="mb-4">
               <el-button size="mini" type="text" @click="handleAdd(row, index)" :el-icon-plus="Add"
@@ -84,6 +73,7 @@
   
   
 <script >
+import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import addoredit from "@/views/components/addoredit/index.vue"
 import {
   Check,
@@ -105,7 +95,7 @@ export default {
   components: {
     addoredit,
     search_control,
-    // IconSelect
+    tableHeader,
   },
   data() {
     return {
@@ -441,14 +431,7 @@ export default {
             'parentId':0
           }
         }
-        // if (this.mode === 'Edit' && this.open === true) {
-        //   this.initialValuesEdit = {
-        //     'delFlag': 0,
-        //     'triggerType': 1,
-        //     'status': 1,
-        //     'taskRun': 1
-        //   }
-        // }
+
       }
 
       this.Add_Edit.push(
