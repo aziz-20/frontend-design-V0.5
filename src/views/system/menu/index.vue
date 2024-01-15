@@ -50,7 +50,7 @@
           </template>
         </el-table-column>
         <el-table-column >
-          <template #default="{row}">
+          <template #default="{row,column}">
             <el-dialog class="inside-dialog" v-model="detailsDialogVisible" title="Details">
               <div class="button-container">
                 <el-icon :size="20" color="green" size="mini" @click="handleAdd(row)" :el-icon-plus="Add"
