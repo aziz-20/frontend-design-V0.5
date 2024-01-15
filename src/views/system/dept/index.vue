@@ -37,7 +37,7 @@
       <el-table-column prop="phone" label="Phone" />
       <el-table-column prop="email" label="Email" />
       <el-table-column type="Calender" prop="createTime" label="Create Data" />
-      <el-table-column prop="updateTime" label="Last Update Time" width="200" />
+      <el-table-column prop="updateTime" label="Last Update Time"/>
       <el-table-column fixed="right" label="Actions" align="center" class-name="small-padding fixed-width">
         <template #default="{ row, column, index }">
           <div class="table-button-container">
@@ -491,7 +491,7 @@ export default {
 }
 
 .row-with-children {
-  background-color: rgb(206, 216, 206);
+  background-color: rgb(202, 201, 201);
 }
 
 .table-button-container {
@@ -500,9 +500,9 @@ export default {
   align-items: center;
 }
 
-/* @media (max-width: 1000px) {
+@media (max-width: 1000px) {
   .table-button-container {
     flex-direction: column;
   }
-} */
+}
 </style>

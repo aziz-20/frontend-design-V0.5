@@ -16,6 +16,7 @@ export default {
     daysControl: api.daysControl,
     taskControl: api.taskControl,
     photos: api.photos,
+    upload: api.upload,
 
 
 }
