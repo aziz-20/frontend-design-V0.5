@@ -47,6 +47,7 @@
                 <View />
               </el-icon>
             </div>
+            
           </template>
         </el-table-column>
         <el-table-column >
