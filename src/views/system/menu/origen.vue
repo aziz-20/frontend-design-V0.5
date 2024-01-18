@@ -49,7 +49,6 @@
                 </el-table-column>
                 <el-table-column prop="component" label="Component" width="120" />
                 <el-table-column prop="path" label="Path" width="200" />
-                <!-- <el-table-column type="icon" prop="Icon " label="Icons" width="200" /> -->
                 <el-table-column prop="remark" label="Note" width="200" />
                 <el-table-column prop="createBy" label="ADD By " width="200" />
                 <el-table-column fixed="right" label="Actions" width="180" align="center"
@@ -74,6 +73,77 @@
                 @emi="emitChange">
             </addoredit>
         </el-config-provider>
+              <!-- <el-dialog width="100%"  v-model="detailsDialogVisible" title="Details">
+        <div class="button-container">
+          <el-icon :size="20" color="green" size="mini"  @click="handleAdd(mobileView)" :el-icon-plus="Add"
+            v-hasPermi="['system:user:add']" v-if="mobileView.type === 0">
+            <Plus />
+          </el-icon>
+          <el-icon :size="20" color="blue" @click="handleUpdate(mobileView)" v-hasPermi="['system:user:edit']">
+            <Edit />
+          </el-icon>
+          <el-icon :size="20" color="red" :el-icon-plus="Delete"  @click="handle_SideDelete(mobileView)"
+            v-hasPermi="['system:user:remove']">
+            <Delete />
+          </el-icon>
+        </div>
+        <div v-for="item in items" :key="item.key" class="tableRow">
+          <div class="tableCell tableHeader">{{ item.label }}</div>
+          <div class="tableCell tableData">{{ mobileView[item.key] }}</div>
+        </div>
+      </el-dialog> -->
+
+
+      <!-- <el-dialog v-model="detailsDialogVisible" title="Row Details">
+        <el-table :data="mobileView ? [mobileView] : []">
+          <el-table-column prop="name" label="Name"></el-table-column>
+          <el-table-column prop="type" label="Type"></el-table-column>
+        </el-table>
+      </el-dialog> -->
+      <!-- Add a new modal component -->
+
+      <!-- <el-dialog class="inside-dialog" v-model="detailsDialogVisible" title="Details">
+        <div class="button-container">
+          <el-icon :size="20" color="green" size="mini" @click="handleAdd(mobileView)" :el-icon-plus="Add"
+            v-hasPermi="['system:user:add']" v-if="mobileView.type === 0">
+            <Plus />
+          </el-icon>
+          <el-icon :size="20" color="blue" @click="handleUpdate(mobileView)" v-hasPermi="['system:user:edit']">
+            <Edit />
+          </el-icon>
+          <el-icon :size="20" color="red" :el-icon-plus="Delete" @click="handle_SideDelete(mobileView)"
+            v-hasPermi="['system:user:remove']">
+            <Delete />
+          </el-icon>
+        </div>
+        <div v-if="mobileView" class="details-container">
+          <div class="details-row">
+            <div class="details-label">Name:</div>
+            <div class="details-value">{{ mobileView.name }}</div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">Note:</div>
+            <div class="details-value">{{ mobileView.remark }}</div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">Type:</div>
+            <div class="details-value">
+              <el-tag :type="mobileView.type === 0 ? 'success' : mobileView.type === 1 ? 'Silver' : 'warning'">
+                {{ mobileView.type === 0 ? 'Directory' : mobileView.type === 1 ? 'File' : 'Link' }}
+              </el-tag>
+            </div>
+          </div>
+          <div class="details-row">
+            <div class="details-label">status:</div>
+            <div class="details-value">
+              <el-tag :type="mobileView.status === 0 ? 'success' : mobileView.status === 1 ? 'danger' : 'warning'">
+                {{ mobileView.status === 0 ? 'Enabled' : mobileView.status === 1 ? 'Disabled' : 'Sleep' }}
+              </el-tag>
+            </div>
+          </div>
+        </div>
+      </el-dialog> -->
+      <!-- <s>ADD, EDIT</s> -->
 
     </div>
 </template>
