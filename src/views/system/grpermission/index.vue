@@ -168,8 +168,6 @@ export default {
             console.log(val)
             this.selectedPerm = val;
             this.dialogVisible = true;
-
-
         },
         handleSelectionChange(val) {
             this.multipleSelection = val

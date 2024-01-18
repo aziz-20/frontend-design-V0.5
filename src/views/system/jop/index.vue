@@ -16,37 +16,20 @@
 
 
     <!-- Table view  -->
-    <el-table flex :data="jobtList" style="width:100%" row-key="jobId" v-loading="loading"
-      element-loading-text="Loading..." v-if="refreshTable" @selection-change="handleSelectionChange">
-
-
-      <el-table-column :selectable="selectable" type="selection"></el-table-column>
-      <el-table-column fixed prop="name" label="Position Name"  />
-      <!-- <el-table-column fixed prop="jobId" label="Job ID" width="150" /> -->
-      <el-table-column fixed prop="abbrev" label="Job code"  />
-      <el-table-column fixed prop="status" label="Status" >
-        <template #default="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">
-            {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" label="Note"  />
-      <el-table-column type="Calender" prop="createTime" label="Create Data"  />
-      <el-table-column prop="updateTime" label="Last Update Time" width="200" />
-      <!-- <el-table-column prop="email" label="Email" width="170" /> -->
-      <el-table-column fixed="right" label="Actions"  align="center" class-name="small-padding fixed-width">
-        <template #default="{ row, column, index }">
-          <el-row class="mb-4">
-            <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
-              v-hasPermi="['system:user:edit']">
-              Edit</el-button>
-            <el-button type="warning" :el-icon-plus="Delete" size="small" v-if="row.parentId != 0"
-              @click="handle_SideDelete(row)" v-hasPermi="['system:user:remove']">Delete</el-button>
-          </el-row>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div>
+      <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
+      <ReusableTable :data="jobtList" :columns="tableColumns" rowKey="jobId" :loading="loading"
+        :refreshTable="refreshTable" :default-expand-all="isExpandAll" :handleSelectionChange="handleSelectionChange"
+        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete"
+        :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
+        :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons" @open-popup="handleOpenPopup" />
+    </div>
+    <div>
+      <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
+        :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig"  :handleUpdate="handleUpdate"
+        :handle_SideDelete="handle_SideDelete">
+      </PhoneTablePopUp>
+    </div>
     <!-- <s>ADD, EDIT</s> -->
     <addoredit ref="form" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
       initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit">
@@ -60,6 +43,8 @@
 
 
 <script >
+import ReusableTable from "@/views/components/defaultTable"
+import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import addoredit from "@/views/components/addoredit/index.vue"
@@ -84,11 +69,15 @@ export default {
     search_control,
     CustomPagination,
     tableHeader,
+    PhoneTablePopUp,
+    ReusableTable
   },
   data() {
     return {
       selectedRows: [],
       mode: 'add',
+      dialogVisible:false,
+      mobileView:[],
       loading: true,
       showSearch: true,
       initialValuesEdit: undefined,
@@ -105,6 +94,18 @@ export default {
       form: {},
       title: "", // Default title for the dialog
       jobtList: [],
+      tablebuttons:
+        [
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+          {
+            view: true,
+          }
+        ],
       queryParams:
       {
         name: undefined,
@@ -118,6 +119,30 @@ export default {
         pageNo: 1,
         pageSize: 20
       },
+      tableColumns: [
+        { type: 'select' },
+        { prop: 'name', label: 'Position Name', fixed: true },
+        // { prop: 'jobId', label: 'Job ID', fixed: true }, // Uncomment if needed
+        { prop: 'abbrev', label: 'Job Code', fixed: true },
+        {
+          label: 'Status',
+          prop: 'status',
+          type: 'tag',
+          tagType: (statusValue) => {
+            return statusValue === 0 ? 'success' : 'warning';
+          },
+          tagLabel: (statusValue) => {
+            return statusValue === 0 ? 'Active' : 'Not Active';
+          },
+          tagColor: (value) => { /* ... */ }
+        },
+        { prop: 'remark', label: 'Note' },
+        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
+        { prop: 'updateTime', label: 'Last Update Time' },
+        {
+          type: 'actions', label: 'Actions', fixed: 'right', align: 'right', show: true
+        }
+      ],
       Add_Edit:
         [
 
@@ -246,6 +271,21 @@ export default {
     },
 
     //********Node control**************************************************************************************** */
+    openDetails(row) {
+      this.mobileView = row;
+      this.buttonsConfig = [
+        {
+          edit: true,
+        },
+        {
+          delete: true,
+        },
+      ];
+      this.dialogVisible = true;
+    },
+    closeDialog() {
+      this.dialogVisible = false; // Method to close the dialog
+    },
 
     getList() {
       this.loading = true;
