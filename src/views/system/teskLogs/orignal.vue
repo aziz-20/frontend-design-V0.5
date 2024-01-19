@@ -15,16 +15,35 @@
                 <el-button v-else @click="showSearch = false" style="float: right;">Hide Filter</el-button>
             </el-col>
         </el-row>
+
         <!-- Table view  -->
-        <div>
-            <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
-            <ReusableTable :data="taskLogsList" :columns="tableColumns" rowKey="taskId" :loading="loading"
-                :refreshTable="refreshTable"  :openDetails="openDetails"
-                :buttonsConfig="tablebuttons" />
-        </div>
-        <!-- :handleSelectionChange="handleSelectionChange" -->
-        <!-- Table view  -->
-        <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
+        <el-table flex :data="taskLogsList" style="width:150%" row-key="taskId" v-loading="loading"
+            element-loading-text="Loading..." :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
+            element-loading-background="rgba(122, 122, 122, 0.8)" v-if="refreshTable"
+            @selection-change="handleSelectionChange">
+            <el-table-column :selectable="selectable" type="selection" width="55"></el-table-column>
+            <el-table-column fixed prop="taskName" label="Task Name" width="240" />
+            <el-table-column fixed prop="triggerType" label="Trigger Type" width="120">
+                <template #default="{ row }">
+                    <el-tag :type="row.status === 0 ? 'default' : 'yellow'">
+                        {{ row.status === 0 ? 'Simple' : 'Cron' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="taskGroup" label="Task Group" width="170" />
+            <el-table-column prop="status" label="Status" width="120">
+                <template #default="{ row }">
+                    <el-tag :type="row.status === 0 ? 'success' : 'danger'">
+                        {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="taskDetail" label="Task Details" width="200" />
+            <!-- <el-table-column prop="updateTime" label="Last Update Time" width="200" /> -->
+            <el-table-column fixed="right" prop="startTime" label="Trigger Starting Time" width="200" />
+            <el-table-column prop="endTime" label="Trigger Ending Time" width="200" />
+       </el-table>]
+       <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
             :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout" @page-change="handlePageChange">
         </custom-pagination>
     </div>
@@ -33,7 +52,6 @@
   
   
 <script >
-import ReusableTable from "@/views/components/defaultTable"
 import addoredit from "@/views/components/addoredit/index.vue"
 import search_control from '@/views/components/qureyParams/index.vue'
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
@@ -45,10 +63,7 @@ export default {
 
     components: {
         addoredit,
-        search_control,
-        CustomPagination,
-        tableHeader,
-        ReusableTable
+        search_control
     },
     props: {
         formDataFromParent: Object
@@ -71,51 +86,6 @@ export default {
             isHasNextPage: false,
             isHasPreviousPage: false,
             form: {},
-            tableColumns: [
-                { type: 'select', selectable: this.selectable, width: '55' },
-                { prop: 'taskName', label: 'Task Name', fixed: true, width: '240' },
-                {
-                    prop: 'triggerType', label: 'Trigger Type', type: 'tag',
-                    tagType: row => row.triggerType === 0 ? 'default' : 'yellow',
-                    tagLabel: row => row.triggerType === 0 ? 'Simple' : 'Cron',
-                },
-                {
-                    label: 'Status',
-                    prop: 'status',
-                    type: 'tag',
-                    tagType: (type) => {
-                        return type === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (type) => {
-                        return type === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                {
-                    prop: 'taskRun', label: 'Task is Active', type: 'tag',
-                    tagType: (type) => {
-                        return type === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (type) => {
-                        return type === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (type) => { /* ... */ }
-                },
-                { prop: 'taskDetail', label: 'Task Details', width: '200' },
-                { prop: 'startTime', label: 'Trigger Starting Time', fixed: 'right', width: '200' },
-                { prop: 'endTime', label: 'Trigger Ending Time', width: '200' },
-                {
-                    type: 'actions', label: 'Operation', align: 'center', fixed: 'right', show: true
-                }
-
-            ],
-            dialogVisible: false,
-            tablebuttons:
-                [
-                    {
-                        view: true,
-                    }
-                ],
             title: "", // Default title for the dialog
             taskLogsList: [],
             queryParams:
@@ -193,21 +163,6 @@ export default {
     //**************Methods Control*********************************************** */
 
     methods: {
-        openDetails(row) {
-            this.mobileView = row;
-            // this.buttonsConfig = [
-            //     {
-            //         add: true,
-            //     },
-            //     {
-            //         edit: true,
-            //     },
-            //     {
-            //         delete: true,
-            //     },
-            // ];
-            this.dialogVisible = true;
-        },
 
         //*****************Pagination control********************************** */
         handlePageChange(newPage) {
@@ -253,7 +208,7 @@ export default {
             this.getList();
         },
 
-        /** Reset button operation */
+
 
         resetQuery() {
             this.queryParams.targetTask = undefined,
@@ -269,7 +224,7 @@ export default {
         },
 
     },
-
+ 
 };
 </script>
   

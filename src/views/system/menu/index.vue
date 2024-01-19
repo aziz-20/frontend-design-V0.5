@@ -1,4 +1,5 @@
 <template>
+  <!-- <script src="//unpkg.com/@element-plus/icons-vue"></script> -->
   <div class="app-container">
     <div class="flex" v-if="showSearch">
       <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
@@ -6,66 +7,46 @@
         :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
         :resetIcon="resetIcon">
       </search_control>
-
     </div>
 
-    <!-- Table Header -->
-    <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
-            :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
-            :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
-            :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
-            :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
+    <div>
+      <!-- Table Header -->
+      <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+        :buttonsConfig="headers" :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
+        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+        :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+        :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
+    </div>
+
+    <div>
+      <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
+      <ReusableTable :data="menuList" :columns="tableColumns" rowKey="menuId" :loading="loading"
+        :refreshTable="refreshTable" :default-expand-all="isExpandAll" :handleSelectionChange="handleSelectionChange"
+        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete"
+        :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
+        :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons" @open-popup="handleOpenPopup" />
+    </div>
+
+    <div>
+
+      <PopupColumn v-model:visible="columnVisible" :buttonsConfig="tablebuttons" :selectedPerm="selectedItem"
+        :popUpTitle="popUpTitle" :columnPopUp="columnPopUp" :handleAdd="handleAdd" :handleUpdate="handleUpdate"
+        :handle_SideDelete="handle_SideDelete">
+      </PopupColumn>
+    </div>
+
+    <div>
+      <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
+        :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleAdd="handleAdd" :handleUpdate="handleUpdate"
+        :handle_SideDelete="handle_SideDelete">
+      </PhoneTablePopUp>
+    </div>
 
 
-    <!-- Table view  -->
-    <el-config-provider>
-      <el-table flex :data="menuList" style="width:100%" row-key="parentId" v-loading="loading"
-        element-loading-text="Loading..." 
-        :default-expand-all="isExpandAll"  v-if="refreshTable"
-        @selection-change="handleSelectionChange">
-
-        <el-table-column :selectable="selectable" type="selection" ></el-table-column>
-        <el-table-column fixed prop="name" label="Name"  />
-        <el-table-column fixed prop="type" label="Type"  />
-        <el-table-column prop="icon" label="Icon" align="center" >
-          <template slot-scope="scope">
-            <!-- <svg-icon :icon-class="scope.row.icon" /> -->
-          </template>
-        </el-table-column>
-        <el-table-column fixed prop="orderNum" label="Order"  />
-        <el-table-column fixed prop="status" label="Status" >
-          <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">
-              {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="component" label="Component"  />
-        <el-table-column prop="path" label="Path"  />
-        <!-- <el-table-column type="icon" prop="Icon " label="Icons" width="200" /> -->
-        <el-table-column prop="remark" label="Note"  />
-        <el-table-column prop="createBy" label="ADD By "  />
-        <el-table-column fixed="right" label="Actions"  align="center" class-name="small-padding fixed-width">
-          <template #default="{ row, column, index }">
-            <el-row class="mb-4">
-              <el-button size="mini" type="text" @click="handleAdd(row, index)" :el-icon-plus="Add"
-                v-hasPermi="['system:user:add']" v-if="row.type === 0">
-                Add</el-button>
-              <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
-                v-hasPermi="['system:user:edit']">
-                Edit</el-button>
-              <el-button type="warning" :el-icon-plus="Delete" size="small" @click="handle_SideDelete(row)"
-                v-hasPermi="['system:user:remove']">Delete</el-button>
-            </el-row>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- <s>ADD, EDIT</s> -->
-      <addoredit ref="form" style="width:40%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
-        initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
-        @emi="emitChange">
-      </addoredit>
-    </el-config-provider>
+    <addoredit ref="form" style="width:40%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
+      initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
+      @emi="emitChange">
+    </addoredit>
 
   </div>
 </template>
@@ -73,16 +54,12 @@
   
   
 <script >
+import PopupColumn from "/src/views/components/defaultTable/columnPopup"
+import ReusableTable from "@/views/components/defaultTable"
+import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import addoredit from "@/views/components/addoredit/index.vue"
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue'
+
 import search_control from '@/views/components/qureyParams/index.vue'
 
 
@@ -96,17 +73,53 @@ export default {
     addoredit,
     search_control,
     tableHeader,
+    PhoneTablePopUp,
+    ReusableTable,
+    PopupColumn
   },
   data() {
     return {
+      // Visible: false,
+      columnVisible: false,
+      selectedItem: null,
+
+      headers: [
+        {
+          add: true,
+        },
+        {
+          edit: true,
+        },
+        {
+          delete: true,
+        },
+        {
+          view: true,
+        },
+        {
+          normal: true,
+          name: 'test',
+          size: 'small',
+          color: 'green',
+          handler: this.handleAdd
+        }
+      ],
+      columnPopUp: [{ label: 'Name', prop: 'name' }, {label:'ID', prop:'menuId'}],
+      dialogVisible: false,
+      buttonsConfig: [],
+      mobileView: null,
+      popUpFields: [],
+      tableColumns: [],
+      tablebuttons: [],
+      columns: null,
       selectedRows: [],
-      mode: 'add',
+      mode: '',
       loading: true,
       showSearch: true,
       switching: undefined,
-      initialValuesEdit:undefined ,
+      initialValuesEdit: undefined,
       initialValuesAdd: undefined,
-      isExpandAll: true,
+      isExpandAll: false,
       refreshTable: true,
       loading: false,
       displaySearch: true,
@@ -115,10 +128,6 @@ export default {
       title: "", // Default title for the dialog
       menuList: [],
       types: [{ label: 'Directory', value: 0 }, { label: 'menu', value: 1 }, { label: 'Button', value: 2 }],
-      total: 0,
-      paginationLayout: 'prev, pager, next', // Customize the layout based on your needs
-      isHasNextPage: false,
-      isHasPreviousPage: false,
       queryParams: {
         name: undefined,
         status: '',
@@ -132,14 +141,9 @@ export default {
         pageSize: 0
       },
 
+
       Add_Edit:
         [
-          // {
-          //   "inputtype": "dynamicFeild", 
-          //   data: {
-          //     Dept: undefined, userIds: undefined
-          //   }, inputtype: "dynamicFeild", name: "scopping", placeholder: "Enter the permision remark", span: "col-6"
-          // },
           {
             "type": "text",
             inputtype: "text",
@@ -162,7 +166,7 @@ export default {
             name: "type",
             label: "Enter the Type ",
             placeholder: "Select the Type ",
-            data: [{ label: 'Directory', value: 0 }, { label: 'menu', value: 1 }, { label: 'Link', value: 2 }],
+            data: [{ label: 'Directory', value: 0 }, { label: 'File', value: 1 }, { label: 'Link', value: 2 }],
             span: 24,
             multiple: false
           },
@@ -300,26 +304,121 @@ export default {
   //**************Creating ************************************** */  
   created() {
     this.getList();
+
   },
   //**************Methods Control*********************************************** */
 
+
   methods: {
+    handleOpenPopup(selectedData) {
+      console.log('Iam here')
+      this.selectedItem = selectedData;
+      this.columnVisible = true;
+    },
+    handeltagclick(val) {
+
+      //When using the pop up  inside the columns please don't forget to add the closing method
+      this.$emit('open-popup', val);
+    },
+    rowClassChecker({ row }) {
+      if (row.children && row.children.length > 0) {
+        return 'greenClass';
+      }
+    },
+
+    closeDialog() {
+      this.dialogVisible = false; // Method to close the dialog
+    },
+
+    table() {
+      this.tableColumns = [
+        { type: 'select' },
+        { prop: 'name', label: 'Name', minWidth: '150', fixed: 'left', show: true },
+        { label: 'Name Children', parent: 'children', type: 'tagPopup', insideKey: 'children', name: 'name', minWidth: '150' },
+        { label: 'Order', prop: 'orderNum' },
+        {
+          label: 'Status',
+          prop: 'status',
+          type: 'tag',
+          tagType: (statusValue) => {
+            return statusValue === 0 ? 'success' : 'warning';
+          },
+          tagLabel: (statusValue) => {
+            return statusValue === 0 ? 'Active' : 'Not Active';
+          },
+          tagColor: (value) => { /* ... */ }
+        },
+        {
+          label: 'Type',
+          prop: 'type',
+          type: 'tag',
+          // type: true,
+          tagType: (value) => {
+            const type = value === 0 ? 'success' : (value === 1 ? 'info' : 'warning');
+            return type;
+          },
+          tagLabel: (value) => {
+            const label = value === 0 ? 'Directory' : (value === 1 ? 'File' : 'Link');
+            return label;
+          },
+          tagColor: (value) => { /* ... */ },
+        },
+        { label: 'Icon', prop: 'icon', minWidth: '100', type: 'icon' },
+        { label: 'Path', prop: 'path', minWidth: '100' },
+        { label: 'Component', prop: 'component', minWidth: '100' },
+        { label: 'ADD By', prop: 'createByName' },
+        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
+        { label: 'Updated By', prop: 'updateByName' },
+        { prop: 'updateTime', label: 'Last Update Time' },
+        { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
+
+      ]
+
+      this.tablebuttons =
+        [
+          {
+            add: true,
+            prop: 'type',
+            value: 0,
+          },
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+          {
+            view: true,
+          }
+        ];
+    },
+    openDetails(row) {
+      this.mobileView = row;
+      this.buttonsConfig = [
+        {
+          add: true,
+          prop: 'type',
+          value: 0,
+        },
+        {
+          edit: true,
+        },
+        {
+          delete: true,
+        },
+      ];
+      this.dialogVisible = true;
+    },
+
     //Watch the form input
     emitChange(x) {
-      // this.$emit('fieldChanged', this.formData);
-      console.log(x)
       const { type } = x
       this.switching = type
       console.log(this.switching)
-      // this.generateForm(triggerType)
-      console.log(x)
     },
     //*****************Pagination control********************************** */
     handlePageChange(newPage) {
-      // Update the queryParams with the new page number
       this.queryParams.pageNo = newPage;
-
-      // Fetch data for the new page
       this.getList();
     },
 
@@ -328,13 +427,9 @@ export default {
 
     getList() {
       this.loading = true;
-      console.log(this.queryParams)
       this.$http.menu.MenuHierarchy(this.queryParams).then(res => {
         if (res.result && res.result.data) {
           this.menuList = res.result.data;
-          // this.isHasNextPage = res.result.isHasNextPage;
-          // this.isHasPreviousPage = res.result.isHasPreviousPage;
-          // this.total = res.result.total;
           console.log(this.menuList)
           this.loading = false;
         } else {
@@ -342,6 +437,7 @@ export default {
           this.$message.error('Failed to load the Menu List');
         }
       });
+      this.table();
     },
 
     //****************** */ Open and Close***************************************
@@ -369,13 +465,13 @@ export default {
       this.queryParams.roleId = ''
       this.queryParams.type = ''
       this.queryParams.userId = ''
+      this.queryParams.jobId = ''
       this.handleQuery();
       this.getList();
     },
     //**************** Add, Edit and delete control section******************************************* */
     //***************************Fields************************************************************/
     generateForm(type) {
-      console.log(type)
       this.Add_Edit =
         [
           {
@@ -391,7 +487,6 @@ export default {
         ]
 
       if (type === 0 || type === 1) {
-        console.log("Hellow")
         this.Add_Edit.push(
           {
             "type": "text",
@@ -401,14 +496,6 @@ export default {
             placeholder: "Enter the component name",
             span: 24
           },
-          // {
-          //   "type": "menu",
-          //   inputtype: "menu",
-          //   name: "parentId",
-          //   label: "Parent Menu",
-          //   placeholder: "Selected Departments",
-          //   span: 12,
-          // },
 
           {
             "type": "text",
@@ -428,7 +515,7 @@ export default {
             'delFlag': 0,
             'status': 1,
             'type': 2,
-            'parentId':0
+            'parentId': 0
           }
         }
 
@@ -488,15 +575,12 @@ export default {
     handleAdd(row) {
       this.mode = "add"
       this.open = true;
-      console.log(row.parentId)
       if (row.parentId === undefined) {
-      console.log(" I am here")
-      this.initialValuesAdd = { "delFlag": "0", 'type': 0,"parentId": 0}
-      // this.generateForm(this.switching)
+        this.initialValuesAdd = { "delFlag": "0", 'type': 0, "parentId": 0 }
       }
 
       if (row.parentId !== undefined) {
-        console.log(row)
+
         this.initialValuesAdd = { "delFlag": "0", "parentId": row.menuId }
         // this.generateForm(this.switching)
       }
@@ -506,7 +590,6 @@ export default {
     handleUpdate(row) {
       this.mode = "Edit"
       this.open = true
-      
       this.initialValuesEdit = row
       // this.generateForm(this.switching)
       this.open = true
@@ -517,8 +600,7 @@ export default {
       this.form = n
       if (this.mode == 'add') {
         this.$http.menu.addMenu(this.form).then(response => {
-          console.log()
-          console.log('sssssssssssssssssssssss' + response.data)
+
           this.$modal.msgSuccess("Addition successful");
           this.open = false;
           this.getList();
@@ -529,7 +611,7 @@ export default {
       }
       else {
         this.$http.menu.updateMenu(this.form).then(response => {
-          console.log('sssssssssssssssssssssss' + this.form)
+          // console.log('sssssssssssssssssssssss' + this.form)
           this.$modal.msgSuccess("Update successful");
           this.open = false;
           this.getList();
@@ -553,7 +635,6 @@ export default {
     //*******************************************Delete Control Section************************************* */  
     handle_SideDelete(row) {
       this.selectedRows.push(row)
-      console.log(this.selectedRows)
       if (this.selectedRows.length > 0) {
         // Check if any of the selected items have children
         const hasChildren = this.selectedRows.some(row => row.children && row.children.length > 0);
@@ -572,7 +653,7 @@ export default {
           }).catch(() => { });
         }
       } else {
-        console.log('No data');
+        // console.log('No data');
       }
     },
 
@@ -590,7 +671,7 @@ export default {
             this.$modal.msgSuccess("Deletion successful");
           }).catch(() => { });
       } else {
-        console.log('No data');
+        // console.log('No data');
       }
     },
 
@@ -612,18 +693,14 @@ export default {
 
     },
   },
-  // watch: {
-  //   switching(newVal, oldVal) {
-  //     if (this.mode === 'add' && this.open === true) {
-  //       this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
-  //     }
-  //     if (this.mode === 'edit' && this.open === true) {
-  //       this.handleUpdate(); // Call anotherMethod whenever `this.switching` changes
-  //     }
-  //   },
-  // },
 };
 </script>
+
+<style >
+.greenClass {
+  background-color: rgb(227, 235, 227);
+}
+</style>
   
   
   

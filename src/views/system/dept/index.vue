@@ -12,48 +12,24 @@
       :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
       :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     <!-- Table view  -->
-    <!-- <el-config-provider> -->
-    <el-table :data="deptList" style="width:100%" row-key="deptId" v-loading="loading" element-loading-text="Loading..."
-      :element-loading-spinner="svg" :default-expand-all="isExpandAll" v-if="refreshTable"
-      @selection-change="handleSelectionChange">
-      <el-table-column :selectable="selectable" type="selection"></el-table-column>
-      <el-table-column fixed prop="name" label="Name">
-        <template #default="{ row }">
-          <div
-            :class="['table-row', { 'child-row': row.isChild, 'row-with-children': row.children && row.children.length > 0 }]">
-            {{ row.name }}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="orderNum" label="Order" />
-      <el-table-column prop="status" label="Status">
-        <template #default="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'danger'">
-            {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="leader" label="Leader" />
-      <el-table-column prop="phone" label="Phone" />
-      <el-table-column prop="email" label="Email" />
-      <el-table-column type="Calender" prop="createTime" label="Create Data" />
-      <el-table-column prop="updateTime" label="Last Update Time" width="200" />
-      <el-table-column fixed="right" label="Actions" align="center" class-name="small-padding fixed-width">
-        <template #default="{ row, column, index }">
-          <div class="table-button-container">
-            <el-button size="mini" type="text" @click="handleAdd(row, index)" :el-icon-plus="Add"
-              v-hasPermi="['system:user:add']">
-              Add</el-button>
-            <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
-              v-hasPermi="['system:user:edit']">
-              Edit</el-button>
-            <el-button type="warning" :el-icon-plus="Delete" size="small" @click="handle_SideDelete(row)"
-              v-hasPermi="['system:user:remove']">Delete</el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
-    <addoredit ref="form"  :rules="fields_rules" :open="open" :mode="modeType" :title="title"
+    <div>
+      <div>
+        <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
+        <ReusableTable :data="deptList" :columns="tableColumns" rowKey="deptId" :loading="loading"
+          :refreshTable="refreshTable" :default-expand-all="isExpandAll" :handleSelectionChange="handleSelectionChange"
+          :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete"
+          :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
+          :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons" @open-popup="handleOpenPopup" />
+      </div>
+
+      <div>
+        <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
+          :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleAdd="handleAdd" :handleUpdate="handleUpdate"
+          :handle_SideDelete="handle_SideDelete">
+        </PhoneTablePopUp>
+      </div>
+    </div>
+    <addoredit ref="form" :rules="fields_rules" :open="open" :mode="modeType" :title="title"
       :init="modeType === 'add' ? initialValuesAdd : initialValuesEdit" :visible="isFormVisible" :fields="Add_Edit"
       @close="closeAddEdit" @submit="onSubmit">
     </addoredit>
@@ -62,14 +38,12 @@
 </template>
 
 <script>
+import PopupColumn from "/src/views/components/defaultTable/columnPopup"
+import ReusableTable from "@/views/components/defaultTable"
+import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import addoredit from "@/views/components/addoredit/index.vue"
-import {
-  Delete,
-  Edit,
-} from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
-import { mapOnePropToObject, treeTransformerTwoValues } from '@/utils/dtControl/dTransformer'
 
 export default {
   name: "Dept",
@@ -79,12 +53,54 @@ export default {
     addoredit,
     search_control,
     tableHeader,
+    PhoneTablePopUp,
+    ReusableTable,
+    PopupColumn
 
   },
   data() {
     return {
       selectedRows: [],
-      mode: 'add',
+      dialogVisible:false,
+      mobileView:[],
+      tablebuttons:
+        [
+          {
+            add: true,
+          },
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+          {
+            view: true,
+          }
+        ],
+      tableColumns: [
+        { type: 'select' },
+        { prop: 'name', label: 'Department', fixed: true, show: true, minWidth: '150' },
+        { prop: 'orderNum', label: 'Order' },
+        {
+          prop: 'status', label: 'Status', type: 'tag',
+          tagType: (statusValue) => {
+            return statusValue === 0 ? 'success' : 'warning';
+          },
+          tagLabel: (statusValue) => {
+            return statusValue === 0 ? 'Active' : 'Not Active';
+          },
+          tagColor: (value) => { /* ... */ }
+        },
+        { prop: 'leader', label: 'Leader' },
+        { prop: 'phone', label: 'Phone', minWidth: '100' },
+        { prop: 'email', label: 'Email', minWidth: '100' },
+        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
+        { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
+        { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
+        { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
+      ],
+      mode: '',
       loading: true,
       showSearch: true,
       initialValuesEdit: undefined,
@@ -267,6 +283,22 @@ export default {
   //**************Methods Control*********************************************** */
 
   methods: {
+    openDetails(row) {
+      this.mobileView = row;
+      this.buttonsConfig = [
+        {
+          add: true,
+        },
+        {
+          edit: true,
+        },
+        {
+          delete: true,
+        },
+      ];
+      this.dialogVisible = true;
+    },
+
     //*****************Pagination control********************************** */
     handlePageChange(newPage) {
       // Update the queryParams with the new page number
@@ -321,7 +353,8 @@ export default {
     //****************Retrieving making list with value*********************************** */
     handleAdd(row) {
       this.mode = 'add'
-      console.log(this.form)
+
+      console.log(row)
       // this.formFieldSelectData(),
       this.open = true;
       this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": row.deptId }
@@ -491,7 +524,7 @@ export default {
 }
 
 .row-with-children {
-  background-color: rgb(206, 216, 206);
+  background-color: rgb(202, 201, 201);
 }
 
 .table-button-container {
@@ -500,9 +533,9 @@ export default {
   align-items: center;
 }
 
-/* @media (max-width: 1000px) {
+@media (max-width: 1000px) {
   .table-button-container {
     flex-direction: column;
   }
-} */
+}
 </style>

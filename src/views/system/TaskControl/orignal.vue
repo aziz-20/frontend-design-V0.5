@@ -15,22 +15,53 @@
             :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
         <!-- Table view  -->
-        <div>
-            <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
-            <ReusableTable :data="taskList" :columns="tableColumns" rowKey="taskId" :loading="loading"
-                :refreshTable="refreshTable" :default-expand-all="isExpandAll"
-                :handleSelectionChange="handleSelectionChange" :handleUpdate="handleUpdate"
-                :handle_SideDelete="handle_SideDelete" :openDetails="openDetails" :buttonsConfig="tablebuttons"
-                @open-popup="handleOpenPopup" />
-        </div>
-
-        <div>
-            <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
-                :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleUpdate="handleUpdate"
-                :handle_SideDelete="handle_SideDelete">
-            </PhoneTablePopUp>
-        </div>
-
+        <el-table flex :data="taskList" style="width:100%" row-key="taskId" v-loading="loading"
+            element-loading-text="Loading..." :element-loading-spinner="svg" element-loading-svg-view-box="-10, -10, 50, 50"
+            element-loading-background="rgba(122, 122, 122, 0.8)" v-if="refreshTable"
+            @selection-change="handleSelectionChange">
+            <el-table-column :selectable="selectable" type="selection"></el-table-column>
+            <el-table-column fixed prop="taskName" label="Task Name" />
+            <el-table-column prop="orderNum" label="Structure order" />
+            <el-table-column prop="taskGroup" label="Task Group" />
+            <el-table-column prop="targetTask" label="Task Group" />
+            <el-table-column prop="triggerType" label="Trigger Type">
+                <template #default="{ row }">
+                    <el-tag :type="row.triggerType === 0 ? 'default' : 'yellow'">
+                        {{ row.triggerType === 0 ? 'Simple' : 'Cron' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <!-- <el-table-column prop="taskGroup" label="Task Group" width="170" /> -->
+            <el-table-column prop="status" label="Status">
+                <template #default="{ row }">
+                    <el-tag :type="row.status === 0 ? 'success' : 'danger'">
+                        {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="taskRun" label="Task is Active">
+                <template #default="{ row }">
+                    <el-tag :type="row.taskRun === 0 ? 'success' : 'danger'">
+                        {{ row.taskRun === 0 ? 'Enabled' : 'Disabled' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="taskCount" label="Number of triggers" width="160" />
+            <el-table-column prop="nextFireTime" label="Next trigger" width="165" />
+            <el-table-column prop="startTime" label="Trigger Starting Time" width="200" />
+            <el-table-column prop="remark" label="Note" />
+            <el-table-column fixed="right" label="Actions" align="center" class-name="small-padding fixed-width">
+                <template #default="{ row, column, index }">
+                    <el-row class="mb-4">
+                        <el-button type="primary" :el-icon-plus="Edit" size="small" @click="handleUpdate(row)"
+                            v-hasPermi="['system:user:edit']">
+                            Edit</el-button>
+                        <el-button type="warning" :el-icon-plus="Delete" size="small" v-if="row.parentId != 0"
+                            @click="handle_SideDelete(row)" v-hasPermi="['system:user:remove']">Delete</el-button>
+                    </el-row>
+                </template>
+            </el-table-column>
+        </el-table>
         <!-- <s>ADD, EDIT</s> -->
         <template v-if="open">
             <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="mode" :title="title" :init="mode === 'add' ?
@@ -48,12 +79,19 @@
   
   
 <script >
-import ReusableTable from "@/views/components/defaultTable"
-import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import addoredit from "@/views/components/addoredit/index.vue"
+import {
+    Check,
+    Delete,
+    Edit,
+    Message,
+    Search,
+    Star,
+} from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
+import { mapOnePropToObject } from '@/utils/dtControl/dTransformer'
 
 
 export default {
@@ -64,73 +102,16 @@ export default {
         addoredit,
         search_control,
         CustomPagination,
-        tableHeader,
-        ReusableTable,
-        PhoneTablePopUp
+        tableHeader
     },
     props: {
         formDataFromParent: Object
     },
     data() {
         return {
-            columnVisible: false,
-            selectedItem: null,
-            tablebuttons:
-                [
-                    {
-                        edit: true,
-                    },
-                    {
-                        delete: true,
-                    },
-                    {
-                        view: true,
-                    }
-                ],
-            dialogVisible: false,
             selectedRows: [],
-            tableColumns: [
-                { type: 'select' },
-                { prop: 'taskName', label: 'Task Name', fixed: true, show: true },
-                { prop: 'orderNum', label: 'Order' },
-                { prop: 'taskGroup', label: 'Task Group' },
-                { prop: 'targetTask', label: 'Target Task' },
-                {
-                    prop: 'triggerType', label: 'Trigger Type', type: 'tag',
-                    tagType: row => row.triggerType === 0 ? 'default' : 'yellow',
-                    tagLabel: row => row.triggerType === 0 ? 'Simple' : 'Cron',
-                },
-                {
-                    label: 'Status',
-                    prop: 'status',
-                    type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                {
-                    prop: 'taskRun', label: 'Task is Active', type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                { prop: 'taskCount', label: 'Number of Triggers', width: '160' },
-                { prop: 'nextFireTime', label: 'Next Trigger', width: '165' },
-                { prop: 'startTime', label: 'Trigger Starting Time', width: '200' },
-                { prop: 'remark', label: 'Note' },
-                {
-                    type: 'actions', label: 'Actions', align: 'center', fixed: 'right', show: true
-                }
-            ],
-            mode: '',
+            // hello:[{ label: 'ALL', value: null }, { label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
+            mode: 'add',
             switching: null,
             loading: true,
             showSearch: true,
@@ -235,21 +216,6 @@ export default {
             this.queryParams.pageNo = newPage;
             // Fetch data for the new page
             this.getList();
-        },
-        openDetails(row) {
-            this.mobileView = row;
-            this.buttonsConfig = [
-                {
-                    add: true,
-                },
-                {
-                    edit: true,
-                },
-                {
-                    delete: true,
-                },
-            ];
-            this.dialogVisible = true;
         },
 
         //********Node control**************************************************************************************** */

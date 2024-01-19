@@ -22,48 +22,90 @@
                         :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
                         :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
                         :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
-
                     <!-- Table view  -->
-                    <div>
-                        <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
-                        <ReusableTable :data="usersList" :columns="tableColumns" rowKey="userId" :loading="loading"
-                            :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange"
-                            :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete" :openDetails="openDetails"
-                            popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
-                            :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons"
-                            @open-popup="handleOpenPopup" />
-                    </div>
-                    <!-- <div>
-                        <el-table :data="usersList" row-key="userId" v-loading="loading" element-loading-text="Loading..."
-                            v-if="refreshTable" @selection-change="handleSelectionChange" :style="{ width: '100%' }">
-                            <el-table-column v-for="(column, index) in tableColumns" :key="index" :prop="column.prop"
-                                :label="column.label" :width="column.width" :fixed="column.fixed"
-                                :type="column.type === 'select' ? 'selection' : undefined" :class-name="column.className">
-                                <template v-if="column.type === 'custom'" v-slot="scope">
-                                    <div v-html="column.customRender(scope.row)"></div>
+                    <el-config-provider>
+                        <el-table :data="usersList" style="width:100%" row-key="userId" v-loading="loading"
+                            element-loading-text="Loading..." :default-expand-all="isExpandAll" v-if="refreshTable"
+                            @selection-change="handleSelectionChange">
+                            <el-table-column :selectable="selectable" type="selection"></el-table-column>
+                            <el-table-column fixed prop="avatar" label="Photo">
+                                <template v-slot="{ row }">
+                                    <img :src=this.$http.photos.image(row.avatar) class="icon"
+                                        style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;" />
                                 </template>
-                                <template v-else-if="column.type === 'tag'" v-slot="scope">
-                                    <el-tag :type="column.tagType(scope.row)">
-                                        {{ column.tagLabel(scope.row) }}
+                            </el-table-column>
+                            <el-table-column fixed prop="username" label="User Name" />
+                            <el-table-column prop="sex" label="Gander">
+                                <template #default="{ row }">
+                                    {{ row.sex === 0 ? 'Man' : 'Woman' }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="status" label="Status">
+                                <template #default="{ row }">
+                                    <el-tag :type="row.status === 0 ? 'success' : 'danger'">
+                                        {{ row.status === 0 ? 'Enabled' : 'Disabled' }}
                                     </el-tag>
-                                </template> -->
-                    <!-- Add other custom template types here as needed -->
-                    <!-- </el-table-column>
-                        </el-table>
-                    </div> -->
-                    <div>
-                        <PopupColumn v-model:visible="columnVisible" :buttonsConfig="tablebuttons"
-                            :selectedPerm="selectedItem" :popUpTitle="popUpTitle" :columnPopUp="columnPopUp"
-                            :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
-                        </PopupColumn>
-                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="Department/s">
+                                <template #default="scope">
+                                    <div v-if="scope.row.dept">
+                                        {{ scope.row.dept.name }}
+                                    </div>
+                                    <div v-else>
+                                        No Department
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="Role/s" width="150">
+                                <template #default="scope">
+                                    <div v-if="scope.row.rolIds && scope.row.rolIds.length > 0">
+                                        <el-tooltip effect="dark" :content="getRoleNames(scope.row.rolIds)">
+                                            <div v-for="roleId in scope.row.rolIds" :key="roleId.roleId">
+                                                {{ roleId.name }}
+                                            </div>
+                                        </el-tooltip>
+                                    </div>
+                                    <div v-else>
+                                        No Job
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column type="Calender" prop="createTime" label="Registry Data" />
+                            <el-table-column prop="updateTime" label="Last Update Time" />
+                            <el-table-column prop="phoneNumber" label="Phone" />
+                            <el-table-column label="Job/s">
+                                <template #default="scope">
+                                    <div v-if="scope.row.jobs && scope.row.jobs.length > 0">
+                                        <el-tooltip effect="dark" :content="getJobNames(scope.row.jobs)">
+                                            <div v-for="job in scope.row.jobs" :key="job.jobId">
+                                                {{ job.name }}
+                                            </div>
+                                        </el-tooltip>
+                                    </div>
+                                    <div v-else>
+                                        No Job
+                                    </div>
+                                </template>
+                            </el-table-column>
 
-                    <div>
-                        <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog"
-                            :rowData="mobileView" :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig"
-                            :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
-                        </PhoneTablePopUp>
-                    </div>
+                            <el-table-column prop="email" label="Email" />
+                            <el-table-column fixed="right" label="Actions" align="center"
+                                class-name="small-padding fixed-width">
+                                <template #default="{ row, column, index }">
+                                    <el-row class="mb-4">
+                                        <el-button type="primary" :el-icon-plus="Edit" size="small"
+                                            v-hasPermi="['system:user:edit']" @click="handleUpdate(row)">
+                                            Edit</el-button>
+                                        <el-button type="warning" :el-icon-plus="Delete" size="small"
+                                            v-hasPermi="['system:user:remove']"
+                                            @click="handle_SideDelete(row)">Delete</el-button>
+                                    </el-row>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+
+                    </el-config-provider>
                     <!-- <s>ADD, EDIT</s> -->
                     <template v-if="open">
                         <addoredit ref="form" :rules="fields_rules" :open="open" :mode="modeType" :title="title"
@@ -81,14 +123,17 @@
     </div>
 </template>
 <script>
-import ReusableTable from "@/views/components/defaultTable"
-
-import PopupColumn from "/src/views/components/defaultTable/columnPopup"
-
-import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import addoredit from "@/views/components/addoredit/index.vue"
+import {
+    Check,
+    Delete,
+    Edit,
+    Message,
+    Search,
+    Star,
+} from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
 import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject } from '@/utils/dtControl/dTransformer'
 import { ElAside, ElInput, ElTree, ElButton } from 'element-plus';
@@ -101,28 +146,10 @@ export default {
         search_control,
         ElAside,
         CustomPagination,
-        tableHeader,
-        PhoneTablePopUp,
-        ReusableTable,
-        PopupColumn
+        tableHeader
     },
     data() {
         return {
-            tablebuttons:
-                [
-                    // {
-                    //     add: true,
-                    // },
-                    {
-                        edit: true,
-                    },
-                    {
-                        delete: true,
-                    },
-                    {
-                        view: true,
-                    }
-                ],
             selectedRows: [],
             loading: true,
             modeType: '',
@@ -139,66 +166,10 @@ export default {
             originalDeptOptions: [],
             open: false,
             usersList: [],
-            columnVisible: false,
-            selectedItem: false,
-            dialogVisible: false,
             total: 0,
             paginationLayout: 'prev, pager, next', // Customize the layout based on your needs
             isHasNextPage: false,
             isHasPreviousPage: false,
-            tableColumns: [
-                { type: 'select'},
-                { type: 'photo', label: 'avatar', fixed: true,  },
-                { prop: 'username', label: 'User Name', fixed: true, show: true },
-                { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
-                {
-                    prop: 'sex', label: 'Gender', type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'info' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Male' : 'Female';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                {
-                    label: 'Status',
-                    prop: 'status',
-                    type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                { prop: 'email', label: 'Email' },
-                {
-                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name',
-                },
-
-                {
-                    prop: 'rolIds', label: 'Role/s', type: 'custom',
-                    customRender: row => {
-                        if (row.rolIds && row.rolIds.length > 0) {
-                            return `<el-tooltip effect="dark" content="${this.getRoleNames(row.rolIds)}">
-                        <div>${row.rolIds.map(roleId => roleId.name).join(', ')}</div>
-                      </el-tooltip>`;
-                        } else {
-                            return 'No Role';
-                        }
-                    }
-                },
-                { label: 'ADD By', prop: 'createByName' },
-                { prop: 'createTime', label: 'Create Date', type: 'calendar' },
-                { label: 'Updated By', prop: 'updateByName' },
-                { prop: 'updateTime', label: 'Last Update Time' },
-                { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
-                { prop: 'phoneNumber', label: 'Phone' },
-
-
-            ],
             form: {
                 email: '',
                 deptId: '',
@@ -261,7 +232,7 @@ export default {
                     // buttonText:"Upload",
                     tip: "Please Enter Only one photo and the size should be less then 2/MG",
                     span: 12,
-                    // showMode: 'add'
+                    showMode: 'add'
 
                 },
                 {
@@ -540,28 +511,6 @@ export default {
         this.getSideSelection();
     },
     methods: {
-
-        // **********************Open view mode****************************************************
-        closeDialog() {
-            this.dialogVisible = false; // Method to close the dialog
-        },
-        openDetails(row) {
-            this.mobileView = row;
-            this.buttonsConfig = [
-                {
-                    add: true,
-                    prop: 'type',
-                    value: 0,
-                },
-                {
-                    edit: true,
-                },
-                {
-                    delete: true,
-                },
-            ];
-            this.dialogVisible = true;
-        },
         handlePageChange(newPage) {
             // Update the queryParams with the new page number
             this.queryParams.pageNo = newPage;
@@ -583,16 +532,6 @@ export default {
                     this.$message.error('Failed to load department list for the selection section');
                 }
             });
-        },
-        handleOpenPopup(selectedData) {
-            console.log('Iam here' + selectedData)
-            this.selectedItem = selectedData;
-            this.columnVisible = true;
-        },
-        handeltagclick(val) {
-
-            //When using the pop up  inside the columns please don't forget to add the closing method
-            this.$emit('open-popup', val);
         },
 
         filterMethod() {
@@ -889,7 +828,7 @@ export default {
 
         //************************************************Delete Control Section***********************************************/
         handle_SideDelete(row) {
-            if (row.userId > 0) {
+            if (row.jobId > 0) {
                 this.$modal.confirm('Are you sure you want to delete the data User/Users with the name "' + row.username + '"?').then(() => {
                     return this.$http.MgUsers.deleteJob(row.userId);
                 }).then(() => {

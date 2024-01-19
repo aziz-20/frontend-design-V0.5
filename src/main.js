@@ -5,6 +5,7 @@ import store from './store'
 import Cookies from 'js-cookie'
 import './premision'
 import Element from 'element-plus'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 import '@/assets/styles/global.css' // global css
 import '@/assets/icons' // icon
@@ -29,9 +30,9 @@ const options = {
 
 
 export const app = createApp(App)
-
-
-
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
 app.config.globalProperties.$http = http
 app.use(store).use(router).component('svg-icon', SvgIcon).use(Vue3Progress, options).use(Element,{
     size:'medium' // set element-ui default size
