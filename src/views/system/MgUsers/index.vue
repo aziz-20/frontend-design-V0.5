@@ -233,7 +233,7 @@ export default {
                     // buttonText:"Upload",
                     tip: "Please Enter Only one photo and the size should be less then 2/MG",
                     span: 12,
-                    showMode: 'add'
+                    // showMode: 'add'
 
                 },
                 {

@@ -136,7 +136,17 @@
 }
 
 .col-6 {
-  width: 49.8%;
+  width: 48.8%;
+  
+}
+/* el-input-number el-input-number--default is-controls-right */
+/* .col-6  .el-input-number ,.col-6 .el-select,
+.col-6 .el-select-v2,.col-6 .el-input,.col-6 .el-input__inner,
+.col-6 .el-row */
+.col-6 div
+{ 
+  width: 100%; 
+ 
 }
 
 .col-55 {
