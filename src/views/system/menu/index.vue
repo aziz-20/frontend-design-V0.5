@@ -13,7 +13,7 @@
       <!-- Table Header -->
       <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
         :buttonsConfig="headers" :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
-        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" 
         :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
         :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     </div>
@@ -83,27 +83,27 @@ export default {
       columnVisible: false,
       selectedItem: null,
 
-      headers: [
-        {
-          add: true,
-        },
-        {
-          edit: true,
-        },
-        {
-          delete: true,
-        },
-        {
-          view: true,
-        },
-        {
-          normal: true,
-          name: 'test',
-          size: 'small',
-          color: 'green',
-          handler: this.handleAdd
-        }
-      ],
+      // headers: [
+      //   {
+      //     add: true,
+      //   },
+      //   {
+      //     edit: true,
+      //   },
+      //   {
+      //     delete: true,
+      //   },
+      //   {
+      //     view: true,
+      //   },
+      //   {
+      //     normal: true,
+      //     name: 'test',
+      //     size: 'small',
+      //     color: 'green',
+      //     handler: this.handleAdd
+      //   }
+      // ],
       columnPopUp: [{ label: 'Name', prop: 'name' }, {label:'ID', prop:'menuId'}],
       dialogVisible: false,
       buttonsConfig: [],
@@ -316,25 +316,22 @@ export default {
       this.columnVisible = true;
     },
     handeltagclick(val) {
-
       //When using the pop up  inside the columns please don't forget to add the closing method
       this.$emit('open-popup', val);
     },
-    rowClassChecker({ row }) {
+
+
+//********************************table***************************************************************************************
+rowClassChecker({ row }) {
       if (row.children && row.children.length > 0) {
         return 'greenClass';
       }
     },
-
-    closeDialog() {
-      this.dialogVisible = false; // Method to close the dialog
-    },
-
     table() {
       this.tableColumns = [
         { type: 'select' },
         { prop: 'name', label: 'Name', minWidth: '150', fixed: 'left', show: true },
-        { label: 'Name Children', parent: 'children', type: 'tagPopup', insideKey: 'children', name: 'name', minWidth: '150' },
+        // { label: 'Name Children', parent: 'children', type: 'tagPopup', insideKey: 'children', name: 'name', minWidth: '150' },
         { label: 'Order', prop: 'orderNum' },
         {
           label: 'Status',
@@ -392,6 +389,8 @@ export default {
           }
         ];
     },
+
+    //**********************PopUp*************************************************** */
     openDetails(row) {
       this.mobileView = row;
       this.buttonsConfig = [
@@ -409,7 +408,10 @@ export default {
       ];
       this.dialogVisible = true;
     },
-
+    closeDialog() {
+      this.dialogVisible = false; // Method to close the dialog
+    },
+//********************************************************************* */
     //Watch the form input
     emitChange(x) {
       const { type } = x
@@ -690,7 +692,6 @@ export default {
       this.selectedRows.forEach(row => {
         console.log(row.menuId, row.name); // logs the deptId and name of each selected row
       });
-
     },
   },
 };

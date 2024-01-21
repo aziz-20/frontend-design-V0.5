@@ -52,7 +52,7 @@ export default {
   fill: currentColor;
   overflow: hidden;
   margin-right: 16px;
-  color: black;
+  color: rgb(0, 0, 0);
   
 }
 

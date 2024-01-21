@@ -19,10 +19,15 @@
         <div>
             <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
             <ReusableTable :data="taskLogsList" :columns="tableColumns" rowKey="taskId" :loading="loading"
-                :refreshTable="refreshTable"  :openDetails="openDetails"
-                :buttonsConfig="tablebuttons" />
+                :refreshTable="refreshTable" :openDetails="openDetails" :buttonsConfig="tablebuttons" />
         </div>
         <!-- :handleSelectionChange="handleSelectionChange" -->
+        <div>
+            <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
+                :fieldsConfig="tableColumns" :buttonsConfig="popUpButton" :handleUpdate="handleUpdate"
+                :handle_SideDelete="handle_SideDelete">
+            </PhoneTablePopUp>
+        </div>
         <!-- Table view  -->
         <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
             :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout" @page-change="handlePageChange">
@@ -35,6 +40,7 @@
 <script >
 import ReusableTable from "@/views/components/defaultTable"
 import addoredit from "@/views/components/addoredit/index.vue"
+import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import search_control from '@/views/components/qureyParams/index.vue'
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
@@ -48,7 +54,8 @@ export default {
         search_control,
         CustomPagination,
         tableHeader,
-        ReusableTable
+        ReusableTable,
+        PhoneTablePopUp
     },
     props: {
         formDataFromParent: Object
@@ -71,51 +78,9 @@ export default {
             isHasNextPage: false,
             isHasPreviousPage: false,
             form: {},
-            tableColumns: [
-                { type: 'select', selectable: this.selectable, width: '55' },
-                { prop: 'taskName', label: 'Task Name', fixed: true, width: '240' },
-                {
-                    prop: 'triggerType', label: 'Trigger Type', type: 'tag',
-                    tagType: row => row.triggerType === 0 ? 'default' : 'yellow',
-                    tagLabel: row => row.triggerType === 0 ? 'Simple' : 'Cron',
-                },
-                {
-                    label: 'Status',
-                    prop: 'status',
-                    type: 'tag',
-                    tagType: (type) => {
-                        return type === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (type) => {
-                        return type === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                {
-                    prop: 'taskRun', label: 'Task is Active', type: 'tag',
-                    tagType: (type) => {
-                        return type === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (type) => {
-                        return type === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (type) => { /* ... */ }
-                },
-                { prop: 'taskDetail', label: 'Task Details', width: '200' },
-                { prop: 'startTime', label: 'Trigger Starting Time', fixed: 'right', width: '200' },
-                { prop: 'endTime', label: 'Trigger Ending Time', width: '200' },
-                {
-                    type: 'actions', label: 'Operation', align: 'center', fixed: 'right', show: true
-                }
-
-            ],
+            tableColumns: [],
             dialogVisible: false,
-            tablebuttons:
-                [
-                    {
-                        view: true,
-                    }
-                ],
+            tablebuttons: [{ view: true }],
             title: "", // Default title for the dialog
             taskLogsList: [],
             queryParams:
@@ -189,24 +154,69 @@ export default {
     //**************Creating ************************************** */  
     created() {
         this.getList();
+        this.table();
     },
     //**************Methods Control*********************************************** */
 
     methods: {
+
+        //**********************Table**********************************************/
+        table() {
+            this.tableColumns =
+                [
+                    { type: 'select', selectable: this.selectable,minWidth:'100' },
+                    { select: false, prop: 'taskName', label: 'Task Name', fixed: true,minWidth:'100', show: true },
+                    {
+                        prop: 'triggerType', label: 'Trigger Type', type: 'tag',
+                        tagType: (triggerType) => {
+                            return triggerType === 0 ? 'success' : 'warning';
+                        },
+                        tagLabel: (triggerType) => {
+                            return triggerType === 0 ? 'Active' : 'Not Active';
+                        },
+                        tagColor: (triggerType) => { /* ... */ }
+                    },
+                    {
+                        label: 'Status',
+                        prop: 'status',
+                        type: 'tag',
+                        tagType: (type) => {
+                            return type === 0 ? 'success' : 'warning';
+                        },
+                        tagLabel: (type) => {
+                            return type === 0 ? 'Active' : 'Not Active';
+                        },
+                        tagColor: (value) => { /* ... */ }
+                    },
+                    {
+                        prop: 'taskRun', label: 'Task is Active', type: 'tag',
+                        tagType: (type) => {
+                            return type === 0 ? 'success' : 'warning';
+                        },
+                        tagLabel: (type) => {
+                            return type === 0 ? 'Active' : 'Not Active';
+                        },
+                        tagColor: (type) => { /* ... */ }
+                    },
+                    { prop: 'taskDetail', label: 'Task Details',minWidth:'100' },
+                    { prop: 'startTime', label: 'Trigger Starting Time', fixed: 'right',minWidth:'100' },
+                    { prop: 'endTime', label: 'Trigger Ending Time',minWidth:'100' },
+                    {
+                        type: 'actions', label: 'Operation', align: 'center', fixed: 'right', show: true,
+                        ClassButton: 'centered-glow-button'
+                    }
+                ]
+        },
+
+
+        //**************************PopUp**************************************** */
         openDetails(row) {
             this.mobileView = row;
-            // this.buttonsConfig = [
-            //     {
-            //         add: true,
-            //     },
-            //     {
-            //         edit: true,
-            //     },
-            //     {
-            //         delete: true,
-            //     },
-            // ];
+
             this.dialogVisible = true;
+        },
+        closeDialog() {
+            this.dialogVisible = false; // Method to close the dialog
         },
 
         //*****************Pagination control********************************** */
@@ -275,4 +285,10 @@ export default {
   
   
   
-  
+<!-- <style >
+ .centered-glow-button {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+}
+</style> -->

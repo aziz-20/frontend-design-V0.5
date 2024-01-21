@@ -3,9 +3,11 @@
     element-loading-text="Loading..." :default-expand-all="isExpandAll" v-if="refreshTable"
     @selection-change="handleSelectionChange" show-overflow-tooltip="true" fit="true" :expand-row-keys="expandRowKeys"
     lazy='true' :cell-class-name="rowClassChecker">
-    <el-table-column type="selection" />
+    <template v-if="!Selection">
+      <el-table-column type="selection" />
+    </template>
     <el-table-column v-for="(column, index) in visibleColumns" :key="index" :prop="column.prop" :label="column.label"
-      :min-width="column.minWidth || ''" :fixed="column.fixed" class="responsive-column" :align="column.align">
+      :min-width="column.minWidth || ''" :fixed="column.fixed" :align="column.align" :class="column.class">
       <template v-if="column.type === 'icon'" #default="{ row }" :column-key="column.key" :aria-label="column.ariaLabel">
         <svg-icon :icon-class="row[column.prop]" />
       </template>
@@ -24,10 +26,12 @@
           style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;" />
       </template>
       <template v-else-if="column.type === 'tagPopup'" #default="{ row }">
-        <el-tag class="tagpoint" v-for="value in row[column.parent]" :key="row[column.insideKey]"
+        <div :class='column.tagPop||"perColumns"'>
+        <el-tag class="table-burtons" v-for="value in row[column.parent]" :key="row[column.insideKey]"
           @click="handeltagclick(value)">
           {{ value[column.name] }}
         </el-tag>
+      </div>
       </template>
       <template v-else-if="column.type === 'nested'" #default="scope">
         <div v-if="scope.row[column.parent]">
@@ -37,13 +41,13 @@
           No Department
         </div>
       </template>
-
       <template v-else-if="column.type === 'actions'" #default="{ row, index }">
-        <div :class="column.actionStyle || 'button-container'">
+        <div :class="column.ClassButton || 'Table-button-container'">
           <template v-for="button in buttonsConfig" :key="index">
             <div v-if="button.newField">
               <el-icon v-if="!button.prop || !('value' in button) || row[button.prop] == button.value" :name="button.name"
-                :size="button.size" :color="button.color" @click="button.handler(row)" v-hasPermi="button.permission">
+                :size="button.size" :color="button.color" @click="button.handler(row,scoped,index)"
+                v-hasPermi="button.permission">
                 <component :is="button.icon" />
               </el-icon>
             </div>
@@ -76,6 +80,7 @@
                 <component :is="button.icon || 'View'" />
               </el-icon>
             </div>
+            <!-- </div> -->
           </template>
         </div>
       </template>
@@ -176,20 +181,37 @@ export default {
 </script>
   
 <style scoped>
-.button-container {
+.Table-button-container {
   display: flex;
   justify-content: right;
   /*This will space the buttons evenly*/
   align-items: top;
   /* Aligns buttons at the top of the container */
   gap: 2px;
+  /* cursor: pointer; */
+  /* transition: box-shadow 0.3s; */
 }
+
+/* .button-container:hover {
+  box-shadow: 0 0 10px rgba(223, 33, 33, 0.7); Adjust color and size as needed
+} */
 
 .margin-top-20 {
   margin-top: 20px;
 }
 
-.tagpoint {
+.table-burtons {
   cursor: pointer;
+}
+
+.perColumns {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /*Aligns items at the top of the container*/
+  flex-wrap: wrap;
+  /* Allows items to wrap onto multiple lines */
+  gap: 2px; /* Sets a gap of 2px between items */
+  /* cursor: pointer; */
+  /* transition: box-shadow 0.3s; */
 }
 </style>
