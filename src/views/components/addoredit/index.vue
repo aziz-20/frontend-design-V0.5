@@ -9,7 +9,7 @@
             <template v-if="field.type !== 'address'">
               <el-form-item :label="field.label" :prop="field.prop" :style="field.style">
                 <template v-if="field.inputtype === 'email'">
-                  <el-input :type="'email'" v-model="form[field.name]" :placeholder="field.placeholder" size="default" />
+                  <el-input :type="'email'" v-model="form[field.name]" :placeholder="field.placeholder" :size="field.size||'mini'" />
                 </template>
                 <template v-if="field.type === 'photo'">
                   <div>
@@ -18,7 +18,7 @@
                   </div>
                 </template>
                 <template v-else-if="field.inputtype === 'text'">
-                  <el-input :type="'text'" v-model="form[field.name]" :placeholder="field.placeholder" size="default"
+                  <el-input :type="'text'" v-model="form[field.name]" :placeholder="field.placeholder" :size="field.size||'mini'"
                     :suffix-icon="field.icon ?? ''" />
                 </template>
                 <template v-else-if="field.inputtype === 'upload'">
@@ -33,9 +33,9 @@
                       </div>
                     </template>
                   </el-upload> -->
-                  <el-upload    class="avatar-uploader" action="#" :show-file-list="false" :http-request="requestUpload"
+                  <el-upload class="avatar-uploader" action="#" :show-file-list="false" :http-request="requestUpload"
                     :before-upload="beforeAvatarUpload">
-                    <img v-if="Avatar" :src="url+Avatar.src" class="avatar" />
+                    <img v-if="Avatar" :src="url + Avatar.src" class="avatar" />
                     <el-icon v-else class="avatar-uploader-icon">
                       {{ '+' }}
                     </el-icon>
@@ -53,26 +53,26 @@
                 <!-- Password Fields -->
                 <template v-else-if="field.inputtype === 'password'">
                   <el-input :type="'password'" v-model="form[field.name]" :placeholder="field.placeholder"
-                    size="default" />
+                  :size="field.size||'mini'" />
                 </template>
                 <template v-else-if="field.inputtype === 'verifyPassword'">
                   <el-form-item :label="field.label" :prop="field.name" :rules="verifyPasswordRule()">
                     <el-input :type="'password'" v-model="verifyPassword" :placeholder="field.placeholder"
-                      size="default" />
+                    :size="field.size||'mini'" />
                   </el-form-item>
                 </template>
 
                 <template v-else-if="field.inputtype === 'confirm'">
                   <el-row :class="field.row" :span="12" flex>
                     <el-input :type="'password'" v-model="form[field.name]" :placeholder="field.placeholder"
-                      :span="field.span" size="default" multiple checkbox />
+                      :span="field.span" :size="field.size||'mini'" multiple checkbox />
                   </el-row>
                 </template>
                 <!-- Phone Field -->
                 <template v-else-if="field.inputtype === 'phone'">
                   <el-row :class="field.row" :span="12" flex>
                     <el-input type="phone" v-model="form[field.name]" :placeholder="field.placeholder" :span="field.span"
-                      size="default" />
+                    :size="field.size||'mini'" />
                   </el-row>
                 </template>
 
@@ -80,7 +80,7 @@
                 <template v-else-if="field.inputtype === 'sorting'">
                   <!-- <el-row :class="field.row" flex> -->
                   <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                    :min="field.min || 0" :max="field.max" size="default" />
+                    :min="field.min || 0" :max="field.max" :size="field.size||'mini'" />
                   <!-- </el-row> -->
                 </template>
 
@@ -110,7 +110,7 @@
                 <template v-else-if="field.inputtype === 'MSelect'">
                   <el-select v-model="form[field.name]" :placeholder="field.placeholder">
                     <el-option v-for="d in field.data" :key="d.value" :label="d.label" :value="d.value" filterable
-                      multiple size="default"></el-option>
+                      multiple :size="field.size||'mini'"></el-option>
                   </el-select>
                 </template>
                 <template v-if="field.inputtype === 'selectV'">
@@ -167,14 +167,15 @@
                 <!-- CustomData Scop -->
                 <template v-if="field.inputtype === 'customDataScop'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="customdata"
-                    style="width: 240px" multiple collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
+                    style="width: 240px" collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
                     :multiple="field.multiple || false" :show-checkbox="field.showCheckbox || false" />
                   {{ this.role }}
                 </template>
                 <!-----------------------------User Name-------------------- -->
                 <template v-if="field.inputtype === 'userField'">
-                  <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="username"
-                    style="width: 240px" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" filterable />
+                  <el-select-v2 v-model="form[field.name]" :multiple="field.multiple" :placeholder="field.placeholder"
+                    :options="username" style="width: 240px" collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
+                    filterable />
                 </template>
                 <!-------------------------------------------- --------------------------------------------- -->
                 <template v-else-if="field.inputtype === 'Gender'">
@@ -194,7 +195,7 @@
                 </template>
                 <template v-else-if="field.inputtype === 'textarea'">
                   <el-input v-model="form[field.name]" :rows="2" type="textarea" :placeholder="field.placeholder"
-                    size="default" />
+                  :size="field.size||'mini'" />
                 </template>
               </el-form-item>
             </template>
@@ -208,8 +209,8 @@
                     <el-form-item :label="subField.label">
                       <template v-if="subField.inputtype === 'DaysWeek'">
                         <el-select-v2 v-model="form['schedule'][subField.name]" :placeholder="subField.placeholder"
-                          :options="days" style="width: 240px" multiple collapse-tags collapse-tags-tooltip
-                          :max-collapse-tags="3" />
+                          :options="days" style="width: 240px" :multiple="subField.multiple" collapse-tags
+                          collapse-tags-tooltip :max-collapse-tags="3" />
                         <!-- {{ typeof (form['schedule'][subField.name]) }} -->
                       </template>
                       <template v-if="subField.inputtype === 'text'">
@@ -219,7 +220,7 @@
                       </template>
                       <template v-else-if="subField.inputtype === 'sorting'">
                         <el-input-number v-model="form['schedule'][subField.name]" :placeholder="field.placeholder"
-                          controls-position="right" :min="subField.min || 0" :max="subField.max" size="default" />
+                          controls-position="right" :min="subField.min || 0" :max="subField.max" :size="subField.size||'mini'" />
                       </template>
                     </el-form-item>
                   </template>
@@ -338,7 +339,7 @@ export default {
       progress: 0,
       isprogress: false,
       imageUrl: null,
-      Avatar : null,
+      Avatar: null,
       usersName: [],
       verifyPassword: '',
       selectedCountryRegions: [],
@@ -358,18 +359,18 @@ export default {
       selectedValues: {}, // Selected values storage
       query: '',
       form: {
-        status: 0,
-        delFlag: 0,
-        scoping: {},
-        address: {
-          delFlag: 0,
-          status: 0,
-          country: '',
-          state: '',
-          city: '',
-          zipcode: '',
-          detail: ''
-        }
+        // status: 0,
+        // delFlag: 0,
+        // scoping: {},
+        // address: {
+        //   delFlag: 0,
+        //   status: 0,
+        //   country: '',
+        //   state: '',
+        //   city: '',
+        //   zipcode: '',
+        //   detail: ''
+        // }
       },
       url: 'http://181.215.79.209:9005',
 
@@ -509,7 +510,7 @@ export default {
         if (this.mode === 'edit' && val.scoping) {
           this.pairs = Object.keys(val.scoping).map((item) => ({ deptId: parseInt(item), userIds: val.scoping[item] }));
         }
-        if (this.mode === 'edit' && val.avatar	) {
+        if (this.mode === 'edit' && val.avatar) {
           console.log(this.form)
           this.Avatar = {
             "bucketName": this.form.avatar.split('/')[1],
@@ -557,7 +558,7 @@ export default {
       },
     },
   },
- 
+
 
   methods: {
     // x(){
@@ -569,12 +570,12 @@ export default {
     //             "src": this.form.avatar
     //          }
     //           console.log(this.Avatar)
-  
+
     //          return 1 
     //     }
     //     else return this.imageUrl
     // },
-    
+
     // someMethod() {
     //   if (!this.form.address) {
     //     console.log("I am in address")
@@ -597,26 +598,26 @@ export default {
       formData.append('file', file.file);
       formData.append('bucketName', 'useravatar');
 
-      this.$http.upload.uploadImage(formData,this.progress).then(res => {
+      this.$http.upload.uploadImage(formData, this.progress).then(res => {
         if (res.code === '0') {
           this.progress = 100;
           this.$message.success('Upload successfully');
           this.imageUrl = process.env.VUE_APP_IMAGE_URL + res.result.bucketName + '/' + res.result.url;
-          this.Avatar ={
+          this.Avatar = {
             "bucketName": res.result.bucketName,
             "url": res.result.url,
             "src": '/' + res.result.bucketName + '/' + res.result.url
           }
           this.form.avatar = this.Avatar.bucketName + '/' + this.Avatar.url
           // console.log(this.form.avatar)
-           setTimeout(() => {
+          setTimeout(() => {
             this.isprogress = false
           }, 200);
           return res.result;
         } else {
           this.isprogress = false
           this.$message.error('Upload failed');
-          
+
         }
       }).catch(error => {
         this.isprogress = false
@@ -738,55 +739,46 @@ export default {
         if (this.shouldShowField(field)) {
           console.log("Searching")
           if (field.inputtype === 'departments') {
+            console.log("Searching")
             this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
-              if (res.result && res.result.data) {
+              console.log(res)
+              if (field.new) {
+                console.log("new")
+                this.department = treeTransformerTwoValuesAndNew(res.result.data, 'name', 'deptId');
+              } else {
+                console.log('other')
                 this.department = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
               }
-              else {
-                this.loading = false;
-                this.$message.error('Failed to load department list for the selection section');
-              }
-            });
-          }
-          if (field.inputtype === 'departmentNew') {
-            console.log("departmentNew")
-            this.$http.dept.DeptlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
-              if (res.result && res.result.data) {
-                this.departmentNew = treeTransformerTwoValuesAndNew(res.result.data, 'name', 'deptId');
-              }
-              else {
-                this.loading = false;
-                this.$message.error('Failed to load department list for the selection section');
-              }
+ 
+            }).catch(message => {
+              ("The error:*" + message + ":*");
             });
           }
           if (field.inputtype === 'customDataScop') {
             console.log("I am here")
             this.$http.cusdatascop.customDatascopelist({ "pageNo": 1, "pageSize": 0 }).then(res => {
               this.customdata = NormalmapTwoPropsToObject(res.result.data, 'name', 'customId');
-            }).catch(error => {
-              console.error(error);
+
+            }).catch(message => {
+              ("The error:*" + message + ":*");
             });
           }
           if (field.inputtype === 'Position') {
-            console.log("CustomData Scop")
             this.$http.Job.listJob({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              console.log("Position")
               this.Position = NormalmapTwoPropsToObject(res.result.data, 'name', 'jobId');
-            }).catch(error => {
-              console.error(error);
+            }).catch(message => {
+              ("The error:*" + message + ":*");
             });
           }
           if (field.inputtype === 'roles') {
             console.log("I am here")
             this.$http.role.listRole({ "pageNo": 1, "pageSize": 0 }).then(res => {
-              console.log(res)
-              if (Array.isArray(res.result.data)) {
-                this.roles = NormalmapTwoPropsToObject(res.result.data, 'name', 'roleId');
-                // this.fields.options = this.mapFieldValues(field, this.roles);
-              } else {
-                console.error('res.result.data is not an array');
-              }
-            })
+              this.roles = NormalmapTwoPropsToObject(res.result.data, 'name', 'roleId');
+              // this.fields.options = this.mapFieldValues(field, this.roles);
+            }).catch(message => {
+              ("The error:*" + message + ":*");
+            });
           }
           if (field.inputtype === 'menu') {
             console.log("I am here")
@@ -798,7 +790,9 @@ export default {
               } else {
                 console.error('res.result.data is not an array');
               }
-            })
+            }).catch(message => {
+              ("The error:*" + message + ":*");
+            });
           }
 
           if (field.inputtype === 'gpermision') {
@@ -815,7 +809,9 @@ export default {
                 this.$message.error('Failed to load Permission Group list for the selection section');
               }
 
-            })
+            }).catch(message => {
+              ("The error:*" + message + ":*");
+            });
           }
 
           if (field.inputtype === 'userField') {
@@ -837,6 +833,8 @@ export default {
                 this.loading = false;
                 this.$message.error('Failed to load department list for the selection section');
               }
+            }).catch(message => {
+              ("The error:*" + message + ":*");
             });
             this.$http.MgUsers.listUsers({
               "pageNo": 1,
@@ -845,7 +843,9 @@ export default {
 
               this.usersName = res?.result?.data.map((item) => {
                 return { value: item.userId, label: item.username }
-              })
+              }).catch(message => {
+                ("The error:*" + message + ":*");
+              });
 
 
             })
@@ -891,17 +891,17 @@ export default {
     colclass(feild) {
 
     },
-    calculateSpan(field) {
-      if (window.innerWidth < 700) {
-        // If so, set the span to 24 for all fields
-        console.log("I am here")
-        return 24;
-      } else {
-        console.log("I am here")
-        // Otherwise, use the existing span logic
-        return this.shouldShowField(field) ? (field.span || 12) : 0;
-      }
-    },
+    // calculateSpan(field) {
+    //   if (window.innerWidth < 700) {
+    //     // If so, set the span to 24 for all fields
+    //     console.log("I am here")
+    //     return 24;
+    //   } else {
+    //     console.log("I am here")
+    //     // Otherwise, use the existing span logic
+    //     return this.shouldShowField(field) ? (field.span || 12) : 0;
+    //   }
+    // },
     mapSexValueToLabel(value) {
       console.log(value)
       return value === 0 ? 'Man' : 'Woman';
@@ -913,13 +913,13 @@ export default {
     handlePreview(file) {
       console.log(file);
     },
-    
+
     beforeclose(done) {
       this.$confirm('ARE YOU SURE TO CLOSEe THIS WINDOW？')
         .then(_ => {
           console.log(this.mode)
-          if(this.mode === 'add'){
-            if(this.Avatar !== null){
+          if (this.mode === 'add') {
+            if (this.Avatar !== null) {
               console.log(this.Avatar)
               this.$http.upload.deleteUsesAvatar([this.Avatar]).then(res => {
                 console.log(res)
@@ -933,9 +933,8 @@ export default {
                 console.error(error);
               });
             }
-            
-          }else{
 
+          } else {
 
           }
           // if(this.imageUrl !== null){
@@ -997,16 +996,12 @@ export default {
 
   },
 
-
-
-
 }
 
 </script>
 
 <style scoped>
-
-.form-row{
+.form-row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1014,7 +1009,8 @@ export default {
   gap: 5px;
 
 }
-.form-row div{
+
+.form-row div {
   flex-grow: 1;
 }
 
@@ -1025,11 +1021,13 @@ export default {
     width: 90% !important;
   }
 }
+
 @media (max-width: 500px) {
- .form-row {
+  .form-row {
     display: block;
-   
-  } 
+
+  }
+
   .co-16 {
     width: 100% !important;
   }
@@ -1059,8 +1057,9 @@ img {
 .avatar-uploader .el-upload:hover {
   border-color: var(--el-color-primary);
 }
-.avatar-uploader .el-progress--circle{
- position : absolute;
+
+.avatar-uploader .el-progress--circle {
+  position: absolute;
 }
 
 .el-icon.avatar-uploader-icon {

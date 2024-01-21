@@ -4,20 +4,21 @@
     <el-form-item v-for="(field, index) in fields" :key="index" :label="field.label">
       <template v-if="shouldShowField(field)">
         <template v-if="field.type === 'tree-select'">
-          <el-tree-select v-model="queryParams[field.name]" :data="field.data" filterable :style="field.style"
-            check-strictly check-on-click-node>
+          <el-tree-select v-model="queryParams[field.name]" :size='field.size || "small"' :data="field.data" filterable
+            :style="field.style" check-strictly check-on-click-node>
           </el-tree-select>
         </template>
         <template v-else-if="field.inputtype === 'switch'">
           <el-switch v-model="queryParams[field.name]" :data="field.switchData" class="ml-2" inline-prompt
             :style="{ '--el-switch-on-color': field.switchOnColor, '--el-switch-off-color': field.switchOffColor }"
             :active-text="field.activeText" :inactive-text="field.inactiveText" :active-value="field.activeValue"
-            :inactive-value="field.inactiveValue">
+            :inactive-value="field.inactiveValue" :size='field.size || "small"'>
           </el-switch>
         </template>
         <template v-if="field.inputtype === 'selectV'">
           <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="field.data"
-            style="width: 140px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
+            :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
+            :size='field.size || "small"' />
         </template>
         <!-- <template v-if="field.inputtype === 'StatusSelect'">
           <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="field.data"
@@ -25,57 +26,60 @@
         </template> -->
         <template v-if="field.inputtype === 'StatusSelect'">
           <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="statuses"
-            style="width: 150px" collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+            :size='field.size || "small"' collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
           {{ this.role }}
         </template>
         <template v-else-if="field.inputtype === 'data-picker'">
-          <el-date-picker v-model="queryParams[field.name]" :style="field.style" value-format="yyyy-MM-dd"
-            start-placeholder="Please add the data"></el-date-picker>
+          <el-date-picker v-model="queryParams[field.name]" :size='field.size || "small"' :style="field.style"
+            value-format="yyyy-MM-dd" start-placeholder="Please add the data"></el-date-picker>
         </template>
-      </template>
-      <!-------------------------------------------------------------------------------------  -->
-      <!-- System Fields selections -->
 
-      <!--Department Selecting Section -->
-      <template v-if="field.inputtype === 'departments'">
-        <el-tree-select v-model="queryParams[field.name]" :data="field.name === 'deptId' ? department : leaders"
-          :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node filterable />
-      </template>
+        <!-------------------------------------------------------------------------------------  -->
+        <!-- System Fields selections -->
 
-      <!-- Roles Selecting Section -->
-      <template v-if="field.inputtype === 'roles'">
-        <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="roles"
-          style="width: 150px" collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
-        {{ this.role }}
-      </template>
-      <!-- Position Selecting Section -->
-      <template v-if="field.inputtype === 'Position'">
-        <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder"
-          :options="field.name === 'abbrev' ? abbrev : Position" style="width: 150px" collapse-tags collapse-tags-tooltip
-          :max-collapse-tags="3" filterable />
-      </template>
+        <!--Department Selecting Section -->
+        <template v-if="field.inputtype === 'departments'">
+          <el-tree-select v-model="queryParams[field.name]" :data="field.name === 'deptId' ? department : leaders"
+            :render-after-expand="true" :placeholder="field.placeholder" :size='field.size || "small"' check-strictly
+            check-on-click-node filterable />
+        </template>
 
-      <!-- Menu Selecting Section -->
-      <template v-if="field.inputtype === 'menu'">
-        <el-tree-select v-model="queryParams[field.name]" :data="menu" :render-after-expand="true"
-          :placeholder="field.placeholder" filterable check-strictly check-on-click-node style="width: 150px" />
-        <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
-      </template>
-      <!-----------------------------User Name-------------------- -->
-      <template v-if="field.inputtype === 'userField'">
-        <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder"
-          :options="field.name === 'userId' ? username : email" style="width: 240px" collapse-tags collapse-tags-tooltip
-          :max-collapse-tags="3" filterable />
-      </template>
+        <!-- Roles Selecting Section -->
+        <template v-if="field.inputtype === 'roles'">
+          <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="roles"
+            :size='field.size || "small"' collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+          {{ this.role }}
+        </template>
+        <!-- Position Selecting Section -->
+        <template v-if="field.inputtype === 'Position'">
+          <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder"
+            :options="field.name === 'abbrev' ? abbrev : Position" :size='field.size || "small"' collapse-tags
+            collapse-tags-tooltip :max-collapse-tags="3" filterable />
+        </template>
 
-      <!-- Task fields -->
-      <template v-if="field.inputtype === 'tasks'">
-        <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="taskname"
-          style="width: 150px" collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
-        <!-- {{ this.role }} -->
-      </template>
+        <!-- Menu Selecting Section -->
+        <template v-if="field.inputtype === 'menu'">
+          <el-tree-select v-model="queryParams[field.name]" :data="menu" :render-after-expand="true"
+            :placeholder="field.placeholder" filterable check-strictly check-on-click-node
+            :size='field.size || "small"' />
+          <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
+        </template>
+        <!-----------------------------User Name-------------------- -->
+        <template v-if="field.inputtype === 'userField'">
+          <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder"
+            :options="field.name === 'userId' ? username : email" :size='field.size || "small"' collapse-tags
+            collapse-tags-tooltip :max-collapse-tags="3" filterable />
+        </template>
 
-      <!-------------------------------------------- --------------------------------------------- -->
+        <!-- Task fields -->
+        <template v-if="field.inputtype === 'tasks'">
+          <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="taskname"
+            :size='field.size || "small"' collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+          <!-- {{ this.role }} -->
+        </template>
+
+        <!-------------------------------------------- --------------------------------------------- -->
+      </template>
 
     </el-form-item>
 

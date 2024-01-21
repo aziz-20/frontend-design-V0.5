@@ -28,8 +28,8 @@
                         <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
                         <ReusableTable :data="usersList" :columns="tableColumns" rowKey="userId" :loading="loading"
                             :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange"
-                            :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete" :openDetails="openDetails"
-                            popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
+                            :handleUpdate="handleSideUpdate" :handle_SideDelete="handle_SideDelete"
+                            :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
                             :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons"
                             @open-popup="handleOpenPopup" />
                     </div>
@@ -111,7 +111,7 @@ export default {
             tablebuttons: [],
             selectedRows: [],
             loading: true,
-            modeType: '',
+            modeType: null,
             showSearch: true,
             initialValuesEdit: null,
             initialValuesAdd: undefined,
@@ -168,19 +168,19 @@ export default {
                 pageSize: 20
             },
             Add_Edit: [
-                {
+                // {
 
-                    "type": "photo",
-                    inputtype: "photo",
-                    name: "avatar",
-                    // label: "Username",
-                    // placeholder: "Please Enter the User name",
-                    // span: 12,
-                    showMode: 'edit',
-                    class: 'col-12',
-                    // style:'img'
+                //     "type": "photo",
+                //     inputtype: "photo",
+                //     name: "avatar",
+                //     // label: "Username",
+                //     // placeholder: "Please Enter the User name",
+                //     // span: 12,
+                //     showMode: 'edit',
+                //     class: 'col-12',
+                //     // style:'img'
 
-                },
+                // },
                 {
 
                     "type": "upload",
@@ -195,9 +195,7 @@ export default {
                     // beforeUpload: this.checkingfileSize,
                     // buttonText:"Upload",
                     tip: "Please Enter Only one photo and the size should be less then 2/MG",
-                    span: 12,
                     // showMode: 'add'
-
                 },
                 {
 
@@ -206,7 +204,6 @@ export default {
                     name: "username",
                     label: "Username",
                     placeholder: "Please Enter the User name",
-                    span: 12,
                     showMode: 'add'
 
                 },
@@ -216,7 +213,6 @@ export default {
                     name: "email",
                     label: "Email Address",
                     placeholder: "Email Address",
-                    span: 12,
                     // showMode: 'edit'
 
                 },
@@ -227,7 +223,6 @@ export default {
                     name: "password",
                     label: "Password",
                     placeholder: "Please Make Password",
-                    span: 12,
                     showMode: 'add'
 
                 },
@@ -239,7 +234,6 @@ export default {
                     name: "password",
                     label: "Recover Password",
                     placeholder: "Please Add New Password",
-                    span: 12,
                     showMode: 'edit'
 
                 },
@@ -250,7 +244,6 @@ export default {
                     name: "sex",
                     label: "Gender",
                     placeholder: "Please select the user Gender",
-                    span: 12,
                     // style: 'w50%',
 
                 },
@@ -260,24 +253,23 @@ export default {
                     name: "phoneNumber",
                     label: "Phone Number",
                     placeholder: "Phone Number",
-                    span: 12,
                 },
                 {
-                    "type": "departments",
+                    "type": "treeSelect",
                     inputtype: "departments",
                     name: "deptId",
-                    label: "Department",
-                    placeholder: "Selected Departments",
-                    span: 12,
+                    // new:true,
+                    label: "Department parent",
+                    placeholder: "Department selected",
+                    // span: 12
                 },
                 {
                     "type": "Position",
                     inputtype: "Position",
-                    name: "jobs",
+                    name: "jobIds",
                     label: "Position",
                     placeholder: "User Position",
-                    span: 12,
-                    multiple: false,
+                    multiple: true,
                 },
 
                 {
@@ -286,7 +278,7 @@ export default {
                     name: "roleIds",
                     label: "User Role",
                     placeholder: "User Role/s",
-                    span: 12,
+                    multiple: true,
                     showMode: 'add'
                 },
                 {
@@ -299,7 +291,6 @@ export default {
                     inactiveText: 'Disabled',
                     activeValue: 0,
                     inactiveValue: 1,
-                    span: 6,
                 },
                 {
                     "type": "sorting",
@@ -307,7 +298,6 @@ export default {
                     name: "capacity",
                     label: "User Capacity",
                     placeholder: "Display Sorting",
-                    span: 6
 
                 },
 
@@ -315,7 +305,6 @@ export default {
                     inputtype: "address",
                     name: "address", // This will be the name of the object
                     label: "Address",
-                    span: 24,
                     data: [
                         {
                             inputtype: "country",
@@ -376,6 +365,7 @@ export default {
                             name: 'dayIds',
                             label: "Select Day/s",
                             placeholder: "Please select an option",
+                            multiple: true, 
                             // span: 6,
                             // showMode: 'edit'
 
@@ -454,7 +444,7 @@ export default {
                 {
                     'type': 'roles',
                     inputtype: "roles",
-                    name: 'roleId',
+                    name: 'roleIds',
                     label: 'Role',
                     placeholder: 'Select Role',
                     style: 'width: 150px'
@@ -486,8 +476,8 @@ export default {
             this.tableColumns = [
                 { type: 'select' },
                 { type: 'photo', label: 'avatar', fixed: true },
-                { prop: 'username', label: 'User Name', fixed: true, show: true,minWidth:'100' },
-                { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
+                { prop: 'username', label: 'User Name', fixed: true, show: true, minWidth: '100',align:'center' },
+                // { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
                 {
                     prop: 'sex', label: 'Gender', type: 'tag',
                     tagType: (statusValue) => {
@@ -510,9 +500,9 @@ export default {
                     },
                     tagColor: (value) => { /* ... */ }
                 },
-                { prop: 'email', label: 'Email',minWidth:'100' },
+                { prop: 'email', label: 'Email', minWidth: '100' },
                 {
-                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name',minWidth:'100'
+                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name', minWidth: '100'
                 },
 
                 {
@@ -527,10 +517,11 @@ export default {
                         }
                     }
                 },
-                { label: 'ADD By', prop: 'createByName',minWidth:'100' },
-                { prop: 'createTime', label: 'Create Date', type: 'calendar' ,minWidth:'100'},
-                { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
-                { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
+                { label: 'Role/s', prop:'roles', minWidth: '200',align:'center'},
+                { label: 'ADD By', prop: 'createByName', minWidth: '100' },
+                { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '100' },
+                { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
+                { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
                 { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
                 { prop: 'phoneNumber', label: 'Phone' },
 
@@ -646,14 +637,14 @@ export default {
         },
 
         //**************Jobs/Dept Join Control***************************************** */
-        getRoleNames(roleIds) {
-            return roleIds.map(roleId => roleId.name).join(',\n ');
-        },
+        // getRoleNames(roleIds) {
+        //     return roleIds.map(roleId => roleId.name).join(',\n ');
+        // },
 
 
-        getJobNames(jobs) {
-            return jobs.map(job => job.name).join(",")
-        },
+        // getJobNames(jobs) {
+        //     return jobs.map(job => job.name).join(",")
+        // },
 
         //*********************************** */
         getList() {
@@ -739,6 +730,13 @@ export default {
 
         },
         //***************************Edit control section**********************************/
+        handleSideUpdate(selectedRows) {
+            if (this.selectedRows.length === 1) {
+                this.handleUpdate(this.selectedRows[0])
+            }
+        },
+
+
         handleUpdate(row) {
             console.log(row)
 
@@ -746,12 +744,9 @@ export default {
             this.title = "Editing User: " + row.username
             // const { country, state, city, zipcode, detail } = row.address;
 
-
             console.log(row)
             let jobData = row.jobs.map(item => item.jobId);
-
             console.log(row.roleIds)
-
             // let roleData = []
             // if (row.roleIds && Array.isArray(row.roleIds) && row.roleIds.length) {
             //     return roleData = row.roleIds.map(item => item.roleId);
