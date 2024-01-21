@@ -1,13 +1,7 @@
 <template>
-    <el-dialog class="inside-dialog" :closed="closeDialog" v-model="localVisible" :title="dialogTitle" >
-        <buttons 
-        :handleAdd="handleAdd" 
-        :handleUpdate="handleUpdate" 
-        :handleDelete=" handle_SideDelete" 
-        :buttonsConfig="buttonsConfig"
-        :rowData="rowData"
-         ></buttons>
-
+    <el-dialog class="inside-dialog"  :closed="closeDialog" v-model="localVisible" :title="dialogTitle">
+        <buttons :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handleDelete="handle_SideDelete"
+            :buttonsConfig="buttonsConfig" :rowData="rowData"></buttons>
         <div v-if="rowData" class="details-container">
             <div class="details-row" v-for="field in fieldsConfig">
                 <div class="details-label">{{ field.label }}</div>
@@ -19,7 +13,14 @@
                         {{ field.tagLabel(rowData[field.prop]) }}
                     </el-tag>
                 </div>
-                <div v-else-if="field.type === 'icon'" class="details-value"><svg-icon :icon-class="rowData[field.prop]" /></div>
+                <div v-else-if="field.type === 'tagPopup'" :class="field.tagPop || 'details-value'">
+                    <el-tag v-for="value in rowData[field.parent]" :key="rowData[field.insideKey]"
+                        @click="field.click(value)">
+                        {{ value[field.name] }}
+                    </el-tag>
+                </div>
+                <div v-else-if="field.type === 'icon'" class="details-value"><svg-icon :icon-class="rowData[field.prop]" />
+                </div>
                 <div v-else class="details-value">{{ rowData[field.prop] }}</div>
             </div>
         </div>
@@ -36,7 +37,7 @@ export default {
 
         };
     },
-    components:{
+    components: {
         buttons
     },
 
@@ -100,7 +101,7 @@ export default {
 }
 </script>
 
-<style >
+<style>
 .button-container {
     display: flex;
     justify-content: center;
@@ -110,8 +111,6 @@ export default {
     /* Aligns buttons at the top of the container */
     gap: 20px;
 }
-
-
 .inside-dialog {
     width: 90%;
     max-width: 700px;
@@ -142,6 +141,7 @@ export default {
 .details-label {
     font-weight: bold;
     margin-right: 10px;
+    word-wrap: break-word;
     /* Space between label and value */
 }
 
@@ -150,6 +150,22 @@ export default {
     /* Allows the value to take the remaining space */
     text-align: center;
     word-wrap: break-word;
+    flex-wrap: wrap;
+    /* Allows items to wrap onto multiple lines */
+    gap: 2px;
+}
+
+.tagPopup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Aligns items at the top of the container */
+    flex-wrap: wrap;
+    /* Allows items to wrap onto multiple lines */
+    gap: 2px;
+    /* Sets a gap of 2px between items */
+    /* cursor: pointer; */
+    /* transition: box-shadow 0.3s; */
 }
 </style>
   

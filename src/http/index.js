@@ -17,6 +17,7 @@ export default {
     taskControl: api.taskControl,
     photos: api.photos,
     upload: api.upload,
+    address:api.address,
 
 
 }

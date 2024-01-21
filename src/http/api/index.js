@@ -12,6 +12,7 @@ import daysControl from './daysControl'
 import taskControl from './taskControl'
 import photos from './photos'
 import upload from './upload'
+import address from './address'
 
 
 export default {
@@ -29,7 +30,8 @@ export default {
   MgUsers,
   taskControl,
   photos,
-  upload
+  upload,
+  address
 }
 
 

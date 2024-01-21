@@ -108,21 +108,7 @@ export default {
     },
     data() {
         return {
-            tablebuttons:
-                [
-                    // {
-                    //     add: true,
-                    // },
-                    {
-                        edit: true,
-                    },
-                    {
-                        delete: true,
-                    },
-                    {
-                        view: true,
-                    }
-                ],
+            tablebuttons: [],
             selectedRows: [],
             loading: true,
             modeType: '',
@@ -146,59 +132,8 @@ export default {
             paginationLayout: 'prev, pager, next', // Customize the layout based on your needs
             isHasNextPage: false,
             isHasPreviousPage: false,
-            tableColumns: [
-                { type: 'select'},
-                { type: 'photo', label: 'avatar', fixed: true,  },
-                { prop: 'username', label: 'User Name', fixed: true, show: true },
-                { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
-                {
-                    prop: 'sex', label: 'Gender', type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'info' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Male' : 'Female';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                {
-                    label: 'Status',
-                    prop: 'status',
-                    type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                { prop: 'email', label: 'Email' },
-                {
-                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name',
-                },
+            tableColumns: [],
 
-                {
-                    prop: 'rolIds', label: 'Role/s', type: 'custom',
-                    customRender: row => {
-                        if (row.rolIds && row.rolIds.length > 0) {
-                            return `<el-tooltip effect="dark" content="${this.getRoleNames(row.rolIds)}">
-                        <div>${row.rolIds.map(roleId => roleId.name).join(', ')}</div>
-                      </el-tooltip>`;
-                        } else {
-                            return 'No Role';
-                        }
-                    }
-                },
-                { label: 'ADD By', prop: 'createByName' },
-                { prop: 'createTime', label: 'Create Date', type: 'calendar' },
-                { label: 'Updated By', prop: 'updateByName' },
-                { prop: 'updateTime', label: 'Last Update Time' },
-                { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
-                { prop: 'phoneNumber', label: 'Phone' },
-
-
-            ],
             form: {
                 email: '',
                 deptId: '',
@@ -538,13 +473,88 @@ export default {
     created() {
         this.getList();
         this.getSideSelection();
+        this.table();
     },
-    methods: {
+    Mounted() {
 
-        // **********************Open view mode****************************************************
-        closeDialog() {
-            this.dialogVisible = false; // Method to close the dialog
+
+    },
+
+    methods: {
+        // ********************** Table ****************************************************//
+        table() {
+            this.tableColumns = [
+                { type: 'select' },
+                { type: 'photo', label: 'avatar', fixed: true },
+                { prop: 'username', label: 'User Name', fixed: true, show: true,minWidth:'100' },
+                { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
+                {
+                    prop: 'sex', label: 'Gender', type: 'tag',
+                    tagType: (statusValue) => {
+                        return statusValue === 0 ? 'info' : 'warning';
+                    },
+                    tagLabel: (statusValue) => {
+                        return statusValue === 0 ? 'Male' : 'Female';
+                    },
+                    tagColor: (value) => { /* ... */ }
+                },
+                {
+                    label: 'Status',
+                    prop: 'status',
+                    type: 'tag',
+                    tagType: (statusValue) => {
+                        return statusValue === 0 ? 'success' : 'warning';
+                    },
+                    tagLabel: (statusValue) => {
+                        return statusValue === 0 ? 'Active' : 'Not Active';
+                    },
+                    tagColor: (value) => { /* ... */ }
+                },
+                { prop: 'email', label: 'Email',minWidth:'100' },
+                {
+                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name',minWidth:'100'
+                },
+
+                {
+                    prop: 'rolIds', label: 'Role/s', type: 'custom',
+                    customRender: row => {
+                        if (row.rolIds && row.rolIds.length > 0) {
+                            return `<el-tooltip effect="dark" content="${this.getRoleNames(row.rolIds)}">
+                        <div>${row.rolIds.map(roleId => roleId.name).join(', ')}</div>
+                      </el-tooltip>`;
+                        } else {
+                            return 'No Role';
+                        }
+                    }
+                },
+                { label: 'ADD By', prop: 'createByName',minWidth:'100' },
+                { prop: 'createTime', label: 'Create Date', type: 'calendar' ,minWidth:'100'},
+                { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
+                { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
+                { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
+                { prop: 'phoneNumber', label: 'Phone' },
+
+
+            ]
+
+            this.tablebuttons =
+                [
+                    {
+                        edit: true,
+                    },
+                    {
+                        delete: true,
+                    },
+                    {
+                        view: true,
+                    }
+                ]
+
+
         },
+
+        // **********************Open view mode****************************************************//
+
         openDetails(row) {
             this.mobileView = row;
             this.buttonsConfig = [
@@ -562,10 +572,14 @@ export default {
             ];
             this.dialogVisible = true;
         },
+        closeDialog() {
+            this.dialogVisible = false; // Method to close the dialog
+        },
+
+        //***************************************************************************************** */
         handlePageChange(newPage) {
             // Update the queryParams with the new page number
             this.queryParams.pageNo = newPage;
-
             // Fetch data for the new page
             this.getList();
         },

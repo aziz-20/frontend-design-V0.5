@@ -17,7 +17,7 @@
         <!-- Table view  -->
         <div>
             <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
-            <ReusableTable :data="taskList" :columns="tableColumns" rowKey="taskId" :loading="loading"
+            <ReusableTable :data="addressList" :columns="tableColumns" rowKey="taskId" :loading="loading"
                 :refreshTable="refreshTable" :default-expand-all="isExpandAll"
                 :handleSelectionChange="handleSelectionChange" :handleUpdate="handleUpdate"
                 :handle_SideDelete="handle_SideDelete" :openDetails="openDetails" :buttonsConfig="tablebuttons"
@@ -57,7 +57,7 @@ import search_control from '@/views/components/qureyParams/index.vue'
 
 
 export default {
-    // name: "Job",
+    name: "address",
     dicts: ['sys_normal_disable'],
 
     components: {
@@ -107,7 +107,7 @@ export default {
             isHasPreviousPage: false,
             form: {},
             title: "", // Default title for the dialog
-            taskLogsList: [],
+            addressList: [],
             queryParams:
             {
                 targetTask: undefined,
@@ -188,22 +188,7 @@ export default {
         table() {
             this.tableColumns = [
                 { type: 'select' },
-                { prop: 'taskName', label: 'Task Name', fixed: true, show: true,minWidth:'150' },
-                { prop: 'orderNum', label: 'Order' ,minWidth:'80'},
-                { prop: 'taskGroup', label: 'Task Group',minWidth:'100' },
-                { prop: 'targetTask', label: 'Target Task',minWidth:'100' },
-                {
-                    label: 'Trigger Type',
-                    prop: 'triggerType',
-                    type: 'tag',
-                    tagType: (triggerType) => {
-                        return triggerType === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (triggerType) => {
-                        return triggerType === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (triggerType) => { /* ... */ }
-                },
+                { prop: 'country', label: 'Country', fixed: true, show: true ,minWidth:'100' },
                 {
                     label: 'Status',
                     prop: 'status',
@@ -216,27 +201,16 @@ export default {
                     },
                     tagColor: (value) => { /* ... */ }
                 },
-                {
-                    prop: 'taskRun', label: 'Task is Active', type: 'tag',
-                    tagType: (statusValue) => {
-                        return statusValue === 0 ? 'success' : 'warning';
-                    },
-                    tagLabel: (statusValue) => {
-                        return statusValue === 0 ? 'Active' : 'Not Active';
-                    },
-                    tagColor: (value) => { /* ... */ }
-                },
-                { prop: 'taskCount', label: 'Number of Triggers', minWidth: '100' },
-                { prop: 'nextFireTime', label: 'Next Trigger', minWidth: '100' },
-                { prop: 'startTime', label: 'Trigger Starting Time',  minWidth: '100' },
-                { prop: 'remark', label: 'Note',minWidth:'100' },
+                { prop: 'state', label: 'State',minWidth:'100' },
+                { prop: 'city', label: 'City',minWidth:'100' },
+                { prop: 'zipcode', label: 'ZipCode',minWidth:'100' },
+                { prop: 'detail', label: 'detail',minWidth:'100' },
                 { label: 'ADD By', prop: 'createByName',minWidth:'100' },
                 { prop: 'createTime', label: 'Create Date', type: 'calendar',minWidth:'100' },
                 { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
                 { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
                 {
                     type: 'actions', label: 'Actions', align: 'right', fixed: 'right', show: true
-                    // ,minWidth:'100'
                 }
             ]
             this.tablebuttons =
@@ -294,14 +268,14 @@ export default {
 
         getList() {
             this.loading = true;
-            this.$http.taskControl.listTask(this.queryParams).then(res => {
+            this.$http.address.listAddress(this.queryParams).then(res => {
                 if (res.result && res.result.data) {
                     this.isHasNextPage = res.result.isHasNextPage;
                     this.isHasPreviousPage = res.result.isHasPreviousPage;
                     this.total = res.result.total;
-                    this.taskList = res.result.data;
+                    this.addressList = res.result.data;
                     this.loading = false
-                    console.log(this.taskList)
+                    console.log(this.addressList)
                     this.loading = false;
                 } else {
                     this.loading = false;
@@ -546,7 +520,7 @@ export default {
         // *********************************ADDing*****************************
         handleAdd() {
             this.mode = "add"
-            this.generateForm(this.switching)
+            // this.generateForm(this.switching)
             this.open = true;
             this.initialValuesAdd
             console.log(this.switching);
@@ -559,7 +533,7 @@ export default {
             this.mode = "edit"
             this.initialValuesEdit = row
             console.log(row)
-            this.generateForm(this.switching)
+            // this.generateForm(this.switching)
             this.open = true
         },
 
@@ -567,7 +541,7 @@ export default {
         onSubmit(n) {
             this.form = n
             if (this.mode === 'add') {
-                this.$http.taskControl.addTask(this.form).then(response => {
+                this.$http.address.addAddress(this.form).then(response => {
                     console.log()
                     console.log('sssssssssssssssssssssss' + response.data)
                     this.$modal.msgSuccess("Addition successful");
@@ -581,7 +555,7 @@ export default {
 
             }
             else {
-                this.$http.taskControl.updateTask(this.form).then(response => {
+                this.$http.address.updateAddress(this.form).then(response => {
                     console.log('sssssssssssssssssssssss' + this.form)
                     this.$modal.msgSuccess("Update successful");
                     this.open = false;
@@ -598,9 +572,9 @@ export default {
 
         //*******************************************Delete Control Section************************************* */
         handle_SideDelete(row) {
-            if (row.taskId > 0) {
-                this.$modal.confirm('Are you sure you want to delete the data of Task/Tasks with the name "' + row.taskName + '"?').then(() => {
-                    return this.$http.taskControl.deleteTask(row.taskId);
+            if (row.addId > 0) {
+                this.$modal.confirm('Are you sure you want to delete the Address"'+row.zipcode+':'+ row.detail + '"?').then(() => {
+                    return this.$http.address.deleteAddress(row.addId);
                 }).then(() => {
                     this.getList();
                     this.$modal.msgSuccess("Deletion successful");
@@ -611,11 +585,11 @@ export default {
         handleDelete() {
             if (this.selectedRows.length > 0) {
                 this.$modal.confirm('WARNING: You are about to permanently delete the following Task/s:{ '
-                    + this.selectedRows.map(row => row.taskName).join(', ')
+                    + this.selectedRows.map(row => row.detail).join('},{')
                     + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
                         this.selectedRows.forEach(row => {
                             // Delete the Selected Jobs
-                            this.$http.taskControl.deleteTask(row.taskId);
+                            this.$http.taskControl.deleteTask(row.addId);
                         });
                         this.getList();
                         this.$modal.msgSuccess("Deletion successful");
@@ -629,7 +603,7 @@ export default {
         handleSelectionChange(selection) {
             this.selectedRows = selection;
             this.selectedRows.forEach(row => {
-                console.log(row.taskId, row.taskName); // logs the deptId and name of each selected row
+                console.log(row.addId, row.detail); // logs the deptId and name of each selected row
             });
         },
 

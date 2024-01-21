@@ -26,7 +26,7 @@
     </div>
     <div>
       <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
-        :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig"  :handleUpdate="handleUpdate"
+        :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleUpdate="handleUpdate"
         :handle_SideDelete="handle_SideDelete">
       </PhoneTablePopUp>
     </div>
@@ -48,20 +48,11 @@ import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
 import addoredit from "@/views/components/addoredit/index.vue"
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue'
 import search_control from '@/views/components/qureyParams/index.vue'
-import { mapOnePropToObject } from '@/utils/dtControl/dTransformer'
 
 
 export default {
-  // name: "Job",
+  name: "Job",
   dicts: ['sys_normal_disable'],
 
   components: {
@@ -75,9 +66,9 @@ export default {
   data() {
     return {
       selectedRows: [],
-      mode: 'add',
-      dialogVisible:false,
-      mobileView:[],
+      mode: null,
+      dialogVisible: false,
+      mobileView: [],
       loading: true,
       showSearch: true,
       initialValuesEdit: undefined,
@@ -94,18 +85,7 @@ export default {
       form: {},
       title: "", // Default title for the dialog
       jobtList: [],
-      tablebuttons:
-        [
-          {
-            edit: true,
-          },
-          {
-            delete: true,
-          },
-          {
-            view: true,
-          }
-        ],
+      tablebuttons:[],
       queryParams:
       {
         name: undefined,
@@ -119,30 +99,7 @@ export default {
         pageNo: 1,
         pageSize: 20
       },
-      tableColumns: [
-        { type: 'select' },
-        { prop: 'name', label: 'Position Name', fixed: true },
-        // { prop: 'jobId', label: 'Job ID', fixed: true }, // Uncomment if needed
-        { prop: 'abbrev', label: 'Job Code', fixed: true },
-        {
-          label: 'Status',
-          prop: 'status',
-          type: 'tag',
-          tagType: (statusValue) => {
-            return statusValue === 0 ? 'success' : 'warning';
-          },
-          tagLabel: (statusValue) => {
-            return statusValue === 0 ? 'Active' : 'Not Active';
-          },
-          tagColor: (value) => { /* ... */ }
-        },
-        { prop: 'remark', label: 'Note' },
-        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
-        { prop: 'updateTime', label: 'Last Update Time' },
-        {
-          type: 'actions', label: 'Actions', fixed: 'right', align: 'right', show: true
-        }
-      ],
+      tableColumns: [],
       Add_Edit:
         [
 
@@ -258,6 +215,7 @@ export default {
   //**************Creating ************************************** */  
   created() {
     this.getList();
+    this.table()
   },
   //**************Methods Control*********************************************** */
 
@@ -271,6 +229,52 @@ export default {
     },
 
     //********Node control**************************************************************************************** */
+    table() {
+      this.tableColumns = [
+        { type: 'select' },
+        { prop: 'name', label: 'Position Name', fixed: true },
+        // { prop: 'jobId', label: 'Job ID', fixed: true }, // Uncomment if needed
+        { prop: 'abbrev', label: 'Job Code', fixed: true },
+        {
+          label: 'Status',
+          prop: 'status',
+          type: 'tag',
+          tagType: (statusValue) => {
+            return statusValue === 0 ? 'success' : 'warning';
+          },
+          tagLabel: (statusValue) => {
+            return statusValue === 0 ? 'Active' : 'Not Active';
+          },
+          tagColor: (value) => { /* ... */ }
+        },
+        { prop: 'remark', label: 'Note' },
+        { label: 'ADD By', prop: 'createByName' },
+        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
+        { label: 'Updated By', prop: 'updateByName' },
+        { prop: 'updateTime', label: 'Last Update Time' },
+        {
+          type: 'actions', label: 'Actions', fixed: 'right', align: 'right', show: true
+        }
+      ]
+
+      this.tablebuttons =
+        [
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+          {
+            view: true,
+          }
+        ]
+    },
+
+
+
+    //**************************PopUp******************************** */
+
     openDetails(row) {
       this.mobileView = row;
       this.buttonsConfig = [
@@ -286,6 +290,9 @@ export default {
     closeDialog() {
       this.dialogVisible = false; // Method to close the dialog
     },
+
+
+    //*************************************************************** */
 
     getList() {
       this.loading = true;

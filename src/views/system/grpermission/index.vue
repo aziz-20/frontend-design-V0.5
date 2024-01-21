@@ -24,75 +24,77 @@
                 </el-button>
             </el-col>
         </el-row>
-        <el-table @selection-change="handleSelectionChange" style="width: 100%" :data=permList row-key="groupId"
-            default-expand-all v-loading="loading" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="name" column-key="defId" width="200" />
-            <el-table-column prop="status" label="status" column-key="defId" width="150" />
-            <el-table-column prop="createTime" label="createTime" column-key="defId" width="200">
-                <template #scope>
-                    {{ scope.row.createTime }}
-                </template>
-            </el-table-column>
-            <el-table-column prop="createBy" label="createBy" column-key="defId" width="150" />
-            <el-table-column prop="updateBy" label="updateBy" width="150" />
-            <el-table-column prop="createBy" label="createBy" column-key="defId " width="150" />
-            <el-table-column prop="remark" label="remark" column-key="defId " width="150" />
-            <el-table-column prop="perms" label="permitions" width="300" aria-label="prems" column-key="permId">
-                <template #default="{ row, column, $index }">
-                    <el-tag class="tagpoint" v-for="perm in row.perms" :key="perm.permId" closable
-                        @click="handeltagclick(perm)" disable-transitions>
-                        {{ perm.name }}
-                    </el-tag>
-                </template>
-            </el-table-column>
-
-
-            <el-table-column label="oparation" align="center" width="500">
-                <template #default="{ row, column, $index }">
-                    <el-button size="small" type="primary" icon="el-icon-add" @click="handleadd(row)">add</el-button>
-                    <el-button size="small" icon="el-icon-edit" @click="handleUpdate(row)">edit</el-button>
-                    <el-button size="small" type="danger" icon="el-icon-edit" @click="handleDelet(row)">delet</el-button>
-
-
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class='row-b margin-top-20'>
-
+        <div>
+            <!-- Table Header -->
+            <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+                :buttonsConfig="headers" :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
+                :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+                :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+                :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
         </div>
+
+        <div>
+            <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
+            <ReusableTable :data="permList" :columns="tableColumns" rowKey="groupId" :loading="loading"
+                :refreshTable="refreshTable" :default-expand-all="isExpandAll"
+                :handleSelectionChange="handleSelectionChange" :handleAdd="handleAdd" :handleUpdate="handleUpdate"
+                :handle_SideDelete="handle_SideDelete" :openDetails="openDetails" popUpTitle="Test"
+                :columnPopUp="columnPopUp" columnLabel="hello" :rowClassChecker="rowClassChecker"
+                :buttonsConfig="tablebuttons" @open-popup="handleOpenPopup" />
+        </div>
+        <div>
+            <PopupColumn v-model:visible="columnVisible" :buttonsConfig="tablebuttons" :selectedPerm="selectedItem"
+                :popUpTitle="popUpTitle" :columnPopUp="columnPopUp" :handleAdd="handleAdd" :handleUpdate="handleUpdate"
+                :handle_SideDelete="handleDelet">
+            </PopupColumn>
+        </div>
+
+        <div>
+            <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
+                :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleAdd="handleAdd"
+                :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
+            </PhoneTablePopUp>
+        </div>
+
+
         <addoredit :open="open" :mode="mode" :title="title" :init="mode === 'add' ? initialValuesAdd : initialValuesEdit"
             :fields="fields" @close="closeAddEdit" @submit="onsubmit" :rules="rules">
         </addoredit>
-        <el-dialog :model-value="dialogVisible" title="Permission Details" :visible="dialogVisible"
-            @close="dialogVisible = false">
-            <!-- Display details of the selected permission inside the dialog -->
-
-            <div v-if="selectedPerm">
-                <p><strong>Name:</strong> {{ selectedPerm.name }}</p>
-                <p><strong>ID:</strong> {{ selectedPerm.permId }}</p>
-
-                <!-- Add more details as needed -->
-            </div>
-        </el-dialog>
 
 
 
     </div>
 </template>
 <script>
-
+import PopupColumn from "/src/views/components/defaultTable/columnPopup"
+import ReusableTable from "@/views/components/defaultTable"
+import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
+import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import addoredit from "@/views/components/addoredit/index.vue"
 import { ElMessage } from 'element-plus'
 import { treeTransformerTwoValues } from '@/utils/dTransformer'
 export default {
     components: {
-        addoredit
+        addoredit,
+        PopupColumn,
+        ReusableTable,
+        PhoneTablePopUp,
+        tableHeader
+
     },
 
     data() {
         return {
+            selectedRows: [],
+            columnVisible: false,
+            selectedItem: [],
+            buttonsConfig: null,
+            columnPopUp: [],
+            mobileView: [],
             loading: true,
+            tableColumns: [],
+            popUpTitle: null,
+            refreshTable: true,
             mode: 'add',
             open: false,
             title: "permision",
@@ -104,6 +106,7 @@ export default {
             initialValuesEdit: undefined,
             options: [],
             permList: [],
+            tablebuttons: [],
             form: {},
             Statusoptions: [0, 1],
             queryParams: {
@@ -155,25 +158,120 @@ export default {
     },
 
     created() {
-
         this.getlist()
         this.getoptions()
-
+        this.table()
     },
 
 
     methods: {
 
+        //********************************table***************************************************************************************
+        // rowClassChecker({ row }) {
+        //     if (row.children && row.children.length > 0) {
+        //         return 'greenClass';
+        //     }
+        // },
+        table() {
+            this.tableColumns = [
+                { type: 'select' },
+                { prop: 'name', label: 'Name', minWidth: '150', fixed: 'left', show: true },
+                // { label: 'Order', prop: 'orderNum' },
+                {
+                    label: 'Status',
+                    prop: 'status',
+                    type: 'tag',
+                    tagType: (statusValue) => {
+                        return statusValue === 0 ? 'success' : 'warning';
+                    },
+                    tagLabel: (statusValue) => {
+                        return statusValue === 0 ? 'Active' : 'Not Active';
+                    },
+                    tagColor: (value) => { /* ... */ }
+                },
+                { label: 'Permission', parent: 'perms', type: 'tagPopup', align: 'center', insideKey: 'perms', name: 'name', minWidth: '330', click: this.handleOpenPopup },
+                // { label: 'Icon', prop: 'icon', minWidth: '100', type: 'icon' },
+                { label: 'ADD By', prop: 'createByName', minWidth: '110' },
+                { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '110' },
+                { label: 'Updated By', prop: 'updateByName', minWidth: '110' },
+                { prop: 'updateTime', label: 'Last Update Time', minWidth: '110' },
+                { type: 'actions', label: 'Operation', minWidth: '110', fixed: 'right', align: 'right', show: true },
+
+            ]
+
+            this.tablebuttons =
+                [
+                    // {
+                    //     add: true,
+                    //     prop: 'type',
+                    //     value: 0,
+                    // },
+                    {
+                        edit: true,
+                    },
+                    {
+                        delete: true,
+                    },
+                    {
+                        view: true,
+                    }
+                ];
+        },
+        //************************Column PopUp********************************** */
+        handleOpenPopup(selectedData) {
+            console.log(selectedData)
+            this.selectedItem = selectedData;
+            this.columnPopUp = [
+                { label: 'Name:', prop: 'name' },
+                { label: 'Functionality:', prop: 'func' },
+                { label: 'Remakes:', prop: 'name' },
+                { label: 'ADD By:', prop: 'createByName' },
+                { prop: 'createTime', label: 'Create Date:' },
+                { label: 'Updated By:', prop: 'updateByName' },
+                { prop: 'updateTime', label: 'Last Update Time:' }
+            ]
+            this.columnVisible = true;
+        },
         handeltagclick(val) {
-            console.log(val)
-            this.selectedPerm = val;
+            //When using the pop up  inside the columns please don't forget to add the closing method
+            this.$emit('open-popup', val);
+        },
+        //**********************PopUp*************************************************** */
+        openDetails(row) {
+            this.mobileView = row;
+            console.log(row)
+            this.buttonsConfig = [
+                {
+                    edit: true,
+                },
+                {
+                    delete: true,
+                },
+            ];
             this.dialogVisible = true;
         },
-        handleSelectionChange(val) {
-            this.multipleSelection = val
+        closeDialog() {
+            this.dialogVisible = false; // Method to close the dialog
+        },
+        //********************************************************************* */
 
+        //************Header control****************************************************************** */
+        toggleExpandAll() {
+            this.refreshTable = false;
+            this.isExpandAll = !this.isExpandAll;
+            this.$nextTick(() => {
+                this.refreshTable = true;
+            });
         },
 
+        //*************handle selection section************************* */
+        handleSelectionChange(selection) {
+            this.selectedRows = selection;
+            this.selectedRows.forEach(row => {
+                console.log(row.menuId, row.name); // logs the deptId and name of each selected row
+            });
+        },
+        //***************************************************************************** */
 
         getoptions() {
 
@@ -198,6 +296,7 @@ export default {
             this.$http.grpermision.permlistHierarchy(this.queryParams).then(res => {
                 const data = res?.result?.data
                 this.permList = data
+                console.log(data)
                 this.loading = false
             })
 
@@ -205,7 +304,6 @@ export default {
         resetqueary() {
             this.resetForm('queryForm')
             this.handleQuery()
-
         }
         ,
 
@@ -228,7 +326,7 @@ export default {
 
             this.open = true
         },
-        handleadd(row) {
+        handleAdd(row) {
 
             if (row.groupId != undefined) {
 
@@ -242,17 +340,34 @@ export default {
             this.open = true
 
         },
-        handleDelet(row) {
+        // handleDelet(row) {
+        //     const { groupId } = row
+        //     console.log(groupId)
+        //     this.$http.grpermision.deletDeper(groupId).then(_ => {
+        //         ElMessage({
+        //             message: ` permition.${this.mode} success`,
+        //             type: 'success',
+        //         })
+        //         this.dialogVisible = false
+        //         this.getlist()
+        //     })
+
+        // },
+
+        handleDelete(row) {
             const { groupId } = row
-            this.$http.grpermision.deletDeper(groupId).then(_ => {
-                ElMessage({
-                    message: ` permition.${this.mode} success`,
-                    type: 'success',
-                })
-                this.getlist()
-            })
+            //     console.log(groupId)
+            this.$modal.confirm('Are you sure you want to delete the data of permision/Tasks with the name "' + row.name + '"?').then(() => {
+                return this.$http.grpermision.deletDeper(row.taskId);
+            }).then(() => {
+                this.getList();
+                this.$modal.msgSuccess("Deletion successful");
+            }).catch(() => { });
 
         },
+
+
+
         openAddEdit() {
 
             this.open = true
@@ -291,20 +406,3 @@ export default {
 }
 
 </script>
-<style>
-.el-table .warning-row {
-    --el-table-tr-bg-color: var(--el-color-warning-light-9);
-}
-
-.el-table .success-row {
-    --el-table-tr-bg-color: var(--el-color-success-light-9);
-}
-
-.margin-top-20 {
-    margin-top: 20px;
-}
-
-.tagpoint {
-    cursor: pointer;
-}
-</style>
