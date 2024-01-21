@@ -11,13 +11,13 @@
         <div>
             <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
                 :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
-                :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+                :handleUpdate="handleTopUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
                 :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
                 :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
         </div>
         <div>
             <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
-            <ReusableTable :data="DatascopeList" :columns="tableColumns" rowKey="jobId" :loading="loading"
+            <ReusableTable :data="DatascopeList" :columns="tableColumns" rowKey="customId" :loading="loading"
                 :refreshTable="refreshTable" :default-expand-all="isExpandAll"
                 :handleSelectionChange="handleSelectionChange" :handleAdd="handleAdd" :handleUpdate="handleUpdate"
                 :handle_SideDelete="handle_SideDelete" :openDetails="openDetails" popUpTitle="Test"
@@ -31,49 +31,23 @@
             </PhoneTablePopUp>
         </div>
 
-        <!-- <el-table @selection-change="handleSelectionChange" style="width: 100%" :data=DatascopeList row-key="groupId"
-            default-expand-all v-loading="loading" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-            <el-table-column fixed type="selection" width="55" />
-            <el-table-column fixed prop="name" label="name" column-key="defId" width="200" />
-            <el-table-column prop="status" label="status" column-key="defId" width="150" />
-            <el-table-column prop="createTime" label="createTime" column-key="defId" width="200">
-                <template #scope>
-                    {{ scope.row.createTime }}
-                </template>
-            </el-table-column>
-            <el-table-column prop="createBy" label="createBy" column-key="defId" width="150" />
-            <el-table-column prop="updateBy" label="updateBy" width="150" />
-            <el-table-column prop="createBy" label="createBy" column-key="defId " width="150" />
-            <el-table-column prop="remark" label="remark" column-key="defId " width="150" />
-
-            <el-table-column fixed="right" label="oparation" align="center" width="200">
-                <template #default="{ row, column, $index }">
-
-                    <el-button size="small" icon="el-icon-edit" @click="handleUpdate(row)">edit</el-button>
-                    <el-button size="small" type="danger" icon="el-icon-edit"
-                        @click="handle_SideDelete(row)">delet</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class='row-b margin-top-20'>
-
-        </div> -->
+        
         <template v-if="open">
             <addoredit :open="open" :mode="mode" :title="title"
                 :init="mode === 'add' ? initialValuesAdd : initialValuesEdit" :fields="fields" @close="closeAddEdit"
                 @submit="onsubmit" :rules="rules">
             </addoredit>
         </template>
-        <el-dialog :model-value="dialogVisible" title="Permission Details" :visible="dialogVisible"
+        <!-- <el-dialog :model-value="dialogVisible" title="Permission Details" :visible="dialogVisible"
             @close="dialogVisible = false">
-            <!-- Display details of the selected permission inside the dialog -->
+            Display details of the selected permission inside the dialog -->
 
-            <div v-if="selectedPerm">
+            <!-- <div v-if="selectedPerm">
                 <p><strong>Name:</strong> {{ selectedPerm.name }}</p>
                 <p><strong>ID:</strong> {{ selectedPerm.permId }}</p>
-                <!-- Add more details as needed -->
-            </div>
-        </el-dialog>
+                Add more details as needed -->
+            <!-- </div>
+        </el-dialog> -->
         <div>
             <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
                 :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout"
@@ -267,7 +241,7 @@ export default {
         table() {
             this.tableColumns = [
                 { type: 'select' },
-                { prop: 'name', label: 'Name', fixed: true, minWidth: '150' },
+                { prop: 'name', label: 'Name', fixed: true, minWidth: '150',show:true },
                 {
                     label: 'Status',
                     prop: 'status',
@@ -398,6 +372,7 @@ export default {
                 this.isHasPreviousPage = res.result.isHasPreviousPage;
                 this.total = res.result.total;
                 this.DatascopeList = data
+                console.log(data)
                 this.loading = false
             })
 
@@ -420,61 +395,25 @@ export default {
         }
         ,
         handleQuery(e) {
-            this.getlist();
+            this.getList();
+
+        },
+        handleTopUpdate(){
+            // let side=null
+            if (this.selectedRows.length === 1) {
+                // row = ;
+                this.handleUpdate(this.selectedRows[0])
+            }
 
         },
         handleUpdate(row) {
             this.mode = "edit"
-            if (this.selectedRows.length === 1) {
-                row = this.selectedRows[0];
-            }
-
             this.fields[0].data = this.options
-            console.log(row.scoping)
-            const updatedScoping = {};
-
-            // Object.keys(row.scoping).forEach((deptId) => {
-            //     const matchingDepartment = this.deplist.find((department) => department.value === parseInt(deptId, 10));
-
-            //     if (matchingDepartment) {
-            //         updatedScoping[matchingDepartment.label] = row.scoping[deptId];
-            //     }
-            // });
-
-            // console.log(updatedScoping);
-            // row.scoping = updatedScoping
-            // console.log(row.)
-            // let x = Object.keys(row.scoping)
-            // console.log(x)
-
-            // let obj = row.scoping
-            //  x.forEach((i) => {
-            //     const d = this.deplist.filter((e) => {
-            //         if (e.value == i) {
-            //             console.log(row.scoping[i])
-            //             return true
-            //         }
-
-            //     })
-            //     console.log(d)
-
-            // })
-
-            // for (const key in obj) {
-
-            //     if (obj.hasOwnProperty(key)) {
-            //         const array = obj[key];
-            //         console.log(`Key: ${key}`);
-
-            //         for (const value of array) {
-            //             console.log(`  Value: ${value}`);
-            //         }
-            //     }
-            // }
-
+            console.log(row)
+            // const updatedScoping = {};
             this.initialValuesEdit = row
-
             this.open = true
+            
         },
         handleAdd(row) {
 
@@ -499,7 +438,6 @@ export default {
         //********************************************************************** */
         //*******************************************Delete Control Section************************************* */
         handle_SideDelete(row) {
-
             if (row.customId > 0) {
                 this.$modal.confirm('Are you sure you want to delete the"{' + row.name + '}"?').then(() => {
                     return this.$http.cusdatascope.delet(row.customId);
@@ -517,7 +455,7 @@ export default {
                     + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
                         this.selectedRows.forEach(row => {
                             // Delete the Selected Jobs
-                            this.$http.Job.deleteJob(row.customId);
+                            this.$http.cusdatascope.delet(row.customId);
                         });
                         this.getList();
                         this.$modal.msgSuccess("Deletion successful");
@@ -554,7 +492,7 @@ export default {
                         message: ` permition.${this.mode} success`,
                         type: 'success',
                     })
-                    this.getlist()
+                    this.getList()
                 })
 
             }
@@ -565,7 +503,7 @@ export default {
                         message: ` permition.${this.mode} success`,
                         type: 'success',
                     })
-                    this.getlist()
+                    this.getList()
                 })
 
             }

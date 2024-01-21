@@ -261,12 +261,13 @@
               <el-form-item :label="field.name" :prop="field.name">
                 <el-row v-for="(item, index) in pairs" :key="index">
                   <el-col :span="12">
-                    <el-tree-select v-model="item.deptId" :props="{}" :data="department" />
+                    <el-tree-select v-model="item.deptId" check-strictly check-on-click-node
+                    filterable :props="{}" :data="department" />
 
                   </el-col>
                   <el-col :span="12">
                     <el-select v-model="item.userIds" multiple placeholder="User IDs">
-                      <el-option v-for="item in field.data.userIds" :key='item.value' :label="item.label"
+                      <el-option v-for="item in field.data.userIds" filterable :key='item.value' :label="item.label"
                         :value="item.value"></el-option>
                     </el-select>
                   </el-col>
@@ -279,7 +280,7 @@
             <template v-else-if="field.inputtype === 'dynamicFieldWithOptions'">
               <el-form-item :label="field.label">
                 <el-select v-model="form[field.name]" :placeholder="field.placeholder" @change="handleOptionChange">
-                  <el-option v-for="option in field.options" :key="option.value" :label="option.label"
+                  <el-option v-for="option in field.options" check-on-click-node :key="option.value" :label="option.label"
                     :value="option.value"></el-option>
                 </el-select>
 
