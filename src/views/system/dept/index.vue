@@ -8,7 +8,7 @@
     </div>
     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
       :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }" :handleAdd="handleAdd"
-      :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+      :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
       :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
       :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     <!-- Table view  -->
@@ -61,12 +61,12 @@ export default {
   data() {
     return {
       selectedRows: [],
-      dialogVisible:false,
-      mobileView:[],
+      dialogVisible: false,
+      mobileView: [],
       tablebuttons:
         [],
       tableColumns: [],
-      mode: '',
+      modeType: null,
       loading: true,
       showSearch: true,
       initialValuesEdit: undefined,
@@ -113,72 +113,73 @@ export default {
         [
           {
             "type": "treeSelect",
-            inputtype: "departmentNew",
+            inputtype: "departments",
             name: "parentId",
+            new: true,
             label: "Department parent",
             placeholder: "Department selected",
             // span: 12
+          }
+          // ,
+          // {
+          //   "type": "input",
+          //   inputtype: "text",
+          //   name: "name",
+          //   label: "Department name",
+          //   placeholder: "Department selected",
+          //   // span: 12
 
-          },
-          {
-            "type": "input",
-            inputtype: "text",
-            name: "name",
-            label: "Department name",
-            placeholder: "Department selected",
-            // span: 12
+          // },
+          // {
+          //   // type: 'select',
+          //   inputtype: "userField",
+          //   name: "leader",
+          //   label: "Department Manger",
+          //   placeholder: "Please add the department Manger",
+          //   // style: 'width: 150px'
 
-          },
-          {
-            // type: 'select',
-            inputtype: "userField",
-            name: "leader",
-            label: "Department Manger",
-            placeholder: "Please add the department Manger",
-            // style: 'width: 150px'
+          // },
 
-          },
+          // {
+          //   "type": "email",
+          //   inputtype: "email",
+          //   name: "email",
+          //   label: "Department Email",
+          //   placeholder: "Enter email",
+          //   data: [{ value: 'email', label: 'email' }],
+          //   // span: 12
 
-          {
-            "type": "email",
-            inputtype: "email",
-            name: "email",
-            label: "Department Email",
-            placeholder: "Enter email",
-            data: [{ value: 'email', label: 'email' }],
-            // span: 12
+          // },
+          // {
+          //   "type": "phone",
+          //   inputtype: "phone",
+          //   name: "phone",
+          //   label: "Contact Number ",
+          //   placeholder: "Please add phone number",
+          //   // span: 12
+          // },
 
-          },
-          {
-            "type": "phone",
-            inputtype: "phone",
-            name: "phone",
-            label: "Contact Number ",
-            placeholder: "Please add phone number",
-            // span: 12
-          },
+          // {
+          //   "type": "sorting",
+          //   inputtype: "sorting",
+          //   name: "orderNum",
+          //   label: "Department Sorting",
+          //   placeholder: "Display Sorting",
+          //   // span: 12
 
-          {
-            "type": "sorting",
-            inputtype: "sorting",
-            name: "orderNum",
-            label: "Department Sorting",
-            placeholder: "Display Sorting",
-            // span: 12
-
-          },
-          {
-            inputtype: 'switch',
-            name: 'status',
-            label: 'Department Status',
-            switchOnColor: '#309f62',
-            switchOffColor: '#ff4949',
-            activeText: 'Enabled',
-            inactiveText: 'Disabled',
-            activeValue: 0,
-            inactiveValue: 1,
-            // span: 12
-          },
+          // },
+          // {
+          //   inputtype: 'switch',
+          //   name: 'status',
+          //   label: 'Department Status',
+          //   switchOnColor: '#309f62',
+          //   switchOffColor: '#ff4949',
+          //   activeText: 'Enabled',
+          //   inactiveText: 'Disabled',
+          //   activeValue: 0,
+          //   inactiveValue: 1,
+          //   // span: 12
+          // },
 
         ],
       rules:
@@ -251,8 +252,8 @@ export default {
 
   methods: {
     //***********************Table****************************************** */
-    table(){
-      this.tableColumns= [
+    table() {
+      this.tableColumns = [
         { type: 'select' },
         { prop: 'name', label: 'Department', fixed: true, show: true, minWidth: '150' },
         { prop: 'orderNum', label: 'Order' },
@@ -275,7 +276,7 @@ export default {
         { prop: 'updateTime', label: 'Last Update Time' },
         { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
       ]
-      this.tablebuttons=
+      this.tablebuttons =
         [
           {
             add: true,
@@ -297,18 +298,18 @@ export default {
     //***********************PopUp*************************************** */
     openDetails(row) {
       this.mobileView = row;
-      this.buttonsConfig = 
-      [
-        {
-          add: true,
-        },
-        {
-          edit: true,
-        },
-        {
-          delete: true,
-        },
-      ]
+      this.buttonsConfig =
+        [
+          {
+            add: true,
+          },
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+        ]
       this.dialogVisible = true;
     },
 
@@ -365,17 +366,22 @@ export default {
     },
     //****************Retrieving making list with value*********************************** */
     handleAdd(row) {
-      this.mode = 'add'
+      this.modeType = 'add'
 
       console.log(row)
       // this.formFieldSelectData(),
       this.open = true;
-      this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": row.deptId }
+      this.initialValuesAdd = { "status": 0, "delFlag": 0, "parentId": row.deptId }
     },
 
     //*******************Edit control section**********************************/
+    handleSideUpdate(selectedRows) {
+      if (this.selectedRows.length === 1) {
+        this.handleUpdate(this.selectedRows[0])
+      }
+    },
     handleUpdate(row) {
-      this.mode = "Edit"
+      this.modeType = "Edit"
       this.initialValuesEdit = row
       this.open = true
       console.log(this.deptOptions)
@@ -388,7 +394,7 @@ export default {
     /**************************** Submit button**************************** */
     onSubmit(n) {
       this.form = n
-      if (this.mode === 'add') {
+      if (this.modeType === 'add') {
         this.$http.dept.addDept(this.form).then(response => {
           console.log()
           console.log('sssssssssssssssssssssss' + response.data)

@@ -5,7 +5,7 @@
         <div v-if="rowData" class="details-container">
             <div class="details-row" v-for="field in fieldsConfig">
                 <div class="details-label">{{ field.label }}</div>
-                <div v v-if="field.type === 'tag'" class="details-value">
+                <div v-if="field.type === 'tag'" class="details-value">
                     <el-tag v-if="rowData[field.prop] !== null && rowData[field.prop]
                         !== undefined && field.tagType(rowData[field.prop]) !== undefined"
                         :type="tagTypeControl(field, rowData[field.prop])"
