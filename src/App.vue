@@ -20,6 +20,10 @@ export default {
   //           }
   //       }
   //   }
+  methods: {
+    
+  },
+  
   
   
 };

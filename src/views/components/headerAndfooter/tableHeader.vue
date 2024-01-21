@@ -74,7 +74,7 @@ export default {
 }
 </script>
   
-<style scoped>
+<style >
 .disabled-button {
     pointer-events: none;
     
@@ -86,6 +86,18 @@ export default {
     gap: 10px;
 }
 
+.float-right {
+    float: right;
+}
+
+.button-container {
+    display: flex;
+    justify-content: right;
+    /*This will space the buttons evenly*/
+    align-items: top;
+    /* Aligns buttons at the top of the container */
+    gap: 2px;
+}
 </style>
 
 

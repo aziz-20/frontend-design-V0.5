@@ -2,8 +2,8 @@
   <el-dialog :class="'d'" ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`"
     :visible.sync="open" :width="'60%'" :closed="closemodel" :modal-class="'editAdd'">
     <el-form :class="'form'" :model="form" ref="editForm" :rules="ru" label-position="top">
-      <div :class="'row'">
-        <div :class="field.class || 'col-16'" v-for="(field, index) in fields" :key="index">
+      <div :class="'form-row'">
+        <div :class="field.class || 'co-16  col-6'" v-for="(field, index) in fields" :key="index">
           <!-- <template v-if="1"> -->
           <template v-if="shouldShowField(field)">
             <template v-if="field.type !== 'address'">
@@ -33,12 +33,13 @@
                       </div>
                     </template>
                   </el-upload> -->
-                  <el-upload  class="avatar-uploader" action="#"
-                    :show-file-list="false" :http-request="requestUpload" :before-upload="beforeAvatarUpload">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                  <el-upload    class="avatar-uploader" action="#" :show-file-list="false" :http-request="requestUpload"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="Avatar" :src="url+Avatar.src" class="avatar" />
                     <el-icon v-else class="avatar-uploader-icon">
-                     {{ '+' }}
+                      {{ '+' }}
                     </el-icon>
+                    <el-progress type="circle" :percentage="progress" v-show="isprogress" status="exception" />
                   </el-upload>
                 </template>
 
@@ -323,6 +324,7 @@
 import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject, treeTransformerMultiyvalue, treeTransformerTwoValuesAndNew } from '@/utils/dtControl/dTransformer'
 import countriesAndregions from '@/utils/Countries&Regions/data'
 import { Plus } from '@element-plus/icons-vue'
+import { ref } from 'vue';
 console.log("Countries", countriesAndregions)
 console.log(Plus)
 
@@ -333,7 +335,10 @@ export default {
       pairs: [
         { deptId: 0, userIds: [] },
       ],
-      imageUrl: '',
+      progress: 0,
+      isprogress: false,
+      imageUrl: null,
+      Avatar : null,
       usersName: [],
       verifyPassword: '',
       selectedCountryRegions: [],
@@ -504,6 +509,16 @@ export default {
         if (this.mode === 'edit' && val.scoping) {
           this.pairs = Object.keys(val.scoping).map((item) => ({ deptId: parseInt(item), userIds: val.scoping[item] }));
         }
+        if (this.mode === 'edit' && val.avatar	) {
+          console.log(this.form)
+          this.Avatar = {
+            "bucketName": this.form.avatar.split('/')[1],
+            "url": this.form.avatar,
+            "src": this.form.avatar
+          }
+          console.log(this.Avatar)
+
+        }
         if (this.mode === 'add') {
           console.log('')
         }
@@ -542,9 +557,24 @@ export default {
       },
     },
   },
-
+ 
 
   methods: {
+    // x(){
+    //     if(this.mode === 'edit'){
+    //          console.log(this.form)
+    //          this.Avatar ={
+    //             "bucketName": this.form.avatar.split('/')[1],
+    //             "url": this.form.avatar,
+    //             "src": this.form.avatar
+    //          }
+    //           console.log(this.Avatar)
+  
+    //          return 1 
+    //     }
+    //     else return this.imageUrl
+    // },
+    
     // someMethod() {
     //   if (!this.form.address) {
     //     console.log("I am in address")
@@ -561,26 +591,41 @@ export default {
     //   }
     // },
     requestUpload(file) {
-      console.log("I am in requestUpload")
-      console.log(file.file)
+      this.isprogress = true
+      this.progress = 0;
       let formData = new FormData();
       formData.append('file', file.file);
       formData.append('bucketName', 'useravatar');
-    
 
-      this.$http.upload.uploadImage(formData).then(res => {
-        console.log(res)
-        if (res.result) {
+      this.$http.upload.uploadImage(formData,this.progress).then(res => {
+        if (res.code === '0') {
+          this.progress = 100;
           this.$message.success('Upload successfully');
+          this.imageUrl = process.env.VUE_APP_IMAGE_URL + res.result.bucketName + '/' + res.result.url;
+          this.Avatar ={
+            "bucketName": res.result.bucketName,
+            "url": res.result.url,
+            "src": '/' + res.result.bucketName + '/' + res.result.url
+          }
+          this.form.avatar = this.Avatar.bucketName + '/' + this.Avatar.url
+          // console.log(this.form.avatar)
+           setTimeout(() => {
+            this.isprogress = false
+          }, 200);
           return res.result;
         } else {
+          this.isprogress = false
           this.$message.error('Upload failed');
+          
         }
       }).catch(error => {
+        this.isprogress = false
         console.error(error);
       });
 
     },
+
+
     handleAvatarSuccess(res, file) {
       console.log(res)
       console.log(file)
@@ -868,10 +913,48 @@ export default {
     handlePreview(file) {
       console.log(file);
     },
-
+    
     beforeclose(done) {
-      this.$confirm('ARE YOU SURE TO CLOSE THIS WINDOW？')
+      this.$confirm('ARE YOU SURE TO CLOSEe THIS WINDOW？')
         .then(_ => {
+          console.log(this.mode)
+          if(this.mode === 'add'){
+            if(this.Avatar !== null){
+              console.log(this.Avatar)
+              this.$http.upload.deleteUsesAvatar([this.Avatar]).then(res => {
+                console.log(res)
+                if (res.code === '0') {
+                  this.$message.success('Delete successfully');
+                  done();
+                } else {
+                  this.$message.error('Delete failed');
+                }
+              }).catch(error => {
+                console.error(error);
+              });
+            }
+            
+          }else{
+
+
+          }
+          // if(this.imageUrl !== null){
+          //   console.log(this.imageUrl)
+          //   this.$http.upload.deleteImage(this.imageUrl).then(res => {
+          //     console.log(res)
+          //     if (res.code === '0') {
+          //       this.$message.success('Delete successfully');
+          //       done();
+          //     } else {
+          //       this.$message.error('Delete failed');
+          //     }
+          //   }).catch(error => {
+          //     console.error(error);
+          //   });
+          // }
+          // else{
+          //   done();
+          // }
           this.resetForm('editForm');
           done();
         })
@@ -902,6 +985,7 @@ export default {
       this.$refs.editForm.validate(valid => {
         if (valid) {
           // Emit the submit event with the relevant data
+
           this.$emit('submit', this.form);
 
           // Reset the form and close the dialog
@@ -915,24 +999,39 @@ export default {
 
 
 
+
 }
 
 </script>
 
-<style>
-.row {
+<style scoped>
+
+.form-row{
   display: flex;
-  /* flex-direction: row; */
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 5px;
 
 }
+.form-row div{
+  flex-grow: 1;
+}
+
 
 
 @media (max-width: 720px) {
   .d {
     width: 90% !important;
+  }
+}
+@media (max-width: 500px) {
+ .form-row {
+    display: block;
+   
+  } 
+  .co-16 {
+    width: 100% !important;
   }
 }
 
@@ -941,11 +1040,13 @@ img {
   margin-left: auto;
   margin-right: auto;
 }
+
 .avatar-uploader .avatar {
   width: 178px;
   height: 178px;
   display: block;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
@@ -957,6 +1058,9 @@ img {
 
 .avatar-uploader .el-upload:hover {
   border-color: var(--el-color-primary);
+}
+.avatar-uploader .el-progress--circle{
+ position : absolute;
 }
 
 .el-icon.avatar-uploader-icon {
