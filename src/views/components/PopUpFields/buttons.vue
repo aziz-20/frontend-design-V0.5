@@ -1,14 +1,22 @@
 <template>
     <div :class="stylingClass || 'button-container'">
-        <div v-for="button in buttonsConfig" :key="index">
-            <div v-if="button.newField">
+        <div v-for="button in buttonsConfig" >
+
+            <div v-if="button.edit">
                 <el-icon v-if="!button.prop || !('value' in button) || rowData[button.prop] == button.value"
-                    :name="button.name" :size="button.size" :color="button.color" @click="button.handler(rowData)"
-                    v-hasPermi="button.permission">
-                    <component :is="button.icon" />
+                    :name="button.name" :size="button.size || 20" :color="button.color || 'blue'"
+                    @click="handleUpdate(rowData)" v-hasPermi="['system:user:add']">
+                    <component :is="button.icon || 'Edit'" />
                 </el-icon>
             </div>
-            <div v-if="button.add">
+            <div v-else-if="button.delete">
+                <el-icon v-if="!button.prop || !('value' in button) || rowData[button.prop] == button.value"
+                    :name="button.name" :size="button.size || 20" :color="button.color || 'red'"
+                    @click="handleDelete(rowData)" v-hasPermi="['system:user:add']">
+                    <component :is="button.icon || 'Delete'" />
+                </el-icon>
+            </div>
+            <div v-else-if="button.add">
                 <el-icon v-if="!button.prop || !('value' in button)
                     || rowData[button.prop] == button.value
                     && (button.condition ? button.condition(rowData) : true)" :name="button.name"
@@ -17,26 +25,19 @@
                     <component :is="button.icon || 'Plus'" />
                 </el-icon>
             </div>
-            <div v-if="button.edit">
-                <el-icon v-if="!button.prop || !('value' in button) || rowData[button.prop] == button.value"
-                    :name="button.name" :size="button.size || 20" :color="button.color || 'blue'"
-                    @click="handleUpdate(rowData)" v-hasPermi="['system:user:add']">
-                    <component :is="button.icon || 'Edit'" />
-                </el-icon>
-            </div>
-            <div v-if="button.delete">
-                <el-icon v-if="!button.prop || !('value' in button) || rowData[button.prop] == button.value"
-                    :name="button.name" :size="button.size || 20" :color="button.color || 'red'"
-                    @click="handleDelete(rowData)" v-hasPermi="['system:user:add']">
-                    <component :is="button.icon || 'Delete'" />
-                </el-icon>
-            </div>
-            <div v-if="button.normal">
+            <div v-else-if="button.normal">
                 <el-button :dark="button.isDark" :class="button.class" :plain="button.plain" :type="button.type"
                     :icon="button.icon || Edit" :color="button.color" :size="button.size || 'small'" @click="button.handler"
                     v-hasPermi="button.permission">
                     {{ button.name }}
                 </el-button>
+            </div>
+            <div v-else-if="button.newIcon">
+                <el-icon v-if="!button.prop || !('value' in button) || rowData[button.prop] == button.value"
+                    :name="button.name" :size="button.size" :color="button.color" @click="button.handler(rowData)"
+                    v-hasPermi="button.permission">
+                    <component :is="button.icon" />
+                </el-icon>
             </div>
         </div>
     </div>

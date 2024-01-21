@@ -1,5 +1,5 @@
 <template>
-    <div class="row mb-4 flex-gap-10">
+    <div class="HeaderContainer">
         <div v-if="buttons.new">
             <el-button :color="buttonColor" :dark="isDark" plain type="primary" :icon="Add" :size="size ||'small'"
                 v-hasPermi="['system:user:add']" @click="handleAdd">NEW</el-button>
@@ -77,10 +77,11 @@ export default {
 <style >
 .disabled-button {
     pointer-events: none;
+    
     /* Add other styles to make the button appear disabled */
 }
 
-.flex-gap-10 {
+.HeaderContainer {
     display: flex;
     gap: 10px;
 }

@@ -64,42 +64,8 @@ export default {
       dialogVisible:false,
       mobileView:[],
       tablebuttons:
-        [
-          {
-            add: true,
-          },
-          {
-            edit: true,
-          },
-          {
-            delete: true,
-          },
-          {
-            view: true,
-          }
-        ],
-      tableColumns: [
-        { type: 'select' },
-        { prop: 'name', label: 'Department', fixed: true, show: true, minWidth: '150' },
-        { prop: 'orderNum', label: 'Order' },
-        {
-          prop: 'status', label: 'Status', type: 'tag',
-          tagType: (statusValue) => {
-            return statusValue === 0 ? 'success' : 'warning';
-          },
-          tagLabel: (statusValue) => {
-            return statusValue === 0 ? 'Active' : 'Not Active';
-          },
-          tagColor: (value) => { /* ... */ }
-        },
-        { prop: 'leader', label: 'Leader' },
-        { prop: 'phone', label: 'Phone', minWidth: '100' },
-        { prop: 'email', label: 'Email', minWidth: '100' },
-        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
-        { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
-        { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
-        { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
-      ],
+        [],
+      tableColumns: [],
       mode: '',
       loading: true,
       showSearch: true,
@@ -279,13 +245,60 @@ export default {
   //**************Creating ************************************** */  
   created() {
     this.getList();
+    this.table();
   },
   //**************Methods Control*********************************************** */
 
   methods: {
+    //***********************Table****************************************** */
+    table(){
+      this.tableColumns= [
+        { type: 'select' },
+        { prop: 'name', label: 'Department', fixed: true, show: true, minWidth: '150' },
+        { prop: 'orderNum', label: 'Order' },
+        {
+          prop: 'status', label: 'Status', type: 'tag',
+          tagType: (statusValue) => {
+            return statusValue === 0 ? 'success' : 'warning';
+          },
+          tagLabel: (statusValue) => {
+            return statusValue === 0 ? 'Active' : 'Not Active';
+          },
+          tagColor: (value) => { /* ... */ }
+        },
+        { prop: 'leader', label: 'Leader' },
+        { prop: 'phone', label: 'Phone', minWidth: '100' },
+        { prop: 'email', label: 'Email', minWidth: '100' },
+        { label: 'ADD By', prop: 'createByName' },
+        { prop: 'createTime', label: 'Create Date', type: 'calendar' },
+        { label: 'Updated By', prop: 'updateByName' },
+        { prop: 'updateTime', label: 'Last Update Time' },
+        { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
+      ]
+      this.tablebuttons=
+        [
+          {
+            add: true,
+          },
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+          {
+            view: true,
+          }
+        ]
+
+
+    },
+
+    //***********************PopUp*************************************** */
     openDetails(row) {
       this.mobileView = row;
-      this.buttonsConfig = [
+      this.buttonsConfig = 
+      [
         {
           add: true,
         },
@@ -295,7 +308,7 @@ export default {
         {
           delete: true,
         },
-      ];
+      ]
       this.dialogVisible = true;
     },
 
@@ -491,12 +504,6 @@ export default {
       });
 
       console.log('test' + selection)
-
-      // if (this.selectedRows.length > 0) {
-      //   // console.log('Data exists');
-      // } else {
-      //   // console.log('No data');
-      // }
     },
 
 

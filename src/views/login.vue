@@ -28,7 +28,7 @@ export default {
     data() {
         return {
             form: {
-                email: "modi@neu.com",
+                email: "zizo@gmail.com",
                 password: "123456",
                 rememberMe: false,
             },
@@ -49,7 +49,7 @@ export default {
             this.$store.dispatch("Login", this.form).then(() => {
                 this.$router.push({ path: this.redirect || "/" }).catch(() => { });
             }).catch(() => {
-                console.log("error")
+                console.error("error")
             });
         },
     },

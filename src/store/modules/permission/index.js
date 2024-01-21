@@ -55,8 +55,8 @@ const permission = {
                 path: 'grpermission',
                 hidden: 1,
                 meta: {
-                  icon: 'dashboard',
-                  title: 'grpermission',
+                  icon: 'permission',
+                  title: 'Group permission',
                 },
                 component: 'system/grpermission',
               },
@@ -66,8 +66,8 @@ const permission = {
                 path: 'cudatascope',
                 hidden: 1,
                 meta: {
-                  icon: 'dashboard',
-                  title: 'cudatascope',
+                  icon: 'custompermission',
+                  title: 'Custom permission',
                 },
                 component: 'system/cudatascope',
               },
@@ -162,7 +162,27 @@ const permission = {
                 path : 'defaultpermission',
                 component :'system/defaultpermission',
                 meta : {title : 'defaultpermission', icon : 'dashboard'}
-              }
+              },
+              {
+                id: 101,
+                path : 'address',
+                name : 'address',
+                hidden: 1,
+                component : 'system/address',
+                meta : {title : 'Addresses', icon : 'location'}
+              }  ,
+              // {
+              //   id: 132,
+              //   name: 'taskLogs',
+              //   path: 'taskLogs',
+              //   hidden: 1,
+              //   meta: 
+              //   {
+              //     icon: 'log',
+              //     title: 'TaskLogs',
+              //   },
+              //   component: 'system/taskLogs',
+              // } ,
               
             ]
 

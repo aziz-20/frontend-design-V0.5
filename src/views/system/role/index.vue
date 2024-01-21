@@ -4,13 +4,13 @@
     <div class="custom-drawer" :class="{ 'is-visible': showSide }">
       <el-button class="toggle-button" icon="el-icon-menu" @click="toggleDrawer"></el-button>
       <div class="custom-drawer" :class="{ 'is-visible': showSide }">
-      <DrawerToggleButton :isDrawerOpen="showSide" @toggle-drawer="toggleDrawer" />
-      <el-input v-model="sideSearch" placeholder="Please enter keyword" @input="filterMethod"
-              :expand-on-click-node="true" />
-      <el-tree :data="deptOptions" :filter-method="filterMethod" :height="208" :default-expand-all="isExpandAll"
-        highlight-current @node-click="handleNodeClick" />
+        <DrawerToggleButton :isDrawerOpen="showSide" @toggle-drawer="toggleDrawer" />
+        <el-input v-model="sideSearch" placeholder="Please enter keyword" @input="filterMethod"
+          :expand-on-click-node="true" />
+        <el-tree :data="deptOptions" :filter-method="filterMethod" :height="208" :default-expand-all="isExpandAll"
+          highlight-current @node-click="handleNodeClick" />
       </div>
-      </div>
+    </div>
     <el-main>
       <div class="flex" v-if="showSearch">
         <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
@@ -35,17 +35,16 @@
           <el-button v-else @click="showSide = false" style="float: left;">Hide Side</el-button>
         </el-col>
       </el-row>
-        <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
-          :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleUpdate="handleUpdate"
-          :handle_SideDelete="handle_SideDelete">
-        </PhoneTablePopUp>
- 
+      <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
+        :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleUpdate="handleUpdate"
+        :handle_SideDelete="handle_SideDelete">
+      </PhoneTablePopUp>
+
       <dev>
         <ReusableTable :data="roleList" :columns="tableColumns" rowKey="roleId" :loading="loading"
           :refreshTable="refreshTable" :default-expand-all="isExpandAll" :handleSelectionChange="handleSelectionChange"
           :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete" :openDetails="openDetails" popUpTitle="Test"
-          :buttonsConfig="tablebuttons"
-          @open-popup="handleOpenPopup" />
+          :buttonsConfig="tablebuttons" @open-popup="handleOpenPopup" />
       </dev>
       <template v-if="open">
         <addoredit ref="form" style="width:35%" :rules="fields_rules" :open="open" :mode="modeType" :title="title"
@@ -57,10 +56,10 @@
 
   </div>
   <div>
-  <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
-    :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout" @page-change="handlePageChange">
-  </custom-pagination>
-</div>
+    <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
+      :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout" @page-change="handlePageChange">
+    </custom-pagination>
+  </div>
 </template>
 <script>
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
@@ -91,40 +90,7 @@ export default {
   data() {
     return {
 
-      tableColumns: [
-        { type: 'select' },
-        { prop: 'name', label: 'Role Name', fixed: true, minWidth: '100', show: true },
-        { prop: 'orderNum', label: 'Order' },
-        {
-          label: 'Status',
-          prop: 'status',
-          type: 'tag',
-          tagType: (statusValue) => {
-            return statusValue === 0 ? 'success' : 'warning';
-          },
-          tagLabel: (statusValue) => {
-            return statusValue === 0 ? 'Active' : 'Not Active';
-          },
-          tagColor: (value) => { /* ... */ }
-        },
-        { prop: 'createTime', label: 'Registry Date', type: 'calendar', minWidth: '100' },
-        { prop: 'remark', label: 'Roles Note', minWidth: '100' },
-        {
-          prop: 'perms', label: 'Role Permission/s', fixed: 'right', minWidth: '100', type: 'custom',
-          customRender: row => {
-            if (row.perms && row.perms.length > 0) {
-              return `<el-tooltip effect="dark" content="${this.getJobNames(row.perms)}">
-                        <div>${row.perms.name}</div>
-                      </el-tooltip>`;
-            } else {
-              return 'No Roles';
-            }
-          }
-        },
-        {
-          type: 'actions', label: 'Operations', align: 'right', fixed: 'right', minWidth: '100', show: true
-        }
-      ],
+      tableColumns: [],
       tablebuttons:
         [
           {
@@ -303,14 +269,74 @@ export default {
   created() {
     this.getSideSelection();
     this.getList();
+    this.table()
   },
-  //**************Methods Control*********************************************** */
+
 
   methods: {
     handlePageChange(newPage) {
       this.queryParams.pageNo = newPage;
       this.getList();
     },
+    //*******************table********************************************** */
+    table() {
+
+      this.tableColumns =
+        [
+          { type: 'select' },
+          { prop: 'name', label: 'Role Name', fixed: true, minWidth: '100', show: true },
+          { prop: 'orderNum', label: 'Order' },
+          {
+            label: 'Status',
+            prop: 'status',
+            type: 'tag',
+            tagType: (statusValue) => {
+              return statusValue === 0 ? 'success' : 'warning';
+            },
+            tagLabel: (statusValue) => {
+              return statusValue === 0 ? 'Active' : 'Not Active';
+            },
+            tagColor: (value) => { /* ... */ }
+          }, { label: 'ADD By', prop: 'createByName',minWidth:'100' },
+          { prop: 'createTime', label: 'Create Date', type: 'calendar',minWidth:'100' },
+          { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
+          { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
+          { prop: 'remark', label: 'Roles Note', minWidth: '100',minWidth:'100' },
+          {
+            prop: 'perms', label: 'Role Permission/s', fixed: 'right', minWidth: '100', type: 'custom',
+            customRender: row => {
+              if (row.perms && row.perms.length > 0) {
+                return `<el-tooltip effect="dark" content="${this.getJobNames(row.perms)}">
+                        <div>${row.perms.name}</div>
+                      </el-tooltip>`;
+              } else {
+                return 'No Roles';
+              }
+            }
+          },
+          {
+            type: 'actions', label: 'Operations', align: 'right', 
+            fixed: 'right', minWidth: '100', show: true
+          }
+        ]
+      this.tablebuttons =
+        [
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+          {
+            view: true,
+          }
+        ]
+
+
+    },
+    
+    //**************PopUp*********************************************** */
+
     openDetails(row) {
       this.mobileView = row;
       this.buttonsConfig = [
@@ -531,7 +557,7 @@ export default {
 
     //************************************************Delete Control Section***********************************************/
     handle_SideDelete(row) {
-      console.log(row.name+":delete")
+      console.log(row.name + ":delete")
       if (row.roleId > 0) {
         console.log("delete")
         this.$modal.confirm('Are you sure you want to delete the data Menu with the name "' + row.name + '"?').then(() => {
@@ -589,68 +615,89 @@ export default {
 .custom-drawer {
   position: fixed;
   top: 0;
-  right: -300px; /* Start off-screen */
+  right: -300px;
+  /* Start off-screen */
   width: 300px;
   height: 100vh;
   background-color: #fff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  transition: transform 0.3s ease, right 0.3s ease; /* Animate these properties */
-  transform: rotateY(10deg); /* Slight tilt */
+  transition: transform 0.3s ease, right 0.3s ease;
+  /* Animate these properties */
+  transform: rotateY(10deg);
+  /* Slight tilt */
 }
 
 .custom-drawer.is-visible {
-  right: 0; /* Slide in */
-  transform: rotateY(0deg); /* Reset tilt when visible */
+  right: 0;
+  /* Slide in */
+  transform: rotateY(0deg);
+  /* Reset tilt when visible */
 }
 
 .drawer-content {
   padding: 20px;
-  transform: rotateY(-10deg); /* Counteract the drawer tilt for content */
+  transform: rotateY(-10deg);
+  /* Counteract the drawer tilt for content */
   transition: transform 0.3s ease;
 }
 
 .custom-drawer.is-visible .drawer-content {
   transform: rotateY(0deg);
-  padding-top: 50px; /* Make space for the toggle button */
+  padding-top: 50px;
+  /* Make space for the toggle button */
 }
 
 .app-container {
   transition: margin-right 0.3s ease;
 }
+
 .toggle-button {
   position: absolute;
-  top: 10px; /* Adjust as needed */
-  right: -40px; /* Half outside the drawer */
-  z-index: 1010; /* Above the drawer */
+  top: 10px;
+  /* Adjust as needed */
+  right: -40px;
+  /* Half outside the drawer */
+  z-index: 1010;
+  /* Above the drawer */
   border: none;
-  background: #fff; /* Match with drawer background or as per your design */
+  background: #fff;
+  /* Match with drawer background or as per your design */
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Optional: adds depth */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  /* Optional: adds depth */
   transition: all 0.3s ease;
 }
 
 .custom-drawer.is-visible .toggle-button {
-  right: -40px; /* Adjust if necessary */
-  transform: rotate(180deg); /* Rotate button for a cool effect */
+  right: -40px;
+  /* Adjust if necessary */
+  transform: rotate(180deg);
+  /* Rotate button for a cool effect */
 }
+
 .overlay {
-  display: none; /* Hide by default */
+  display: none;
+  /* Hide by default */
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 999; /* Below the drawer but above everything else */
-  background: rgba(0, 0, 0, 0.5); /* Dimmed background - adjust color/opacity as needed */
+  z-index: 999;
+  /* Below the drawer but above everything else */
+  background: rgba(0, 0, 0, 0.5);
+  /* Dimmed background - adjust color/opacity as needed */
 }
 
 .overlay.is-active {
-  display: block; /* Show when the drawer is visible */
+  display: block;
+  /* Show when the drawer is visible */
 }
 
 .custom-drawer {
   /* ... */
-  z-index: 1000; /* Above the overlay */
+  z-index: 1000;
+  /* Above the overlay */
 }
 </style>
