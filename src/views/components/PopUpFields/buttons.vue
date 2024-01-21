@@ -104,7 +104,7 @@ export default {
 }
 </script>
 
-<style >
+<style scoped>
 .button-container {
     display: flex;
     justify-content: center;

@@ -74,7 +74,7 @@ export default {
 }
 </script>
   
-<style scoped>
+<style >
 .disabled-button {
     pointer-events: none;
     /* Add other styles to make the button appear disabled */
@@ -96,7 +96,8 @@ export default {
     align-items: top;
     /* Aligns buttons at the top of the container */
     gap: 2px;
-}</style>
+}
+</style>
 
 
 

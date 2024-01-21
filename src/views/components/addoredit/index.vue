@@ -2,7 +2,7 @@
   <el-dialog :class="'d'" ref="form" :before-close="beforeclose" :model-value="visble" :title="`${title}`"
     :visible.sync="open" :width="'60%'" :closed="closemodel" :modal-class="'editAdd'">
     <el-form :class="'form'" :model="form" ref="editForm" :rules="ru" label-position="top">
-      <div :class="'row'">
+      <div :class="'form-row'">
         <div :class="field.class || 'co-16  col-6'" v-for="(field, index) in fields" :key="index">
           <!-- <template v-if="1"> -->
           <template v-if="shouldShowField(field)">
@@ -1004,9 +1004,9 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 
-.row {
+.form-row{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1014,7 +1014,7 @@ export default {
   gap: 5px;
 
 }
-.row div{
+.form-row div{
   flex-grow: 1;
 }
 
@@ -1026,7 +1026,7 @@ export default {
   }
 }
 @media (max-width: 500px) {
- .row {
+ .form-row {
     display: block;
    
   } 
