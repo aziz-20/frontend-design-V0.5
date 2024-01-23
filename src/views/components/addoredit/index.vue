@@ -162,7 +162,14 @@
                     @check-change="organizeSelection(field.name)" />
                   {{ console.log(this.GpermsOptions) }}
                 </template>
-
+               <!-- Group permissions 2 -->
+                <template v-else-if="field.inputtype === 'gpermision2'">
+                    <el-tree-select v-model="form[field.name]" ref="myTreeSelect" :data="this.GpermsOptions2"
+                      :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node
+                      filterable  :show-checkbox="field.showCheckbox"
+                       />
+                    {{ console.log(this.GpermsOptions2) }}
+                  </template>
 
                 <!-- CustomData Scop -->
                 <template v-if="field.inputtype === 'customDataScop'">
@@ -268,7 +275,7 @@
                   </el-col>
                   <el-col :span="12">
                     <el-select v-model="item.userIds" multiple placeholder="User IDs">
-                      <el-option v-for="item in field.data.userIds" filterable :key='item.value' :label="item.label"
+                      <el-option v-for="item in usersName" filterable :key='item.value' :label="item.label"
                         :value="item.value"></el-option>
                     </el-select>
                   </el-col>
@@ -353,6 +360,7 @@ export default {
       ilteredData: [],
       fieldData: {},
       GpermsOptions: [],
+      GpermsOptions2: [],
       customdata: [],
       days: [],
       gander: [{ label: 'Male', value: 0 },
@@ -508,10 +516,11 @@ export default {
         console.log(val)
         // this.emitFormData()
         this.formFieldSelectData()
-        if (this.mode === 'edit' && val.scoping) {
+        console.log(val)
+        if (this.mode === 'edit' && val?.scoping) {
           this.pairs = Object.keys(val.scoping).map((item) => ({ deptId: parseInt(item), userIds: val.scoping[item] }));
         }
-        if (this.mode === 'edit' && val.avatar) {
+        if (this.mode === 'edit' && val?.avatar) {
           console.log(this.form)
           this.Avatar = {
             "bucketName": this.form.avatar.split('/')[1],
@@ -521,9 +530,7 @@ export default {
           console.log(this.Avatar)
 
         }
-        if (this.mode === 'add') {
-          console.log('')
-        }
+
 
       },
     },
@@ -814,6 +821,25 @@ export default {
               ("The error:*" + message + ":*");
             });
           }
+          if (field.inputtype === 'gpermision2') {
+            console.log("in gpermision")
+            this.$http.grpermision.permlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              if (res.result && res.result.data) {
+                console.log(res.result.data)
+                this.GpermsOptions2 = treeTransformerMultiyvalue(res.result.data, 'name', 'groupId', 'children', 'name', 'groupId');
+                // NormalmapTwoPropsToObject(res.result.data, 'name', 'groupId');
+                console.log(this.GpermsOptions2)
+                console.log(typeof (this.GpermsOptions2))
+
+              } else {
+                this.loading = false;
+                this.$message.error('Failed to load Permission Group list for the selection section');
+              }
+
+            }).catch(message => {
+              ("The error:*" + message + ":*");
+            });
+          }
 
           if (field.inputtype === 'userField') {
             this.$http.MgUsers.listUsers({ "pageNo": 1, "pageSize": 0 }).then(res => {
@@ -837,17 +863,29 @@ export default {
             }).catch(message => {
               ("The error:*" + message + ":*");
             });
+            // this.$http.MgUsers.listUsers({
+            //   "pageNo": 1,
+            //   "pageSize": 0
+            // }).then(res => {
+
+            //   this.usersName = res?.result?.data.map((item) => {
+            //     return { value: item.userId, label: item.username }
+            //   }).catch(message => {
+            //     ("The error:*" + message + ":*");
+            //   });
+
+
+            // })
             this.$http.MgUsers.listUsers({
-              "pageNo": 1,
-              "pageSize": 0
+                "pageNo": 1,
+                "pageSize": 0
             }).then(res => {
 
-              this.usersName = res?.result?.data.map((item) => {
-                return { value: item.userId, label: item.username }
-              }).catch(message => {
-                ("The error:*" + message + ":*");
-              });
-
+                const data = res?.result?.data.map((item) => {
+                    return { value: item.userId, label: item.username }
+                })
+                // this.searchFields[1].data = data
+                this.usersName = data
 
             })
 

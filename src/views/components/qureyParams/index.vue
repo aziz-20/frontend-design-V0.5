@@ -1,5 +1,5 @@
 <template>
-  <el-form :inline="true" :model="queryParams" ref="queryForm" size="small" class="demo-form-inline"
+  <el-form :inline="true" :model="queryParams" ref="queryForm" size="small" class="query-form-container"
     v-show="displaySearch">
     <el-form-item v-for="(field, index) in fields" :key="index" :label="field.label">
       <template v-if="shouldShowField(field)">
@@ -32,6 +32,10 @@
         <template v-else-if="field.inputtype === 'data-picker'">
           <el-date-picker v-model="queryParams[field.name]" :size='field.size || "small"' :style="field.style"
             value-format="yyyy-MM-dd" start-placeholder="Please add the data"></el-date-picker>
+        </template>
+        <template v-else-if="field.inputtype === 'text'">
+          <el-input v-model="queryParams[field.name]" :size='field.size || "small"' :style="field.style"
+            :placeholder="field.placeholder" :label="field.label"></el-input>
         </template>
 
         <!-------------------------------------------------------------------------------------  -->
@@ -261,6 +265,14 @@ export default {
   text-align: center;
   margin-top: 10px;
   /* Adjust the margin as needed */
+}
+.query-form-container{
+  /* display: inline-block; */
+  /* Adjust the margin as needed */
+  display: flex;
+  flex-wrap: wrap;
+  
+  
 }
 </style>
 

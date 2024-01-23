@@ -71,37 +71,21 @@ import Layout from "@/Layout"
       }
     ]
   } ,
- 
-  {
-    path : '/defaultpermission',
-    component : Layout,
-    hidden:false,
+  // {
+  //   path : '/permission',
+  //   component : Layout,
+  //   hidden:false,
    
-    children : [
-      {
-        path : 'defaultpermission',
-        hidden:false,
-        name : 'defaultpermission',
-        component : () => import('@/views/system/defaultpermission'),
-        meta : {title : 'defaultpermission', icon : 'dashboard'}
-      }
-    ]
-  },
-  {
-    path : '/permission',
-    component : Layout,
-    hidden:false,
-   
-    children : [
-      {
-        path : 'permission',
-        hidden:false,
-        name : 'permission',
-        component : () => import('@/views/system/permission'),
-        meta : {title : 'permission', icon : 'dashboard'}
-      }
-    ]
-  },
+  //   children : [
+  //     {
+  //       path : 'permission',
+  //       hidden:false,
+  //       name : 'permission',
+  //       component : () => import('@/views/system/permission'),
+  //       meta : {title : 'permission', icon : 'dashboard'}
+  //     }
+  //   ]
+  // },
   {
     path : '/grpermission',
     component : Layout,

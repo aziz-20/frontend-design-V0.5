@@ -323,7 +323,9 @@ export default {
 
 //********************************table***************************************************************************************
 rowClassChecker({ row }) {
+      console.log(row)
       if (row.children && row.children.length > 0) {
+        console.log(row)
         return 'greenClass';
       }
     },
@@ -698,8 +700,8 @@ rowClassChecker({ row }) {
 </script>
 
 <style >
-.greenClass {
-  background-color: rgb(227, 235, 227);
+.el-table .greenClass {
+  background-color: rgb(10, 52, 10);
 }
 </style>
   

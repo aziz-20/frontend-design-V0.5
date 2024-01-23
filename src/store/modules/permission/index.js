@@ -45,7 +45,7 @@ const permission = {
             hidden: 1,
             meta: {
               icon: 'dashboard',
-              title: 'grpermission',
+              title: 'System',
             },
             component: 'Layout',
             children: [
@@ -70,6 +70,23 @@ const permission = {
                   title: 'Custom permission',
                 },
                 component: 'system/cudatascope',
+              },
+              {
+                id: 888,
+                name : 'defaultpermission',
+                path : 'defaultpermission',
+                hidden: 1,
+                component :'system/defaultpermission',
+                meta : {title : 'defaultpermission', icon : 'dashboard'}
+              },
+              {
+                id: 881,
+                name : 'permission',
+                path : 'permission',
+                hidden: 1,
+                component :'system/permission',
+                meta : {title : 'permission', icon : 'dashboard'}
+
               },
               {
                 id: 124,
@@ -156,13 +173,6 @@ const permission = {
                 component : 'system/permission',
                 meta : {title : 'permission', icon : 'dashboard'}
               }  ,
-              {
-                id: 888,
-                name : 'defaultpermission',
-                path : 'defaultpermission',
-                component :'system/defaultpermission',
-                meta : {title : 'defaultpermission', icon : 'dashboard'}
-              },
               {
                 id: 101,
                 path : 'address',

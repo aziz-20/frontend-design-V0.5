@@ -1,21 +1,19 @@
 <template>
     <div class="app-container">
+        <search_control v-if="showSearch" ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
+            :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetqueary"
+            :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
+            :resetIcon="resetIcon">
+        </search_control>
 
-        <div class="flex" v-if="showSearch">
-            <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetqueary"
-                :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
-                :resetIcon="resetIcon">
-            </search_control>
-        </div>
-        <div>
+       
             <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
                 :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
                 :handleUpdate="handleTopUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
                 :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
                 :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
-        </div>
-        <div>
+        
+       
             <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
             <ReusableTable :data="DatascopeList" :columns="tableColumns" rowKey="customId" :loading="loading"
                 :refreshTable="refreshTable" :default-expand-all="isExpandAll"
@@ -23,37 +21,28 @@
                 :handle_SideDelete="handle_SideDelete" :openDetails="openDetails" popUpTitle="Test"
                 :columnPopUp="columnPopUp" columnLabel="hello" :rowClassChecker="rowClassChecker"
                 :buttonsConfig="tablebuttons" @open-popup="handleOpenPopup" />
-        </div>
-        <div>
+        
+        
             <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog" :rowData="mobileView"
                 :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig" :handleUpdate="handleUpdate"
                 :handle_SideDelete="handle_SideDelete">
             </PhoneTablePopUp>
-        </div>
+       
 
-        
+
         <template v-if="open">
             <addoredit :open="open" :mode="mode" :title="title"
                 :init="mode === 'add' ? initialValuesAdd : initialValuesEdit" :fields="fields" @close="closeAddEdit"
                 @submit="onsubmit" :rules="rules">
             </addoredit>
         </template>
-        <!-- <el-dialog :model-value="dialogVisible" title="Permission Details" :visible="dialogVisible"
-            @close="dialogVisible = false">
-            Display details of the selected permission inside the dialog -->
 
-            <!-- <div v-if="selectedPerm">
-                <p><strong>Name:</strong> {{ selectedPerm.name }}</p>
-                <p><strong>ID:</strong> {{ selectedPerm.permId }}</p>
-                Add more details as needed -->
-            <!-- </div>
-        </el-dialog> -->
-        <div>
+        
             <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
                 :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout"
                 @page-change="handlePageChange">
             </custom-pagination>
-        </div>
+        
 
 
 
@@ -122,6 +111,7 @@ export default {
                 name: undefined,
                 status: undefined,
                 userId: undefined,
+                roleId: undefined,
                 pageNo: 1,
                 pageSize: 20
             },
@@ -167,16 +157,19 @@ export default {
             searchFields: [
                 {
                     inputtype: 'departments',
-                    name: 'name',
-                    data: 'name',
+                    name: 'deptId',
                     label: 'Department Name',
 
                 },
+
                 {
-                    type: 'tree-select',
-                    name: 'userId',
-                    label: 'Data scope User',
-                    data: undefined,
+                    'type': 'roles',
+                    inputtype: "roles",
+                    name: 'roleId',
+                    label: 'Role',
+                    placeholder: 'Select Role',
+
+
                 },
                 {
                     type: 'userField',
@@ -189,10 +182,11 @@ export default {
 
                 },
                 {
-                    type: 'StatusSelect',
+                    inputtype: 'StatusSelect',
                     name: 'status',
                     label: 'Data scope Status',
                 },
+
 
             ],
             searchButtonText: 'Search',
@@ -212,7 +206,6 @@ export default {
                 status: [
                     { required: true, message: "cant be empty", trigger: "blur" }
                 ],
-
 
             }
 
@@ -241,7 +234,7 @@ export default {
         table() {
             this.tableColumns = [
                 { type: 'select' },
-                { prop: 'name', label: 'Name', fixed: true, minWidth: '150',show:true },
+                { prop: 'name', label: 'Name', fixed: true, minWidth: '150', show: true },
                 {
                     label: 'Status',
                     prop: 'status',
@@ -381,7 +374,10 @@ export default {
             this.queryParams.name = ''
             this.queryParams.status = ''
             this.queryParams.userId = ''
-            this.queryParams.pageNum = 1
+            this.queryParams.roleId = ''
+
+
+            // this.queryParams.pageNum = 1
             this.handleQuery();
         }
         ,
@@ -398,7 +394,7 @@ export default {
             this.getList();
 
         },
-        handleTopUpdate(){
+        handleTopUpdate() {
             // let side=null
             if (this.selectedRows.length === 1) {
                 // row = ;
@@ -413,7 +409,7 @@ export default {
             // const updatedScoping = {};
             this.initialValuesEdit = row
             this.open = true
-            
+
         },
         handleAdd(row) {
 
@@ -456,6 +452,7 @@ export default {
                         this.selectedRows.forEach(row => {
                             // Delete the Selected Jobs
                             this.$http.cusdatascope.delet(row.customId);
+                            this.getList();
                         });
                         this.getList();
                         this.$modal.msgSuccess("Deletion successful");

@@ -2,7 +2,7 @@
   <el-table :data="data" height="100%" :style="style || 'width: 100%'" :row-key="rowKey" v-loading="loading"
     element-loading-text="Loading..." :default-expand-all="isExpandAll" v-if="refreshTable"
     @selection-change="handleSelectionChange" show-overflow-tooltip="true" fit="true" :expand-row-keys="expandRowKeys"
-    lazy='true' :cell-class-name="rowClassChecker">
+    lazy='true' :row-class-name="rowClassChecker">
     <template v-if="!Selection">
       <el-table-column type="selection" />
     </template>
