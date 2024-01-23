@@ -2,7 +2,7 @@
     <div class="app-container">
         <div class="flex" v-if="showSearch">
             <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
+                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="Reload" :emptyFields="resetQuery"
                 :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
                 :resetIcon="resetIcon">
             </search_control>
@@ -68,7 +68,7 @@ export default {
             loading: true,
             showSearch: true,
             initialValuesEdit: undefined,
-            initialValuesAdd: { "delFlag": "0", triggerType: 0 },
+            initialValuesAdd: { "delFlag": "0", 'triggerType': 0 },
             refreshTable: true,
             loading: false,
             displaySearch: true,
@@ -86,13 +86,13 @@ export default {
             queryParams:
             {
                 targetTask: undefined,
-                taskGroup: null,
-                taskLogId: '',
+                taskGroup: undefined,
+                taskLogId: undefined,
                 taskName: undefined,
                 startTime: undefined,
                 status: undefined,
                 taskDetail: undefined,
-                triggerType: null,
+                triggerType: undefined,
                 pageNo: 1,
                 pageSize: 30
             },
@@ -116,19 +116,26 @@ export default {
                 // Define your search field configurations here
                 // Example:
                 {
-                    type: 'tasks',
-                    inputtype: "tasks",
-                    name: 'taskName',
+                    type: 'taskLog',
+                    inputtype: "taskLog",
+                    name: 'taskId',
+                    taskName:true,
                     label: 'Task Name',
                     // data: 'Position',
-                    style: 'width: 150px'
-
+                },
+                {
+                    type: 'taskLog',
+                    inputtype: "taskLog",
+                    name: 'taskGroup',
+                    taskGroup:true,
+                    label: 'Task Name',
+                    // data: 'Position',
                 },
                 {
                     "type": "selectV",
                     inputtype: "selectV",
                     name: 'triggerType',
-                    label: "Trigger Type",
+                    label: "Trigger Group",
                     data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
                     placeholder: "Please Select a Trigger",
 
@@ -164,8 +171,9 @@ export default {
         table() {
             this.tableColumns =
                 [
-                    { type: 'select', selectable: this.selectable,minWidth:'100' },
-                    { select: false, prop: 'taskName', label: 'Task Name', fixed: true,minWidth:'100', show: true },
+                    { type: 'select'},
+                    { select: false, prop: 'taskName', label: 'Task Name', fixed: true, minWidth: '100', show: true },
+                    { select: false, prop: 'taskGroup', label: 'Task Group', fixed: true, minWidth: '100'},
                     {
                         prop: 'triggerType', label: 'Trigger Type', type: 'tag',
                         tagType: (triggerType) => {
@@ -188,19 +196,9 @@ export default {
                         },
                         tagColor: (value) => { /* ... */ }
                     },
-                    {
-                        prop: 'taskRun', label: 'Task is Active', type: 'tag',
-                        tagType: (type) => {
-                            return type === 0 ? 'success' : 'warning';
-                        },
-                        tagLabel: (type) => {
-                            return type === 0 ? 'Active' : 'Not Active';
-                        },
-                        tagColor: (type) => { /* ... */ }
-                    },
-                    { prop: 'taskDetail', label: 'Task Details',minWidth:'100' },
-                    { prop: 'startTime', label: 'Trigger Starting Time', fixed: 'right',minWidth:'100' },
-                    { prop: 'endTime', label: 'Trigger Ending Time',minWidth:'100' },
+                    { prop: 'taskDetail', label: 'Task Details', minWidth: '100' },
+                    { prop: 'startTime', label: 'Trigger Starting Time', minWidth: '100' },
+                    { prop: 'endTime', label: 'Trigger Ending Time', minWidth: '100' },
                     {
                         type: 'actions', label: 'Operation', align: 'center', fixed: 'right', show: true,
                         ClassButton: 'centered-glow-button'
@@ -264,18 +262,22 @@ export default {
         },
 
         /** Reset button operation */
+        Reload() {
+            this.resetQuery()
+            this.getList();
+
+        },
 
         resetQuery() {
             this.queryParams.targetTask = undefined,
-                this.queryParams.taskGroup = null,
-                this.queryParams.taskLogId = null,
+                this.queryParams.taskGroup = undefined,
+                this.queryParams.taskLogId = undefined,
                 this.queryParams.taskName = undefined,
                 this.queryParams.startTime = undefined,
                 this.queryParams.status = undefined,
-                this.queryParams.taskDetail = undefined,
-                this.queryParams.triggerType = null,
-                this.handleQuery();
-            this.getList();
+                this.queryParams.startTime = undefined,
+                this.queryParams.exceptionInfo = undefined,
+                this.queryParams.targetTask = undefined
         },
 
     },

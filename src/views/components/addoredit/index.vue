@@ -9,7 +9,8 @@
             <template v-if="field.type !== 'address'">
               <el-form-item :label="field.label" :prop="field.prop" :style="field.style">
                 <template v-if="field.inputtype === 'email'">
-                  <el-input :type="'email'" v-model="form[field.name]" :placeholder="field.placeholder" :size="field.size||'mini'" />
+                  <el-input :type="'email'" v-model="form[field.name]" :placeholder="field.placeholder"
+                    :size="field.size || 'mini'" />
                 </template>
                 <template v-if="field.type === 'photo'">
                   <div>
@@ -18,8 +19,8 @@
                   </div>
                 </template>
                 <template v-else-if="field.inputtype === 'text'">
-                  <el-input :type="'text'" v-model="form[field.name]" :placeholder="field.placeholder" :size="field.size||'mini'"
-                    :suffix-icon="field.icon ?? ''" />
+                  <el-input :type="'text'" v-model="form[field.name]" :placeholder="field.placeholder"
+                    :size="field.size || 'mini'" :suffix-icon="field.icon ?? ''" />
                 </template>
                 <template v-else-if="field.inputtype === 'upload'">
                   <!-- <el-upload v-model:fileList="form[field.name]" class="upload-demo" :action="field.action"
@@ -53,26 +54,26 @@
                 <!-- Password Fields -->
                 <template v-else-if="field.inputtype === 'password'">
                   <el-input :type="'password'" v-model="form[field.name]" :placeholder="field.placeholder"
-                  :size="field.size||'mini'" />
+                    :size="field.size || 'mini'" />
                 </template>
                 <template v-else-if="field.inputtype === 'verifyPassword'">
                   <el-form-item :label="field.label" :prop="field.name" :rules="verifyPasswordRule()">
                     <el-input :type="'password'" v-model="verifyPassword" :placeholder="field.placeholder"
-                    :size="field.size||'mini'" />
+                      :size="field.size || 'mini'" />
                   </el-form-item>
                 </template>
 
                 <template v-else-if="field.inputtype === 'confirm'">
                   <el-row :class="field.row" :span="12" flex>
                     <el-input :type="'password'" v-model="form[field.name]" :placeholder="field.placeholder"
-                      :span="field.span" :size="field.size||'mini'" multiple checkbox />
+                      :span="field.span" :size="field.size || 'mini'" multiple checkbox />
                   </el-row>
                 </template>
                 <!-- Phone Field -->
                 <template v-else-if="field.inputtype === 'phone'">
                   <el-row :class="field.row" :span="12" flex>
                     <el-input type="phone" v-model="form[field.name]" :placeholder="field.placeholder" :span="field.span"
-                    :size="field.size||'mini'" />
+                      :size="field.size || 'mini'" />
                   </el-row>
                 </template>
 
@@ -80,7 +81,7 @@
                 <template v-else-if="field.inputtype === 'sorting'">
                   <!-- <el-row :class="field.row" flex> -->
                   <el-input-number v-model="form[field.name]" :placeholder="field.placeholder" controls-position="right"
-                    :min="field.min || 0" :max="field.max" :size="field.size||'mini'" />
+                    :min="field.min || 0" :max="field.max" :size="field.size || 'mini'" />
                   <!-- </el-row> -->
                 </template>
 
@@ -110,7 +111,7 @@
                 <template v-else-if="field.inputtype === 'MSelect'">
                   <el-select v-model="form[field.name]" :placeholder="field.placeholder">
                     <el-option v-for="d in field.data" :key="d.value" :label="d.label" :value="d.value" filterable
-                      multiple :size="field.size||'mini'"></el-option>
+                      multiple :size="field.size || 'mini'"></el-option>
                   </el-select>
                 </template>
                 <template v-if="field.inputtype === 'selectV'">
@@ -137,15 +138,13 @@
                 <!-- Roles Selecting Section -->
                 <template v-if="field.inputtype === 'roles'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="roles"
-                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
-                    :max-collapse-tags="3" />
+                    :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
                   <!-- {{ this.role }} -->
                 </template>
                 <!-- Position Selecting Section -->
                 <template v-if="field.inputtype === 'Position'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="Position"
-                    style="width: 240px" :multiple="field.multiple" collapse-tags collapse-tags-tooltip
-                    :max-collapse-tags="3" />
+                    :multiple="field.multiple" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" />
                 </template>
                 <!-- Menu Selecting Section -->
                 <template v-else-if="field.inputtype === 'menu'">
@@ -167,15 +166,14 @@
                 <!-- CustomData Scop -->
                 <template v-if="field.inputtype === 'customDataScop'">
                   <el-select-v2 v-model="form[field.name]" :placeholder="field.placeholder" :options="customdata"
-                    style="width: 240px" collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
-                    :multiple="field.multiple || false" :show-checkbox="field.showCheckbox || false" />
+                    collapse-tags collapse-tags-tooltip :max-collapse-tags="3" :multiple="field.multiple || false"
+                    :show-checkbox="field.showCheckbox || false" />
                   {{ this.role }}
                 </template>
                 <!-----------------------------User Name-------------------- -->
                 <template v-if="field.inputtype === 'userField'">
                   <el-select-v2 v-model="form[field.name]" :multiple="field.multiple" :placeholder="field.placeholder"
-                    :options="username" style="width: 240px" collapse-tags collapse-tags-tooltip :max-collapse-tags="3"
-                    filterable />
+                    :options="username" collapse-tags collapse-tags-tooltip :max-collapse-tags="3" filterable />
                 </template>
                 <!-------------------------------------------- --------------------------------------------- -->
                 <template v-else-if="field.inputtype === 'Gender'">
@@ -195,10 +193,11 @@
                 </template>
                 <template v-else-if="field.inputtype === 'textarea'">
                   <el-input v-model="form[field.name]" :rows="2" type="textarea" :placeholder="field.placeholder"
-                  :size="field.size||'mini'" />
+                    :size="field.size || 'mini'" />
                 </template>
               </el-form-item>
             </template>
+            <!-- Icon Field -->
 
             <!-- -------------------------------------------------------------------- -->
             <template v-if="field.inputtype === 'schedule'">
@@ -209,8 +208,8 @@
                     <el-form-item :label="subField.label">
                       <template v-if="subField.inputtype === 'DaysWeek'">
                         <el-select-v2 v-model="form['schedule'][subField.name]" :placeholder="subField.placeholder"
-                          :options="days" style="width: 240px" :multiple="subField.multiple" collapse-tags
-                          collapse-tags-tooltip :max-collapse-tags="3" />
+                          :options="days" :multiple="subField.multiple" collapse-tags collapse-tags-tooltip
+                          :max-collapse-tags="3" />
                         <!-- {{ typeof (form['schedule'][subField.name]) }} -->
                       </template>
                       <template v-if="subField.inputtype === 'text'">
@@ -220,14 +219,15 @@
                       </template>
                       <template v-else-if="subField.inputtype === 'sorting'">
                         <el-input-number v-model="form['schedule'][subField.name]" :placeholder="field.placeholder"
-                          controls-position="right" :min="subField.min || 0" :max="subField.max" :size="subField.size||'mini'" />
+                          controls-position="right" :min="subField.min || 0" :max="subField.max"
+                          :size="subField.size || 'mini'" />
                       </template>
                     </el-form-item>
                   </template>
                 </div>
               </div>
             </template>
-
+            <!------------- Address Fields ---------------------->
             <template v-if="field.inputtype === 'address'">
               <div :class="'row'">
                 <div :class="'col-16'" v-for="(subField, index) in field.data" :key="index">
@@ -257,13 +257,28 @@
                 </div>
               </div>
             </template>
+            <!---------------------- Address---------------------------------------------------- -->
+            <template v-if="field.inputtype === 'country'">
+              <el-select v-model="form[field.name]" :placeholder="field.placeholder || 'Select Country'"
+                @change="countryChange" filterable>
+                <el-option v-for="country in countries" :key="country.value" :label="country.label"
+                  :value="country.value">
+                </el-option>
+              </el-select>
+            </template>
+            <template v-else-if="field.inputtype === 'state'">
+              <el-select v-model="form[field.name]" placeholder="Select State" filterable>
+                <el-option v-for="region in selectedCountryRegions" :key="region.value" :label="region.label"
+                  :value="region.value">
+                </el-option>
+              </el-select>
+            </template>
             <!------------ Dynamic Field Control------------------ -->
             <template v-else-if="field.inputtype === 'dynamicFeild'">
               <el-form-item :label="field.name" :prop="field.name">
                 <el-row v-for="(item, index) in pairs" :key="index">
                   <el-col :span="12">
                     <el-tree-select v-model="item.deptId" :props="{}" :data="department" />
-
                   </el-col>
                   <el-col :span="12">
                     <el-select v-model="item.userIds" multiple placeholder="User IDs">
@@ -328,7 +343,6 @@ import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue';
 console.log("Countries", countriesAndregions)
 console.log(Plus)
-
 export default {
 
   data() {
@@ -358,27 +372,14 @@ export default {
       { label: 'Female', value: 1 }],
       selectedValues: {}, // Selected values storage
       query: '',
-      form: {
-        // status: 0,
-        // delFlag: 0,
-        // scoping: {},
-        // address: {
-        //   delFlag: 0,
-        //   status: 0,
-        //   country: '',
-        //   state: '',
-        //   city: '',
-        //   zipcode: '',
-        //   detail: ''
-        // }
-      },
+      form: {},
       url: 'http://181.215.79.209:9005',
 
       countries: countriesAndregions.map(country => ({
-        value: country.countryShortCode,
+        value: country.countryName,
         label: country.countryName,
         regions: country.regions.map(region => ({
-          value: region.shortCode,
+          value: region.name,
           label: region.name,
         })),
       })),
@@ -508,7 +509,8 @@ export default {
         // this.emitFormData()
         this.formFieldSelectData()
         if (this.mode === 'edit' && val.scoping) {
-          this.pairs = Object.keys(val.scoping).map((item) => ({ deptId: parseInt(item), userIds: val.scoping[item] }));
+          this.pairs = Object.keys(val.scoping).map((item) =>
+           ({ deptId: parseInt(item), userIds: val.scoping[item] }));
         }
         if (this.mode === 'edit' && val.avatar) {
           console.log(this.form)
@@ -523,7 +525,6 @@ export default {
         if (this.mode === 'add') {
           console.log('')
         }
-
       },
     },
     pairs: {
@@ -591,13 +592,17 @@ export default {
     //     };
     //   }
     // },
+    // Icon method
+    selected(name) {
+      this.form.icon = name;
+    },
+    //
     requestUpload(file) {
       this.isprogress = true
       this.progress = 0;
       let formData = new FormData();
       formData.append('file', file.file);
       formData.append('bucketName', 'useravatar');
-
       this.$http.upload.uploadImage(formData, this.progress).then(res => {
         if (res.code === '0') {
           this.progress = 100;
@@ -608,7 +613,7 @@ export default {
             "url": res.result.url,
             "src": '/' + res.result.bucketName + '/' + res.result.url
           }
-          this.form.avatar = this.Avatar.bucketName + '/' + this.Avatar.url
+          this.form.avatar = '/'+this.Avatar.bucketName + '/' + this.Avatar.url
           // console.log(this.form.avatar)
           setTimeout(() => {
             this.isprogress = false
@@ -617,7 +622,6 @@ export default {
         } else {
           this.isprogress = false
           this.$message.error('Upload failed');
-
         }
       }).catch(error => {
         this.isprogress = false
@@ -634,16 +638,28 @@ export default {
     },
     beforeAvatarUpload(file) {
       console.log(file)
-      const isJPG = file.type === 'image/jpeg';
+      const isImage = file.type.startsWith('image/');
       const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isJPG) {
-        this.$message.error('Picture must be JPG format!');
+      if (!isImage) {
+        this.$message.error('File must be an image!');
       }
       if (!isLt2M) {
-        this.$message.error('Picture size can not exceed 2MB!');
+        this.$message.error('Image size can not exceed 2MB!');
       }
-      return isJPG && isLt2M;
+      return isImage && isLt2M;
     },
+    // beforeAvatarUpload(file) {
+    //   console.log(file)
+    //   const isJPG = file.type === 'image/jpeg/png';
+    //   const isLt2M = file.size / 1024 / 1024 < 2;
+    //   if (!isJPG) {
+    //     this.$message.error('Picture must be JPG format!');
+    //   }
+    //   if (!isLt2M) {
+    //     this.$message.error('Picture size can not exceed 2MB!');
+    //   }
+    //   return isJPG && isLt2M;
+    // },
     organizeSelection(selectedValues) {
       const organizedData = {};
       // Helper function to find the parent of a given value
@@ -709,7 +725,6 @@ export default {
       if (!this.pairs) {
         this.pairs = [];
       }
-
       // Now you can safely push an item into the pairs array
       this.pairs.push({ deptId: '', userIds: [] });
     },
@@ -749,7 +764,7 @@ export default {
                 console.log('other')
                 this.department = treeTransformerTwoValues(res.result.data, 'name', 'deptId');
               }
- 
+
             }).catch(message => {
               ("The error:*" + message + ":*");
             });
@@ -794,7 +809,6 @@ export default {
               ("The error:*" + message + ":*");
             });
           }
-
           if (field.inputtype === 'gpermision') {
             console.log("in gpermision")
             this.$http.grpermision.permlistHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
@@ -1013,8 +1027,6 @@ export default {
 .form-row div {
   flex-grow: 1;
 }
-
-
 
 @media (max-width: 720px) {
   .d {

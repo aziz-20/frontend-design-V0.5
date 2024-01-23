@@ -1,13 +1,11 @@
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams } from '../setting'
-import { ElMessage, ElMessageBox,ElNotification  } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import modal from '@/plugins/modal'
 
 export let isRelogin = { show: false };
 export function requestIntersept(config) {
- 
-
     const isToken = (config.headers || {}).isToken === false
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
     if (getToken() && !isToken) {
@@ -55,9 +53,6 @@ export function requestIntersept(config) {
     return config
 }
 
-
-
-
 export function responseIntersept(res) {
 
     console.log(res)
@@ -100,14 +95,14 @@ export function responseIntersept(res) {
         })
         return Promise.reject('error')
     } else if (code !== '0') {
-        
+
         modal.notifyError(msg)
         return Promise.reject('error')
     } else {
-    
+
         return res.data
     }
-    
+
 
 }
 
