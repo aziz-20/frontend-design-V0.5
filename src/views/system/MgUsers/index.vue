@@ -11,15 +11,16 @@
                 <el-main>
                     <div class="flex" v-if="showSearch">
                         <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-                            :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
-                            :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
-                            :resetIcon="resetIcon" :visible="isFormVisible" :hiddenFields="hiddenFields">
+                            :hierarchicalData="transNameList" :handleQuery="search" :emptyFields="resetQuery"
+                            :resetQuery="Reload" :searchButtonText="searchButtonText" :resetButtonText="resetButtonText"
+                            :searchIcon="searchIcon" :resetIcon="resetIcon" :visible="isFormVisible"
+                            :hiddenFields="hiddenFields">
                         </search_control>
                     </div>
                     <!-- Table Header -->
                     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
                         :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
-                        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+                        :handleAdd="handleAdd" :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll"
                         :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
                         :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
@@ -28,7 +29,7 @@
                         <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
                         <ReusableTable :data="usersList" :columns="tableColumns" rowKey="userId" :loading="loading"
                             :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange"
-                            :handleUpdate="handleSideUpdate" :handle_SideDelete="handle_SideDelete"
+                            :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete"
                             :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
                             :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons"
                             @open-popup="handleOpenPopup" />
@@ -82,9 +83,7 @@
 </template>
 <script>
 import ReusableTable from "@/views/components/defaultTable"
-
 import PopupColumn from "/src/views/components/defaultTable/columnPopup"
-
 import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
@@ -365,7 +364,7 @@ export default {
                             name: 'dayIds',
                             label: "Select Day/s",
                             placeholder: "Please select an option",
-                            multiple: true, 
+                            multiple: true,
                             // span: 6,
                             // showMode: 'edit'
 
@@ -413,6 +412,7 @@ export default {
                     type: 'userField',
                     inputtype: "userField",
                     name: 'userId',
+                    username: true,
                     label: 'User Name',
                     placeholder: "Enter username",
                     style: 'width: 150px'
@@ -428,6 +428,7 @@ export default {
                     type: 'userField',
                     inputtype: "userField",
                     name: 'email',
+                    email: true,
                     label: 'Users Email',
                     placeholder: "Select Email",
                     style: 'width: 150px'
@@ -444,7 +445,7 @@ export default {
                 {
                     'type': 'roles',
                     inputtype: "roles",
-                    name: 'roleIds',
+                    name: 'roleId',
                     label: 'Role',
                     placeholder: 'Select Role',
                     style: 'width: 150px'
@@ -476,7 +477,7 @@ export default {
             this.tableColumns = [
                 { type: 'select' },
                 { type: 'photo', label: 'avatar', fixed: true },
-                { prop: 'username', label: 'User Name', fixed: true, show: true, minWidth: '100',align:'center' },
+                { prop: 'username', label: 'User Name', fixed: true, show: true, minWidth: '100', align: 'center' },
                 // { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
                 {
                     prop: 'sex', label: 'Gender', type: 'tag',
@@ -517,7 +518,7 @@ export default {
                         }
                     }
                 },
-                { label: 'Role/s', prop:'roles', minWidth: '200',align:'center'},
+                { label: 'Role/s', prop: 'roles', minWidth: '200', align: 'center' },
                 { label: 'ADD By', prop: 'createByName', minWidth: '100' },
                 { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '100' },
                 { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
@@ -633,18 +634,10 @@ export default {
             this.queryParams.sideSearchToAdd = data
             console.log(data.value)
             this.queryParams.deptId = data.value;
-            this.handleQuery();
+            this.search();
         },
 
-        //**************Jobs/Dept Join Control***************************************** */
-        // getRoleNames(roleIds) {
-        //     return roleIds.map(roleId => roleId.name).join(',\n ');
-        // },
-
-
-        // getJobNames(jobs) {
-        //     return jobs.map(job => job.name).join(",")
-        // },
+        //**************ROLE/S Join Control***************************************** */
 
         //*********************************** */
         getList() {
@@ -680,7 +673,12 @@ export default {
             this.open = false
         },
         //************************************** */
-        handleQuery(e) {
+        search(e) {
+            this.getList();
+
+        },
+        Reload() {
+            this.resetQuery()
             this.getList();
         },
 
@@ -695,9 +693,7 @@ export default {
             this.queryParams.roleId = ''
             this.queryParams.abbrev = ''
             this.queryParams.createTime = ''
-            this.queryParams.pageNum = ''
-            this.handleQuery();
-            this.getList();
+            // this.queryParams.roleId = ''
         },
 
         //**************** Add, Edit and delete control section******************************************* */
@@ -730,6 +726,11 @@ export default {
 
         },
         //***************************Edit control section**********************************/
+        // handleSideUpdate(selectedRows) {
+        //     if (this.selectedRows.length === 1) {
+        //         this.handleUpdate(this.selectedRows[0])
+        //     }
+        // },
         handleSideUpdate(selectedRows) {
             if (this.selectedRows.length === 1) {
                 this.handleUpdate(this.selectedRows[0])
@@ -739,14 +740,18 @@ export default {
 
         handleUpdate(row) {
             console.log(row)
-
             this.modeType = "edit"
             this.title = "Editing User: " + row.username
             // const { country, state, city, zipcode, detail } = row.address;
-
             console.log(row)
-            let jobData = row.jobs.map(item => item.jobId);
-            console.log(row.roleIds)
+            let jobData
+            // if(row.) 
+            // if (row.jobs !== 0) {
+                jobData = row.jobs.map(item => item.jobId);
+            // }
+            // row.jobs.map(item => item.jobId);
+
+            console.log(jobData)
             // let roleData = []
             // if (row.roleIds && Array.isArray(row.roleIds) && row.roleIds.length) {
             //     return roleData = row.roleIds.map(item => item.roleId);
@@ -824,9 +829,6 @@ export default {
                 }
 
             }
-
-
-
             this.open = true
         },
 
@@ -862,22 +864,6 @@ export default {
             }
         },
 
-        checkingfileSize(file) {
-            const isLt2M = file.size / 1024 / 1024 < 2;
-            console.log("I am in checking process of :" + file)
-            if (!isLt2M) {
-                this.$message.error('Uploaded file size should not exceed 2MB!');
-            }
-            return isLt2M;
-        },
-        Upload() {
-            this.$http.MgUsers.UploadAvatar(this.form.avatar).then(response => {
-                this.$modal.msgSuccess("Adding photos");
-            }).catch(error => {
-                console.error('Upload Photo Error:', error);
-                // Handle your error here
-            });
-        },
 
         //********************Reset*************************************************/
         reset() {

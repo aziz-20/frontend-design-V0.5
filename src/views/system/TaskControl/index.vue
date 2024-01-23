@@ -2,7 +2,7 @@
     <div class="app-container">
         <div class="flex" v-if="showSearch">
             <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
+                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="Reload" :emptyFields="resetQuery"
                 :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
                 :resetIcon="resetIcon">
             </search_control>
@@ -10,7 +10,7 @@
 
         <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
             :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
-            :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+            :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
             :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
             :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
@@ -180,18 +180,15 @@ export default {
         this.table()
     },
     //**************Methods Control*********************************************** */
-
-
     methods: {
-
         //**********************Table******************************************************** */
         table() {
             this.tableColumns = [
                 { type: 'select' },
-                { prop: 'taskName', label: 'Task Name', fixed: true, show: true,minWidth:'150' },
-                { prop: 'orderNum', label: 'Order' ,minWidth:'80'},
-                { prop: 'taskGroup', label: 'Task Group',minWidth:'100' },
-                { prop: 'targetTask', label: 'Target Task',minWidth:'100' },
+                { prop: 'taskName', label: 'Task Name', fixed: true, show: true, minWidth: '150' },
+                { prop: 'orderNum', label: 'Order', minWidth: '80' },
+                { prop: 'taskGroup', label: 'Task Group', minWidth: '100' },
+                { prop: 'targetTask', label: 'Target Task', minWidth: '100' },
                 {
                     label: 'Trigger Type',
                     prop: 'triggerType',
@@ -228,12 +225,12 @@ export default {
                 },
                 { prop: 'taskCount', label: 'Number of Triggers', minWidth: '100' },
                 { prop: 'nextFireTime', label: 'Next Trigger', minWidth: '100' },
-                { prop: 'startTime', label: 'Trigger Starting Time',  minWidth: '100' },
-                { prop: 'remark', label: 'Note',minWidth:'100' },
-                { label: 'ADD By', prop: 'createByName',minWidth:'100' },
-                { prop: 'createTime', label: 'Create Date', type: 'calendar',minWidth:'100' },
-                { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
-                { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
+                { prop: 'startTime', label: 'Trigger Starting Time', minWidth: '100' },
+                { prop: 'remark', label: 'Note', minWidth: '100' },
+                { label: 'ADD By', prop: 'createByName', minWidth: '100' },
+                { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '100' },
+                { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
+                { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
                 {
                     type: 'actions', label: 'Actions', align: 'right', fixed: 'right', show: true
                     // ,minWidth:'100'
@@ -326,7 +323,11 @@ export default {
         handleQuery(e) {
             this.getList();
         },
+        Reload() {
+            this.handleQuery();
+            this.getList();
 
+        },
         /** Reset button operation */
 
         resetQuery() {
@@ -337,15 +338,13 @@ export default {
                 this.queryParams.startTime = undefined,
                 this.queryParams.status = undefined,
                 this.queryParams.taskDetail = undefined,
-                this.queryParams.triggerType = null,
-                this.handleQuery();
-            this.getList();
+                this.queryParams.triggerType = null
+
         },
 
         //**************** Add, Edit and delete control section******************************************* */
         generateForm(triggerType) {
             console.log(triggerType)
-
             this.Add_Edit = [
                 {
                     "type": "selectV",
@@ -555,6 +554,12 @@ export default {
         },
 
         //*******************Edit control section**********************************/
+        handleSideUpdate(selectedRows) {
+            if (this.selectedRows.length === 1) {
+                this.handleUpdate(this.selectedRows[0])
+            }
+        },
+
         handleUpdate(row) {
             this.mode = "edit"
             this.initialValuesEdit = row
