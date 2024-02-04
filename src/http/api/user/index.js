@@ -12,7 +12,7 @@ export default {
         return request({
             url: '/auth/logout',
             method: 'post',
-            data
+            // data
             
         })
     },

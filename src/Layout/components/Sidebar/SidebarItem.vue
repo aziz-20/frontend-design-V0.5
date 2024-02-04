@@ -1,5 +1,5 @@
 <template>
-  <div v-if="item.hidden === 1">
+  <!-- <div v-if="item.hidden === 1">
     <template
       v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
       <el-menu-item class="menu-item" :index="item.id">
@@ -20,7 +20,43 @@
       <sidebar-item v-for="child in item.children" :key="child.path" :is-nest="true" :item="child"
         :base-path="resolvePath(child.path)" class="nest-menu" />
     </el-sub-menu>
-  </div>
+  </div> -->
+  <template v-if="route.type == 0">
+    <el-sub-menu :index="route.id" >
+      <template #title>
+        <svg-icon v-if="route.meta.icon" :icon-class="route.meta.icon" />
+        <span>{{ route.meta.title }}</span>
+      </template>
+      <template v-for="subItem in route.children" :key="subItem.id">
+        <template v-if="route.children.length >= 1"> 
+          <Sidebar-Item :base-path="basePath" :item= "route" :route="subItem" />
+        </template>
+        <template v-else>
+          <el-menu-item :index="subItem.id" @click="onsubmenuClick(route.path)">
+            <template #title>
+              <router-link :to="basePath + '/' + subItem.path">
+                <!-- {{ basePath + '/' + route.path }} -->
+
+              <!-- <svg-icon v-if="subItem.meta.icon" :icon-class="subItem.meta.icon" />
+              <span>{{ subItem.meta.title }}</span> -->
+            </router-link>
+            </template>
+          </el-menu-item>
+        </template>
+      </template>
+    </el-sub-menu>
+  </template>
+  <template v-else-if="route.type == 1">
+    <el-menu-item :index="'' + route.id" @click="onsubmenuClick(route.path)">
+      <template #title>
+        <router-link :to="basePath + '/' + route.path">
+          {{ basePath + '/' + route.path }}
+        <!-- <svg-icon v-if="route.meta.icon" :icon-class="route.meta.icon" /> -->
+        <!-- <span>{{ route.meta.title }}</span> -->
+        </router-link>
+      </template>
+    </el-menu-item>
+  </template>
 </template>
 <!-- <template>
   <div v-if="!item.hidden">
@@ -38,6 +74,7 @@
 
 import { isExternal } from '@/utils/validate';
 import Item from './Item';
+import SidebarItem from './SidebarItem.vue';
 import AppLink from './Link';
 import path from 'path';
 import {
@@ -46,11 +83,12 @@ import {
   Location,
   Setting,
 } from '@element-plus/icons-vue'
+import router from '@/router';
 // import FixiOSBug from './FixiOSBug';
 
 export default {
   name: 'SidebarItem',
-  components: { Item, AppLink },
+  components: { Item, AppLink, router },
   // mixins: [FixiOSBug],
   props: {
     item: {
@@ -64,6 +102,10 @@ export default {
     basePath: {
       type: String,
       default: ''
+    },
+    route: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -72,11 +114,18 @@ export default {
     };
   },
   methods: {
+    onsubmenuClick(path) {
+      console.log(path)
+      console.log(this.basePath)
+      console.log(this.basePath + '/' + path)
+  
+     console.log('1')
+    },
     hasOneShowingChild(children, parent) {
       children = children || [];
 
       const showingChildren = children.filter(item => {
-        if (item.hidden  == 0) {
+        if (item.hidden == 0) {
           console.log(item)
           return false;
         } else {
@@ -113,10 +162,11 @@ export default {
       }
 
       console.log(this.basePath)
-      console.log(routePath )
+      console.log(routePath)
       console.log('1')
-      return path.join(this.basePath, routePath);
-
+      // return this.basePath;
+      // return path.join(this.basePath, routePath);
+         return   "ffff"
       //  return {path:  routePath};
 
 

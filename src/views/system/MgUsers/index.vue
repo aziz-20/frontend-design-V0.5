@@ -3,7 +3,7 @@
         <div class="common-layout">
             <el-container>
                 <el-aside width="250px" v-if="showSide">
-                    <el-input v-model="sideSearch" placeholder="Please enter keyword" @input="filterMethod"
+                    <el-input   v-model="sideSearch" placeholder="Please enter keyword" @input="filterMethod"
                         :expand-on-click-node="true" />
                     <el-tree :data="deptOptions" :filter-method="filterMethod" :height="208"
                         :default-expand-all="isExpandAll" highlight-current @node-click="handleNodeClick" />
@@ -20,7 +20,7 @@
                     <!-- Table Header -->
                     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
                         :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
-                        :handleAdd="handleAdd" :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll"
+                        :handleAdd="handleAdd" :headers="headers" :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll"
                         :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
                         :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
@@ -28,7 +28,7 @@
                     <div>
                         <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
                         <ReusableTable :data="usersList" :columns="tableColumns" rowKey="userId" :loading="loading"
-                            :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange"
+                            :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange" 
                             :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete"
                             :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
                             :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons"
@@ -58,8 +58,10 @@
                             :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
                         </PopupColumn>
                     </div>
+                
 
                     <div>
+                        
                         <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog"
                             :rowData="mobileView" :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig"
                             :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
@@ -74,6 +76,9 @@
                     </template>
                 </el-main>
             </el-container>
+            <!-- <div v-focus="'system:user:view'" >
+               {{'i have the permision to show this messige'}}
+            </div> -->
             <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
                 :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout"
                 @page-change="handlePageChange">
@@ -91,6 +96,7 @@ import addoredit from "@/views/components/addoredit/index.vue"
 import search_control from '@/views/components/qureyParams/index.vue'
 import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject } from '@/utils/dtControl/dTransformer'
 import { ElAside, ElInput, ElTree, ElButton } from 'element-plus';
+import store from '@/store'
 export default {
     // name: "Job",
     dicts: ['sys_normal_disable'],
@@ -105,8 +111,10 @@ export default {
         ReusableTable,
         PopupColumn
     },
+   
     data() {
         return {
+            routePerm: this.$route.meta.perms,
             tablebuttons: [],
             selectedRows: [],
             loading: true,
@@ -166,6 +174,28 @@ export default {
                 pageNo: 1,
                 pageSize: 20
             },
+                  headers: [
+        {
+          add: true,
+        },
+        {
+          edit: true,
+          hasPermis:'system:user:hng'
+        },
+        {
+          delete: true,
+        },
+        {
+          view: true,
+        },
+        {
+          normal: true,
+          name: 'test',
+          size: 'small',
+          color: 'green',
+          handler: this.handleAdd
+        }
+      ],
             Add_Edit: [
                 // {
 
@@ -460,11 +490,12 @@ export default {
         };
     },
     //**************Creating ************************************** */  
-
+    
     created() {
         this.getList();
         this.getSideSelection();
         this.table();
+        this.t()
     },
     Mounted() {
 
@@ -472,6 +503,10 @@ export default {
     },
 
     methods: {
+        t(){
+           console.log(this.$store)
+           this.$store.dispatch('RoutePerms',this.$route.meta.perms)
+        },
         // ********************** Table ****************************************************//
         table() {
             this.tableColumns = [

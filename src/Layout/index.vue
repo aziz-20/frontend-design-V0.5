@@ -99,6 +99,7 @@ export default {
   z-index: 1001;
   overflow: hidden;
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+  
 }
 
 #app .main-container {

@@ -12,6 +12,8 @@ import '@/assets/icons' // icon
 import SvgIcon from '@/components/SvgIcon'// svg component
 import http from './http'
 import plugins from './plugins'
+
+import cutomDirective from './directive/ditest'
 import RightToolbar from "@/components/RightToolbar"
 
 
@@ -33,7 +35,11 @@ export const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+
 app.config.globalProperties.$http = http
+   
+app.directive('focus', cutomDirective)
+  
 app.use(store).use(router).component('svg-icon', SvgIcon).use(Vue3Progress, options).use(Element,{
     size:'medium' // set element-ui default size
   }).use(plugins).mount('#app')

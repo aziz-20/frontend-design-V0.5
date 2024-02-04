@@ -36,6 +36,10 @@
                 <el-date-picker v-model="queryParams[field.name]" value-format="yyyy-MM-dd"
                   start-placeholder="Please add the data"></el-date-picker>
               </template>
+              <template v-else-if="field.inputtype === 'text'">
+                <el-input v-model="queryParams[field.name]" :placeholder="field.placeholder" :size='field.size || "small"'
+                  clearable />
+              </template> 
 
               <!-------------------------------------------------------------------------------------  -->
               <!-- System Fields selections -->
@@ -47,10 +51,37 @@
                   :render-after-expand="true" :placeholder="field.placeholder" check-strictly check-on-click-node
                   filterable />
               </template>
+               <!--permissionGroup Selecting Section -->
+              <template v-if="field.inputtype === 'permissionGroup'">
+                        <el-tree-select v-model="queryParams[field.name]" :data="permissionGroup" :render-after-expand="true"
+                          :placeholder="field.placeholder"  filterable check-strictly check-on-click-node />
+              </template>
+              <!--permissionGroup name tree Selecting Section -->
+              <template v-if="field.inputtype === 'permissionGroupname'">
+                <el-tree-select v-model="queryParams[field.name]" :data="permissionGroupname" :render-after-expand="true"
+                  :placeholder="field.placeholder"  filterable check-strictly check-on-click-node />
+              </template> 
+
+             
 
               <!-- Roles Selecting Section -->
               <template v-if="field.inputtype === 'roles'">
                 <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="roles"
+                  collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+              </template>
+               <!-- Permission Selecting Section -->
+              <template v-if="field.inputtype === 'permission'">
+                <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="permission"
+                  collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+              </template>
+              <!-- defaultpermission Selecting Section -->
+              <template v-if="field.inputtype === 'defaultpermission'">
+                <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="defaultpermission"
+                  collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
+              </template>
+              <!-- Custompersmission Selecting Section -->
+              <template v-if="field.inputtype === 'Custompersmission'">
+                <el-select-v2 v-model="queryParams[field.name]" :placeholder="field.placeholder" :options="Custompersmission"
                   collapse-tags collapse-tags-tooltip filterable :max-collapse-tags="3" />
               </template>
               <!-- Position Selecting Section -->
@@ -65,6 +96,11 @@
                 <el-tree-select v-model="queryParams[field.name]" :data="menu" :render-after-expand="true"
                   :placeholder="field.placeholder" filterable check-strictly check-on-click-node />
                 <!-- {{ 'the data is as follows:' + this.form[field.name] }} -->
+              </template>
+              <!-- Menu Name vs ID Selecting Section -->
+              <template v-if="field.inputtype === 'menuNameId'">
+                <el-tree-select v-model="queryParams[field.name]" :data="menuNameId" :render-after-expand="true"
+                  :placeholder="field.placeholder"  filterable check-strictly check-on-click-node />
               </template>
               <!-----------------------------User Name-------------------- -->
               <template v-if="field.inputtype === 'userField'">
@@ -151,7 +187,15 @@ export default {
       taskgroup: [],
       deptemail: [],
       deptparent: [],
+  
+      
 
+      //Permission
+      permission: [],
+      permissionGroup: [],
+      permissionGroupname: [],
+      defaultpermission:[],
+      Custompersmission :[],
 
       //Job Managements 
       Position: [],
@@ -163,6 +207,7 @@ export default {
 
       //Menu Managements 
       menu: [],
+      menuNameId: [],
 
       //UserManagements
       username: [],
@@ -180,10 +225,19 @@ export default {
       ],
     }
   },
-  mounted() {
-    this.formFieldSelectData()
+  // mounted() {
+  //   this.formFieldSelectData()
 
+  // },
+  created() {
+    this.formFieldSelectData()
   },
+  // beforeMount() {
+  //   this.formFieldSelectData()
+  // },
+  // beforeMount() {
+  //   this.formFieldSelectData()
+  // },
   methods: {
     shouldShowField(field) {
       // console.log(this.mode)
@@ -216,6 +270,39 @@ export default {
               console.message(error);
             });
           }
+          if (field.inputtype === 'permission') {
+            this.$http.permision.permlist({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              const data = res?.result?.data
+              if (data) {
+                this.permission = treeTransformerTwoValues(data, 'name', 'name')
+                
+              }
+            }).catch(message => {
+              console.error(error);
+            });
+          }
+          if (field.inputtype === 'defaultpermission') {
+            this.$http.defpermision.permlist({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              const data = res?.result?.data
+              if (data) {
+                this.defaultpermission = treeTransformerTwoValues(data, 'name', 'name')
+                
+              }
+            }).catch(message => {
+              console.error(error);
+            });
+          }
+          if (field.inputtype === 'Custompersmission') {
+            this.$http.cusdatascope.customDatascopelist({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              const data = res?.result?.data
+              if (data) {
+                this.Custompersmission = treeTransformerTwoValues(data, 'name', 'name')
+                
+              }
+            }).catch(message => {
+              console.error(error);
+            });
+          }
           if (field.inputtype === 'Position') {
             console.log("I am here")
             this.$http.Job.listJob({ "pageNo": 1, "pageSize": 0 }).then(res => {
@@ -232,7 +319,7 @@ export default {
           if (field.inputtype === 'roles') {
             console.log("I am here")
             this.$http.role.listRole({ "pageNo": 1, "pageSize": 0 }).then(res => {
-              console.log(res)
+    
               if (Array.isArray(res.result.data)) {
                 this.roles = NormalmapTwoPropsToObject(res.result.data, 'name', 'roleId');
                 // this.fields.options = this.mapFieldValues(field, this.roles);
@@ -273,6 +360,21 @@ export default {
             this.$http.menu.MenuHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
               if (res.result && res.result.data) {
                 this.menu = mapOnePropToObject(res.result.data, 'name', 'menuId')
+                console.log(this.menu)
+              }
+              else {
+                this.loading = false;
+                this.$message.error('Failed to load Menu list for the Quarry Selection Section');
+              }
+            }).catch(message => {
+              console.error(error);
+            });
+          }
+          if (field.inputtype === 'menuNameId') {
+            this.$http.menu.MenuHierarchy({ "pageNo": 1, "pageSize": 0 }).then(res => {
+              if (res.result && res.result.data) {
+                this.menuNameId = treeTransformerTwoValues(res.result.data, 'name', 'menuId')
+                console.log(this.menuNameId)
               }
               else {
                 this.loading = false;
@@ -306,6 +408,23 @@ export default {
 
             }).catch(message => {
               // console.message(message);
+            });
+          }
+          if(field.inputtype === 'permissionGroup' || field.inputtype === 'permissionGroupname'){
+            this.$http.grpermision.permlistHierarchy({
+                "pageNo": 1,
+                "pageSize": 0
+            }).then(res => {
+                const data = res?.result?.data
+                if (data) {
+                    this.permissionGroup = treeTransformerTwoValues(data, 'name', 'groupId')
+                    this.permissionGroupname = mapOnePropToObject(data, 'name', 'name')
+
+                }
+
+
+            }).catch(message => {
+                console.error(error);
             });
           }
           if (field.inputtype === 'address') {

@@ -96,13 +96,15 @@ const user = {
     // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
+        removeToken()
         console.log('xx')
-        User.logout(state.email).then(() => {
+        User.logout({userToken:state.token}).then(() => {
           console.log('xx')
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           commit('SET_PERMISSIONS', [])
           removeToken()
+          console.log( getToken())
           resolve()
         }).catch(error => {
           reject(error)

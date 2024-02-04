@@ -6,7 +6,7 @@
         </div>
         <div v-if="buttons.edit">
             <el-button :dark="isDark" :class="{ 'disabled-button': selectedRows.length !== 1 }" plain type="primary"
-                :icon="Edit" :size="size || 'small'" @click="handleUpdate(selectedRows)" v-hasPermi="['system:user:edit']">
+                :icon="Edit" :size="size || 'small'" @click="handleUpdate(selectedRows)" v-focus="'system:user:edit'">
                 Edit
             </el-button>
         </div>

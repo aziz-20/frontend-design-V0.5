@@ -282,7 +282,9 @@
             </template>
             <!------------ Dynamic Field Control------------------ -->
             <template v-else-if="field.inputtype === 'dynamicFeild'">
+              
               <el-form-item :label="field.name" :prop="field.name">
+                <div class="dynaic-feild-container">
                 <el-row v-for="(item, index) in pairs" :key="index">
                   <el-col :span="12">
                     <el-tree-select v-model="item.deptId" check-strictly check-on-click-node
@@ -297,6 +299,7 @@
                   </el-col>
                 </el-row>
                 <el-button @click="addScoping" type="primary" icon="el-icon-plus">Add Scoping</el-button>
+              </div>
               </el-form-item>
             </template>
             <!-- -------------------------------------------------------------------------------------------- -->
@@ -357,7 +360,7 @@ export default {
   data() {
     return {
       pairs: [
-        { deptId: 0, userIds: [] },
+        { deptId: '', userIds: [] },
       ],
       progress: 0,
       isprogress: false,
@@ -478,6 +481,7 @@ export default {
     rules: Object,
 
     closeAddEdit: Function,
+    
 
   },
 
@@ -1123,6 +1127,12 @@ img {
   width: 178px;
   height: 178px;
   text-align: center;
+}
+.dynaic-feild-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
 }
 </style>
 

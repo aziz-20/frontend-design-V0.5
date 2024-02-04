@@ -47,8 +47,11 @@
       initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
       @emi="emitChange">
     </addoredit>
-
+     
   </div>
+  <div v-for="x in routePerm" >
+                {{x.code}}
+            </div>
 </template>
   
   
@@ -79,6 +82,7 @@ export default {
   },
   data() {
     return {
+      routePerm: this.$route.meta.perms,
       // Visible: false,
       columnVisible: false,
       selectedItem: null,
@@ -145,6 +149,13 @@ export default {
       Add_Edit:
         [
           {
+            "type": "text",
+            inputtype: "text",
+            name: "controllerName",
+            label: "controller Name ",
+            placeholder: "Enter the controller Name",
+            span: 24
+          },{
             "type": "text",
             inputtype: "text",
             name: "component",

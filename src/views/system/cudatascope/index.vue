@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <search_control v-if="showSearch" ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-            :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetqueary"
+            :hierarchicalData="transNameList" :handleQuery="search" :resetQuery="Reload" :emptyFields="resetQuery"
             :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
             :resetIcon="resetIcon">
         </search_control>
@@ -155,11 +155,12 @@ export default {
 
             ],
             searchFields: [
+        
                 {
-                    inputtype: 'departments',
-                    name: 'deptId',
-                    label: 'Department Name',
-
+                    inputtype: "Custompersmission",
+                    name:"name",
+                    label: "Custom persmission name",
+                    placeholder: "Enter Custom persmission name",
                 },
 
                 {
@@ -169,16 +170,6 @@ export default {
                     label: 'Role',
                     placeholder: 'Select Role',
 
-
-                },
-                {
-                    type: 'userField',
-                    inputtype: "userField",
-                    name: 'userId',
-                    label: 'User Name',
-                    // options: 'username',
-                    placeholder: "Enter username",
-                    style: 'width: 150px'
 
                 },
                 {
@@ -381,18 +372,24 @@ export default {
             this.handleQuery();
         }
         ,
-
-
-
-        resetForm(refName) {
-            if (this.$refs[refName]) {
-                this.$refs[refName].resetFields();
-            }
-        }
-        ,
-        handleQuery(e) {
+        search(e) {
             this.getList();
 
+        },
+        Reload() {
+            this.resetQuery()
+            this.getList();
+        },
+
+        /** Reset button operation */
+
+        resetQuery() {
+            this.queryParams.name = undefined
+            this.queryParams.status = undefined
+            this.queryParams.userId = undefined
+            this.queryParams.roleId = undefined
+       
+       
         },
         handleTopUpdate() {
             // let side=null
@@ -404,7 +401,7 @@ export default {
         },
         handleUpdate(row) {
             this.mode = "edit"
-            this.fields[0].data = this.options
+            // this.fields[0].data = this.options
             console.log(row)
             // const updatedScoping = {};
             this.initialValuesEdit = row
@@ -444,22 +441,30 @@ export default {
             }
         },
 
-        handleDelete() {
+
+        handleDelet(row) {
             if (this.selectedRows.length > 0) {
+                console.log(this.selectedRows)
                 this.$modal.confirm('WARNING: You are about to permanently delete the following:{ '
                     + this.selectedRows.map(row => row.name).join('},{')
                     + '}. This action CANNOT be undone.Do you want to pressed?').then(() => {
                         this.selectedRows.forEach(row => {
                             // Delete the Selected Jobs
-                            this.$http.cusdatascope.delet(row.customId);
-                            this.getList();
+                            this.$http.cusdatascope.delet(row.defId).then(_ => {
+                            
+                                this.$modal.msgSuccess("Deletion successful");
+                            })
+                            // this.getList();
+                           this.search()
                         });
-                        this.getList();
-                        this.$modal.msgSuccess("Deletion successful");
+                        
+    
                     }).catch(() => { });
             } else {
                 console.log('No data');
             }
+
+
         },
 
         //*************handle selection section************************* */

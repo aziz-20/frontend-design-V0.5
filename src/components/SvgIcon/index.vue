@@ -51,9 +51,6 @@ export default {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
-  margin-right: 16px;
-  color: rgb(0, 0, 0);
-  
 }
 
 .svg-external-icon {
