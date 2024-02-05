@@ -96,7 +96,7 @@ const user = {
     // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        removeToken()
+        // removeToken()
         console.log('xx')
         User.logout({userToken:state.token}).then(() => {
           console.log('xx')

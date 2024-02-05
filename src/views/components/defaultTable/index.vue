@@ -11,7 +11,7 @@
       <template v-if="column.type === 'icon'" #default="{ row }" :column-key="column.key" :aria-label="column.ariaLabel">
         <svg-icon :icon-class="row[column.prop]" />
       </template>
-      <template v-if="column.type === 'tag'" #default="{ row }">
+      <template v-else-if="column.type === 'tag'" #default="{ row }">
         <el-tag
           v-if="row[column.prop] !== null && row[column.prop] !== undefined && column.tagType(row[column.prop]) !== undefined"
           :type="column.tagType(row[column.prop])" :color="checkTagColorFunction(column, row[column.prop])">

@@ -1,28 +1,7 @@
 <template>
-  <!-- <div v-if="item.hidden === 1">
-    <template
-      v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
-      <el-menu-item class="menu-item" :index="item.id">
-        <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
-          <Item :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)" :title="onlyOneChild.meta.title" />
-        </app-link>
 
-        <template #title>
-          {{ this.item.meta.title }}
-        </template>
-
-      </el-menu-item>
-    </template>
-    <el-sub-menu v-else ref="subMenu" :index="item" popper-append-to-body>
-      <template #title>
-        <Item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" /> 
-      </template>
-      <sidebar-item v-for="child in item.children" :key="child.path" :is-nest="true" :item="child"
-        :base-path="resolvePath(child.path)" class="nest-menu" />
-    </el-sub-menu>
-  </div> -->
-  <template v-if="route.type == 0">
-    <el-sub-menu :index="route.id" >
+  <template v-if="route.type == 0 && route.hidden === 1">
+    <el-sub-menu :index="'' +route.id" >
       <template #title>
         <svg-icon v-if="route.meta.icon" :icon-class="route.meta.icon" />
         <span>{{ route.meta.title }}</span>
@@ -32,13 +11,13 @@
           <Sidebar-Item :base-path="basePath" :item= "route" :route="subItem" />
         </template>
         <template v-else>
-          <el-menu-item :index="subItem.id" @click="onsubmenuClick(route.path)">
+          <el-menu-item  :index="subItem.id" @click="onsubmenuClick(route.path)">
             <template #title>
               <router-link :to="basePath + '/' + subItem.path">
                 <!-- {{ basePath + '/' + route.path }} -->
 
-              <!-- <svg-icon v-if="subItem.meta.icon" :icon-class="subItem.meta.icon" />
-              <span>{{ subItem.meta.title }}</span> -->
+              <svg-icon v-if="subItem.meta.icon" :icon-class="subItem.meta.icon" />
+              <span>{{ subItem.meta.title }}</span> 
             </router-link>
             </template>
           </el-menu-item>
@@ -46,17 +25,21 @@
       </template>
     </el-sub-menu>
   </template>
-  <template v-else-if="route.type == 1">
-    <el-menu-item :index="'' + route.id" @click="onsubmenuClick(route.path)">
+  <template v-else-if="route.type == 1 && route.hidden === 1">
+    <el-menu-item  :index="'' + route.id" @click="onsubmenuClick(route.path)">
       <template #title>
         <router-link :to="basePath + '/' + route.path">
-          {{ basePath + '/' + route.path }}
-        <!-- <svg-icon v-if="route.meta.icon" :icon-class="route.meta.icon" /> -->
-        <!-- <span>{{ route.meta.title }}</span> -->
+          <!-- {{ basePath + '/' + route.path }} -->
+        <svg-icon v-if="route.meta.icon" :icon-class="route.meta.icon" />
+        <span>{{ route.meta.title }}</span>
         </router-link>
       </template>
     </el-menu-item>
   </template>
+  <template v-else-if="route.type == 2 && route.hidden === 1">
+    
+  </template>
+  
 </template>
 <!-- <template>
   <div v-if="!item.hidden">
@@ -174,16 +157,6 @@ export default {
   }
 };
 </script>
-<style> .menu-item {
-   display: flex;
-   flex-direction: row;
-   align-items: center;
-   gap: 10px;
-   padding: 0px 20px;
-   height: 50px;
-   font-size: 14px;
-   color: #fff;
-   font-weight: 500;
-   cursor: pointer;
- }
+<style scoped>  
+
 </style>
