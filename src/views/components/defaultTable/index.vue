@@ -2,7 +2,7 @@
   <el-table :data="data" height="100%" :style="style || 'width: 100%'" :row-key="rowKey" v-loading="loading"
     element-loading-text="Loading..." :default-expand-all="isExpandAll" v-if="refreshTable"
     @selection-change="handleSelectionChange" show-overflow-tooltip="true" fit="true" :expand-row-keys="expandRowKeys"
-    lazy='true' :cell-class-name="rowClassChecker">
+    lazy='true' :row-class-name="rowClassChecker">
     <template v-if="!Selection">
       <el-table-column type="selection" />
     </template>
@@ -11,7 +11,7 @@
       <template v-if="column.type === 'icon'" #default="{ row }" :column-key="column.key" :aria-label="column.ariaLabel">
         <svg-icon :icon-class="row[column.prop]" />
       </template>
-      <template v-if="column.type === 'tag'" #default="{ row }">
+      <template v-else-if="column.type === 'tag'" #default="{ row }">
         <el-tag
           v-if="row[column.prop] !== null && row[column.prop] !== undefined && column.tagType(row[column.prop]) !== undefined"
           :type="column.tagType(row[column.prop])" :color="checkTagColorFunction(column, row[column.prop])">

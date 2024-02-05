@@ -3,7 +3,7 @@
         <div class="common-layout">
             <el-container>
                 <el-aside width="250px" v-if="showSide">
-                    <el-input v-model="sideSearch" placeholder="Please enter keyword" @input="filterMethod"
+                    <el-input   v-model="sideSearch" placeholder="Please enter keyword" @input="filterMethod"
                         :expand-on-click-node="true" />
                     <el-tree :data="deptOptions" :filter-method="filterMethod" :height="208"
                         :default-expand-all="isExpandAll" highlight-current @node-click="handleNodeClick" />
@@ -11,15 +11,16 @@
                 <el-main>
                     <div class="flex" v-if="showSearch">
                         <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-                            :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
-                            :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
-                            :resetIcon="resetIcon" :visible="isFormVisible" :hiddenFields="hiddenFields">
+                            :hierarchicalData="transNameList" :handleQuery="search" :emptyFields="resetQuery"
+                            :resetQuery="Reload" :searchButtonText="searchButtonText" :resetButtonText="resetButtonText"
+                            :searchIcon="searchIcon" :resetIcon="resetIcon" :visible="isFormVisible"
+                            :hiddenFields="hiddenFields">
                         </search_control>
                     </div>
                     <!-- Table Header -->
                     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
                         :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
-                        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+                        :handleAdd="handleAdd" :headers="headers" :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll"
                         :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
                         :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
@@ -27,9 +28,9 @@
                     <div>
                         <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
                         <ReusableTable :data="usersList" :columns="tableColumns" rowKey="userId" :loading="loading"
-                            :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange"
-                            :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete" :openDetails="openDetails"
-                            popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
+                            :refreshTable="refreshTable" :handleSelectionChange="handleSelectionChange" 
+                            :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete"
+                            :openDetails="openDetails" popUpTitle="Test" :columnPopUp="columnPopUp" columnLabel="hello"
                             :rowClassChecker="rowClassChecker" :buttonsConfig="tablebuttons"
                             @open-popup="handleOpenPopup" />
                     </div>
@@ -57,8 +58,10 @@
                             :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
                         </PopupColumn>
                     </div>
+                
 
                     <div>
+                        
                         <PhoneTablePopUp :visible="dialogVisible" dialog-title="Detailed" @close="closeDialog"
                             :rowData="mobileView" :fieldsConfig="tableColumns" :buttonsConfig="buttonsConfig"
                             :handleAdd="handleAdd" :handleUpdate="handleUpdate" :handle_SideDelete="handle_SideDelete">
@@ -73,6 +76,9 @@
                     </template>
                 </el-main>
             </el-container>
+            <!-- <div v-focus="'system:user:view'" >
+               {{'i have the permision to show this messige'}}
+            </div> -->
             <custom-pagination v-show="total > 0" :total-items="total" :current-page.sync="queryParams.pageNo"
                 :page-size.sync="queryParams.pageSize" :pagination-layout="paginationLayout"
                 @page-change="handlePageChange">
@@ -82,9 +88,7 @@
 </template>
 <script>
 import ReusableTable from "@/views/components/defaultTable"
-
 import PopupColumn from "/src/views/components/defaultTable/columnPopup"
-
 import PhoneTablePopUp from "@/views/components/PopUpFields/index.vue"
 import tableHeader from "@/views/components/headerAndfooter/tableHeader"
 import CustomPagination from "@/views/components/headerAndfooter/footer.vue"
@@ -92,6 +96,7 @@ import addoredit from "@/views/components/addoredit/index.vue"
 import search_control from '@/views/components/qureyParams/index.vue'
 import { mapOnePropToObject, treeTransformerTwoValues, NormalmapTwoPropsToObject } from '@/utils/dtControl/dTransformer'
 import { ElAside, ElInput, ElTree, ElButton } from 'element-plus';
+import store from '@/store'
 export default {
     // name: "Job",
     dicts: ['sys_normal_disable'],
@@ -106,12 +111,14 @@ export default {
         ReusableTable,
         PopupColumn
     },
+   
     data() {
         return {
+            routePerm: this.$route.meta.perms,
             tablebuttons: [],
             selectedRows: [],
             loading: true,
-            modeType: '',
+            modeType: null,
             showSearch: true,
             initialValuesEdit: null,
             initialValuesAdd: undefined,
@@ -167,20 +174,42 @@ export default {
                 pageNo: 1,
                 pageSize: 20
             },
+                  headers: [
+        {
+          add: true,
+        },
+        {
+          edit: true,
+          hasPermis:'system:user:hng'
+        },
+        {
+          delete: true,
+        },
+        {
+          view: true,
+        },
+        {
+          normal: true,
+          name: 'test',
+          size: 'small',
+          color: 'green',
+          handler: this.handleAdd
+        }
+      ],
             Add_Edit: [
-                {
+                // {
 
-                    "type": "photo",
-                    inputtype: "photo",
-                    name: "avatar",
-                    // label: "Username",
-                    // placeholder: "Please Enter the User name",
-                    // span: 12,
-                    showMode: 'edit',
-                    class: 'col-12',
-                    // style:'img'
+                //     "type": "photo",
+                //     inputtype: "photo",
+                //     name: "avatar",
+                //     // label: "Username",
+                //     // placeholder: "Please Enter the User name",
+                //     // span: 12,
+                //     showMode: 'edit',
+                //     class: 'col-12',
+                //     // style:'img'
 
-                },
+                // },
                 {
 
                     "type": "upload",
@@ -195,9 +224,7 @@ export default {
                     // beforeUpload: this.checkingfileSize,
                     // buttonText:"Upload",
                     tip: "Please Enter Only one photo and the size should be less then 2/MG",
-                    span: 12,
-                    showMode: 'add'
-
+                    // showMode: 'add'
                 },
                 {
 
@@ -206,7 +233,6 @@ export default {
                     name: "username",
                     label: "Username",
                     placeholder: "Please Enter the User name",
-                    span: 12,
                     showMode: 'add'
 
                 },
@@ -216,7 +242,6 @@ export default {
                     name: "email",
                     label: "Email Address",
                     placeholder: "Email Address",
-                    span: 12,
                     // showMode: 'edit'
 
                 },
@@ -227,7 +252,6 @@ export default {
                     name: "password",
                     label: "Password",
                     placeholder: "Please Make Password",
-                    span: 12,
                     showMode: 'add'
 
                 },
@@ -239,7 +263,6 @@ export default {
                     name: "password",
                     label: "Recover Password",
                     placeholder: "Please Add New Password",
-                    span: 12,
                     showMode: 'edit'
 
                 },
@@ -250,7 +273,6 @@ export default {
                     name: "sex",
                     label: "Gender",
                     placeholder: "Please select the user Gender",
-                    span: 12,
                     // style: 'w50%',
 
                 },
@@ -260,24 +282,23 @@ export default {
                     name: "phoneNumber",
                     label: "Phone Number",
                     placeholder: "Phone Number",
-                    span: 12,
                 },
                 {
-                    "type": "departments",
+                    "type": "treeSelect",
                     inputtype: "departments",
                     name: "deptId",
-                    label: "Department",
-                    placeholder: "Selected Departments",
-                    span: 12,
+                    // new:true,
+                    label: "Department parent",
+                    placeholder: "Department selected",
+                    // span: 12
                 },
                 {
                     "type": "Position",
                     inputtype: "Position",
-                    name: "jobs",
+                    name: "jobIds",
                     label: "Position",
                     placeholder: "User Position",
-                    span: 12,
-                    multiple: false,
+                    multiple: true,
                 },
 
                 {
@@ -286,7 +307,7 @@ export default {
                     name: "roleIds",
                     label: "User Role",
                     placeholder: "User Role/s",
-                    span: 12,
+                    multiple: true,
                     showMode: 'add'
                 },
                 {
@@ -299,7 +320,6 @@ export default {
                     inactiveText: 'Disabled',
                     activeValue: 0,
                     inactiveValue: 1,
-                    span: 6,
                 },
                 {
                     "type": "sorting",
@@ -307,7 +327,6 @@ export default {
                     name: "capacity",
                     label: "User Capacity",
                     placeholder: "Display Sorting",
-                    span: 6
 
                 },
 
@@ -315,7 +334,6 @@ export default {
                     inputtype: "address",
                     name: "address", // This will be the name of the object
                     label: "Address",
-                    span: 24,
                     data: [
                         {
                             inputtype: "country",
@@ -376,6 +394,7 @@ export default {
                             name: 'dayIds',
                             label: "Select Day/s",
                             placeholder: "Please select an option",
+                            multiple: true,
                             // span: 6,
                             // showMode: 'edit'
 
@@ -423,6 +442,7 @@ export default {
                     type: 'userField',
                     inputtype: "userField",
                     name: 'userId',
+                    username: true,
                     label: 'User Name',
                     placeholder: "Enter username",
                     style: 'width: 150px'
@@ -438,6 +458,7 @@ export default {
                     type: 'userField',
                     inputtype: "userField",
                     name: 'email',
+                    email: true,
                     label: 'Users Email',
                     placeholder: "Select Email",
                     style: 'width: 150px'
@@ -469,11 +490,12 @@ export default {
         };
     },
     //**************Creating ************************************** */  
-
+    
     created() {
         this.getList();
         this.getSideSelection();
         this.table();
+        this.t()
     },
     Mounted() {
 
@@ -481,13 +503,17 @@ export default {
     },
 
     methods: {
+        t(){
+           console.log(this.$store)
+           this.$store.dispatch('RoutePerms',this.$route.meta.perms)
+        },
         // ********************** Table ****************************************************//
         table() {
             this.tableColumns = [
                 { type: 'select' },
                 { type: 'photo', label: 'avatar', fixed: true },
-                { prop: 'username', label: 'User Name', fixed: true, show: true,minWidth:'100' },
-                { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
+                { prop: 'username', label: 'User Name', fixed: true, show: true, minWidth: '100', align: 'center' },
+                // { label: 'Job/s', parent: 'jobs', type: 'tagPopup', secondProp: 'children', insideKey: 'jobId', secondName: 'name', show: true },
                 {
                     prop: 'sex', label: 'Gender', type: 'tag',
                     tagType: (statusValue) => {
@@ -510,9 +536,9 @@ export default {
                     },
                     tagColor: (value) => { /* ... */ }
                 },
-                { prop: 'email', label: 'Email',minWidth:'100' },
+                { prop: 'email', label: 'Email', minWidth: '100' },
                 {
-                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name',minWidth:'100'
+                    parent: 'dept', label: 'Department/s', type: 'nested', prop: 'name', minWidth: '100'
                 },
 
                 {
@@ -527,10 +553,11 @@ export default {
                         }
                     }
                 },
-                { label: 'ADD By', prop: 'createByName',minWidth:'100' },
-                { prop: 'createTime', label: 'Create Date', type: 'calendar' ,minWidth:'100'},
-                { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
-                { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
+                { label: 'Role/s', prop: 'roles', minWidth: '200', align: 'center' },
+                { label: 'ADD By', prop: 'createByName', minWidth: '100' },
+                { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '100' },
+                { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
+                { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
                 { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
                 { prop: 'phoneNumber', label: 'Phone' },
 
@@ -642,18 +669,10 @@ export default {
             this.queryParams.sideSearchToAdd = data
             console.log(data.value)
             this.queryParams.deptId = data.value;
-            this.handleQuery();
+            this.search();
         },
 
-        //**************Jobs/Dept Join Control***************************************** */
-        getRoleNames(roleIds) {
-            return roleIds.map(roleId => roleId.name).join(',\n ');
-        },
-
-
-        getJobNames(jobs) {
-            return jobs.map(job => job.name).join(",")
-        },
+        //**************ROLE/S Join Control***************************************** */
 
         //*********************************** */
         getList() {
@@ -689,7 +708,12 @@ export default {
             this.open = false
         },
         //************************************** */
-        handleQuery(e) {
+        search(e) {
+            this.getList();
+
+        },
+        Reload() {
+            this.resetQuery()
             this.getList();
         },
 
@@ -704,9 +728,7 @@ export default {
             this.queryParams.roleId = ''
             this.queryParams.abbrev = ''
             this.queryParams.createTime = ''
-            this.queryParams.pageNum = ''
-            this.handleQuery();
-            this.getList();
+            // this.queryParams.roleId = ''
         },
 
         //**************** Add, Edit and delete control section******************************************* */
@@ -739,19 +761,32 @@ export default {
 
         },
         //***************************Edit control section**********************************/
+        // handleSideUpdate(selectedRows) {
+        //     if (this.selectedRows.length === 1) {
+        //         this.handleUpdate(this.selectedRows[0])
+        //     }
+        // },
+        handleSideUpdate(selectedRows) {
+            if (this.selectedRows.length === 1) {
+                this.handleUpdate(this.selectedRows[0])
+            }
+        },
+
+
         handleUpdate(row) {
             console.log(row)
-
             this.modeType = "edit"
             this.title = "Editing User: " + row.username
             // const { country, state, city, zipcode, detail } = row.address;
-
-
             console.log(row)
-            let jobData = row.jobs.map(item => item.jobId);
+            let jobData
+            // if(row.) 
+            // if (row.jobs !== 0) {
+                jobData = row.jobs.map(item => item.jobId);
+            // }
+            // row.jobs.map(item => item.jobId);
 
-            console.log(row.roleIds)
-
+            console.log(jobData)
             // let roleData = []
             // if (row.roleIds && Array.isArray(row.roleIds) && row.roleIds.length) {
             //     return roleData = row.roleIds.map(item => item.roleId);
@@ -829,9 +864,6 @@ export default {
                 }
 
             }
-
-
-
             this.open = true
         },
 
@@ -867,22 +899,6 @@ export default {
             }
         },
 
-        checkingfileSize(file) {
-            const isLt2M = file.size / 1024 / 1024 < 2;
-            console.log("I am in checking process of :" + file)
-            if (!isLt2M) {
-                this.$message.error('Uploaded file size should not exceed 2MB!');
-            }
-            return isLt2M;
-        },
-        Upload() {
-            this.$http.MgUsers.UploadAvatar(this.form.avatar).then(response => {
-                this.$modal.msgSuccess("Adding photos");
-            }).catch(error => {
-                console.error('Upload Photo Error:', error);
-                // Handle your error here
-            });
-        },
 
         //********************Reset*************************************************/
         reset() {

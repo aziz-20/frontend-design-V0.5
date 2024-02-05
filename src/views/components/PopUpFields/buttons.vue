@@ -73,22 +73,6 @@ export default {
     },
 
     methods: {
-        tagTypeControl(field, value) {
-            if (typeof field.tagType !== 'function') {
-                console.error('tagColor is not a function. Field:', field);
-                return '';
-            }
-            // console.log(value)
-            return field.tagType(value);
-        },
-        checkTagColorFunction(field, value) {
-            if (typeof field.tagColor !== 'function') {
-                console.error('tagColor is not a function. Field:', field);
-                return 'defaultColor';
-            }
-            // console.log(value)
-            return field.tagColor(value);
-        },
         closeDialog() {
             this.$emit('update:visible', false); // Emit event to update visible prop in parent
         },
@@ -105,7 +89,7 @@ export default {
 }
 </script>
 
-<style >
+<style scoped>
 .button-container {
     display: flex;
     justify-content: center;

@@ -3,21 +3,34 @@ import request from '@/http/request'
 
 export default {
    
-    uploadImage(data) {
+    uploadImage(data,progress) {
         return request({
             url:'/upload/upload',
             method: 'post',
             data: data,
             headers: {
                 'Content-Type': 'multipart/form-data'
+            },
+            // onUploadProgress: progressEvent => {
+            //     progress(progressEvent)
+            // }
+            onUploadProgress(event){
+                console.log(event)
+                let v = Math.floor(event.loaded/event.total*100)
+                console.log(progress)	
+                console.log(v)
+                progress = v == 100 ? 80 : v
+                console.log(progress)
             }
 
         })
     },
-    deleteUsesAvatar(id) {
+    deleteUsesAvatar(data) {
         return request({
-            url: 'user/deleteAvatar',
-            method: 'delete'
+            url: '/upload/delete',
+            method: 'post',
+            data: data
+
         })
     },
 

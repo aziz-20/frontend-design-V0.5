@@ -9,12 +9,15 @@ export default {
         })
     },
     logout(data) {
+        console.log(data)
         return request({
             url: '/auth/logout',
             method: 'post',
             data
             
+            
         })
+        
     },
     getInfo() {
         return request({

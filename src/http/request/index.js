@@ -6,7 +6,7 @@ axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 const request = axios.create({
     
       baseURL: process.env.VUE_APP_API_BASE_URL,
-      timeout: 50000
+      timeout: 500000
   })
  
 request.interceptors.request.use((config) => requestIntersept(config), error => {
@@ -18,15 +18,14 @@ request.interceptors.response.use((config) => responseIntersept(config), error =
   console.log('err' + error)
   let { message } = error;
   if (message == "Network Error") {
-    message = "后端接口连接异常";
+    message = "The backend interface is abnormally connected";
   } else if (message.includes("timeout")) {
-    message = "系统接口请求超时";
+    message = "The system interface request timed out";
   } else if (message.includes("Request failed with status code")) {
-    message = "系统接口" + message.substr(message.length - 3) + "异常";
+    message = "System interfaces" + message.substr(message.length - 3) + "abnormal";
   }
-  ElMessage({ message: message, type: 'error', duration: 5 * 1000 })
+  ElMessage({ message: message, type: 'error', duration: 5 * 10000 })
   return Promise.reject(error)
 
 });
-
 export default request

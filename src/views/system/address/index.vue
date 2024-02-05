@@ -2,18 +2,19 @@
     <div class="app-container">
         <div class="flex" v-if="showSearch">
             <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
+                :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="Reload" :emptyFields="resetQuery"
                 :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
                 :resetIcon="resetIcon">
             </search_control>
         </div>
 
-        <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
-            :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
-            :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
-            :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
-            :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
-
+        <div>
+            <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
+                :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
+                :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+                :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
+                :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
+        </div>
         <!-- Table view  -->
         <div>
             <!-- Here is the table You will need to specify the data hadling here add classes and so on -->
@@ -110,14 +111,13 @@ export default {
             addressList: [],
             queryParams:
             {
-                targetTask: undefined,
-                taskGroup: null,
-                taskLogId: '',
-                taskName: undefined,
-                startTime: undefined,
                 status: undefined,
-                taskDetail: undefined,
-                triggerType: undefined,
+                state: undefined,
+                city: undefined,
+                country: undefined,
+                zipcode: undefined,
+                menuId: undefined,
+                userId: null,
                 pageNo: 1,
                 pageSize: 20
             },
@@ -141,28 +141,36 @@ export default {
                 // Define your search field configurations here
                 // Example:
                 {
-                    type: 'tasks',
-                    inputtype: "tasks",
-                    name: 'taskName',
-                    label: 'Task Name',
+                    type: 'state',
+                    inputtype: "address",
+                    name: 'country',
+                    country: true,
+                    label: 'Country',
+                    // style: 'width: 150px'
+
+                },
+                {
+                    type: 'address',
+                    inputtype: "address",
+                    name: 'state',
+                    state: true,
+                    label: 'State',
+                    // style: 'width: 150px'
+
+                },
+                {
+                    type: 'userField',
+                    inputtype: "userField",
+                    name: 'userId',
+                    label: 'User Name',
+                    placeholder: "Enter username",
                     style: 'width: 150px'
 
                 },
                 {
-                    "type": "selectV",
-                    inputtype: "selectV",
-                    name: 'triggerType',
-                    label: "Trigger Type",
-                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
-                    placeholder: "Please Select a Trigger",
-
-
-                },
-
-                {
                     inputtype: 'StatusSelect',
                     name: 'status',
-                    label: 'Log Status',
+                    label: 'Status',
 
                 },
             ],
@@ -180,15 +188,12 @@ export default {
         this.table()
     },
     //**************Methods Control*********************************************** */
-
-
     methods: {
-
         //**********************Table******************************************************** */
         table() {
             this.tableColumns = [
                 { type: 'select' },
-                { prop: 'country', label: 'Country', fixed: true, show: true ,minWidth:'100' },
+                { prop: 'country', label: 'Country', fixed: true, show: true, minWidth: '100' },
                 {
                     label: 'Status',
                     prop: 'status',
@@ -201,14 +206,14 @@ export default {
                     },
                     tagColor: (value) => { /* ... */ }
                 },
-                { prop: 'state', label: 'State',minWidth:'100' },
-                { prop: 'city', label: 'City',minWidth:'100' },
-                { prop: 'zipcode', label: 'ZipCode',minWidth:'100' },
-                { prop: 'detail', label: 'detail',minWidth:'100' },
-                { label: 'ADD By', prop: 'createByName',minWidth:'100' },
-                { prop: 'createTime', label: 'Create Date', type: 'calendar',minWidth:'100' },
-                { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
-                { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
+                { prop: 'state', label: 'State', minWidth: '100' },
+                { prop: 'city', label: 'City', minWidth: '100' },
+                { prop: 'zipcode', label: 'ZipCode', minWidth: '100' },
+                { prop: 'detail', label: 'detail', minWidth: '100' },
+                { label: 'ADD By', prop: 'createByName', minWidth: '100' },
+                { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '100' },
+                { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
+                { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
                 {
                     type: 'actions', label: 'Actions', align: 'right', fixed: 'right', show: true
                 }
@@ -302,216 +307,81 @@ export default {
         },
 
         /** Reset button operation */
+        Reload() {
+            this.resetQuery()
+            this.getList();
+
+        },
+
+        /** Reset button operation */
 
         resetQuery() {
             this.queryParams.targetTask = undefined,
-                this.queryParams.taskGroup = null,
-                this.queryParams.taskLogId = null,
-                this.queryParams.taskName = undefined,
-                this.queryParams.startTime = undefined,
-                this.queryParams.status = undefined,
-                this.queryParams.taskDetail = undefined,
-                this.queryParams.triggerType = null,
-                this.handleQuery();
-            this.getList();
+                this.queryParams.country = null,
+                this.queryParams.state = null,
+                this.queryParams.city = undefined,
+                this.queryParams.detail = undefined,
+                this.queryParams.zipcode = undefined,
+                this.queryParams.userId = undefined,
+                this.queryParams.status = ''
         },
 
         //**************** Add, Edit and delete control section******************************************* */
-        generateForm(triggerType) {
-            console.log(triggerType)
-
+        generateForm() {
             this.Add_Edit = [
                 {
-                    "type": "selectV",
-                    inputtype: "selectV",
-                    name: 'triggerType',
-                    label: "Type of the trigger Action",
-                    data: [{ label: 'Simple ', value: 0 }, { label: 'Cron', value: 1 }],
-                    placeholder: "Please Select a Trigger",
-                    span: 24
+                    inputtype: "country",
+                    name: 'country',
+                    label: "Country",
+                    placeholder: "Please select an option",
+                    // showMode: 'edit'
+                    // showMode: 'add'
 
                 },
                 {
-                    "type": "input",
-                    inputtype: "text",
-                    name: "taskGroup",
-                    label: "Task Group ",
-                    placeholder: "Please Enter the Task Group name",
-                    span: 24
+                    inputtype: "state",
+                    name: 'state',
+                    label: "Provence/State",
+                    placeholder: "Please select an option",
+                    // showMode: 'edit'
+                    // showMode: 'add'
 
                 },
                 {
-                    "type": "input",
                     inputtype: "text",
-                    name: "taskName",
-                    label: "Name of the Task ",
-                    placeholder: "Please Enter the job Title",
-                    span: 24
-
+                    name: "city",
+                    label: "City",
+                    placeholder: "Please enter a value",
+                    // showMode: 'add'
                 },
                 {
-                    "type": "text",
                     inputtype: "text",
-                    name: "targetTask",
-                    label: "Task Action",
-                    placeholder: "Please Enter Task Action",
-                    span: 24
+                    name: "zipcode",
+                    label: "Zip code",
+                    placeholder: "Please enter a value",
 
+                    // showMode: 'add'
                 },
-
+                {
+                    inputtype: "text",
+                    name: "detail",
+                    label: "Street/Home Address",
+                    placeholder: "Please enter a value",
+                    // showMode: 'add'
+                },
                 {
                     inputtype: 'switch',
                     name: 'status',
-                    label: 'Task Status',
+                    label: 'User Status',
                     switchOnColor: '#309f62',
                     switchOffColor: '#ff4949',
                     activeText: 'Activate',
                     inactiveText: 'Disabled',
                     activeValue: 0,
                     inactiveValue: 1,
-                    span: 12
                 },
+            ]
 
-            ];
-            // if (this.mode === 'add' && this.open === true) {
-            //     this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
-            // }
-
-            if (triggerType === 1) {
-                if (this.mode === 'add' && this.open === true) {
-                    this.initialValuesAdd = {
-                        'delFlag': 0,
-                        'triggerType': 1,
-                        'status': 1,
-                        'taskRun': 1
-                    }
-                }
-                if (this.mode === 'edit' && this.open === true) {
-                    this.initialValuesEdit = {
-                        'delFlag': 0,
-                        'triggerType': 1,
-                        'status': 1,
-                        'taskRun': 1
-                    }
-                }
-                console.log("I am here")
-                this.Add_Edit.push(
-                    {
-                        "type": "text",
-                        inputtype: "text",
-                        name: "cronExpression",
-                        label: "Cron Expiration",
-                        placeholder: "Please Enter Expiration for the Cron",
-                        span: 12
-                    },
-                );
-            }
-            if (triggerType === 0) {
-                if (this.mode === 'add' && this.open === true) {
-                    this.initialValuesAdd = {
-                        'delFlag': 0,
-                        'triggerType': 0,
-                        'status': 1,
-                        'taskRun': 1
-                    }
-                }
-                if (this.mode === 'edit' && this.open === true) {
-                    console.log('mmmmm')
-                    this.initialValuesEdit = {
-                        'delFlag': 0,
-                        'triggerType': 0,
-                        'status': 1,
-                        'taskRun': 1
-                    }
-                }
-                this.Add_Edit.push(
-                    {
-                        "type": "sorting",
-                        inputtype: "sorting",
-                        name: "taskDuration",
-                        label: "Duration",
-                        placeholder: "Enter Code for the Position",
-                        min: 1,
-                        span: 12
-                    },
-                    {
-                        "type": "sorting",
-                        inputtype: "sorting",
-                        name: "taskCount",
-                        label: "Number of time",
-                        // placeholder: "Enter Code for the Position",
-                        min: 1,
-                        span: 12
-                    },
-                );
-            }
-            this.Add_Edit.push(
-
-                {
-                    inputtype: 'switch',
-                    name: 'taskRun',
-                    label: 'RUN TASK',
-                    switchOnColor: '#309f62',
-                    switchOffColor: '#ff4949',
-                    activeText: 'Enable',
-                    inactiveText: 'Disable',
-                    activeValue: 0,
-                    inactiveValue: 1,
-                    span: 12
-                },
-                {
-                    inputtype: 'switch',
-                    name: 'taskConcurrent',
-                    label: 'Run Task Concurrently ',
-                    switchOnColor: '#309f62',
-                    switchOffColor: '#ff4949',
-                    activeText: 'True',
-                    inactiveText: 'False',
-                    activeValue: 0,
-                    inactiveValue: 1,
-                    span: 12
-                },
-
-                {
-
-                    "type": "sorting",
-                    inputtype: "sorting",
-                    name: "misFirePolicy",
-                    label: "Task order",
-                    placeholder: "Enter Code for the Position",
-                    min: 1,
-                    span: 12
-                },
-                {
-
-                    "type": "sorting",
-                    inputtype: "sorting",
-                    name: "orderNum",
-                    label: "Task Policy",
-                    placeholder: "Enter Code for the Position",
-                    span: 12
-                },
-
-                // {
-                //     "type": "selectV",
-                //     inputtype: "selectV",
-                //     name: 'misFirePolicy',
-                //     label: "Task Policy",
-                //     data: [{ label: 'MISFIRE_DEFAULT ', value: 0 }, { label: 'MISFIRE_IGNORE_MISFIRES', value: 1 }, { label: 'MISFIRE_FIRE_AND_PROCEED', value: 2 }, { label: 'MISFIRE_DO_NOTHING', value: 1 }],
-                //     placeholder: "Please Select a Trigger",
-                //     span: 12
-                // },
-                {
-                    "type": "textarea",
-                    inputtype: "textarea",
-                    name: "remark",
-                    label: "Job Description",
-                    placeholder: "Enter Description or Note of the Job ",
-                    span: 24
-                },
-
-            );
-            console.log(this.initialValuesAdd)
 
             return this.Add_Edit;
         },
@@ -520,21 +390,27 @@ export default {
         // *********************************ADDing*****************************
         handleAdd() {
             this.mode = "add"
-            // this.generateForm(this.switching)
+            this.generateForm()
             this.open = true;
             this.initialValuesAdd
             console.log(this.switching);
-
             console.log(this.form);
         },
 
         //*******************Edit control section**********************************/
         handleUpdate(row) {
             this.mode = "edit"
+            this.generateForm()
             this.initialValuesEdit = row
             console.log(row)
-            // this.generateForm(this.switching)
+
             this.open = true
+        },
+        handleSideUpdate(selectedRows) {
+            console.log(this.selectedRows[0])
+            if (this.selectedRows.length === 1) {
+                this.handleUpdate(this.selectedRows[0])
+            }
         },
 
         /**************************** Submit button**************************** */
@@ -573,7 +449,7 @@ export default {
         //*******************************************Delete Control Section************************************* */
         handle_SideDelete(row) {
             if (row.addId > 0) {
-                this.$modal.confirm('Are you sure you want to delete the Address"'+row.zipcode+':'+ row.detail + '"?').then(() => {
+                this.$modal.confirm('Are you sure you want to delete the Address"' + row.zipcode + ':' + row.detail + '"?').then(() => {
                     return this.$http.address.deleteAddress(row.addId);
                 }).then(() => {
                     this.getList();
@@ -607,16 +483,6 @@ export default {
             });
         },
 
-    },
-    watch: {
-        switching(newVal, oldVal) {
-            if (this.mode === 'add' && this.open === true) {
-                this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
-            }
-            if (this.mode === 'edit' && this.open === true) {
-                this.handleUpdate(); // Call anotherMethod whenever `this.switching` changes
-            }
-        },
     },
 };
 </script>

@@ -14,7 +14,7 @@
     <el-main>
       <div class="flex" v-if="showSearch">
         <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-          :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
+          :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="Reload" :emptyFields="resetQuery"
           :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
           :resetIcon="resetIcon" :visible="isFormVisible" :hiddenFields="hiddenFields">
         </search_control>
@@ -25,7 +25,7 @@
           <!-- Table Header -->
           <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
             :buttonsConfig="headers" :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
-            :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll"
+            :handleAdd="handleAdd" :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll"
             :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
             :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
         </div>
@@ -74,9 +74,8 @@ import { ElAside, ElInput, ElTree, ElButton, ElDrawer } from 'element-plus';
 import inspector from "@/http/inspector";
 // import { Edit, View as IconView } from '@element-plus/icons-vue';
 export default {
-  // name: "Job",
+  name: "Role",
   dicts: ['sys_normal_disable'],
-
   components: {
     addoredit,
     search_control,
@@ -132,8 +131,8 @@ export default {
       usersList: [],
       queryParams: {
         name: undefined,
-        status: '',
-        roleId: '',
+        status: undefined,
+        roleId: undefined,
         createTime: undefined,
         permId: undefined,
         deptId: undefined,
@@ -214,14 +213,14 @@ export default {
 
       fields_rules:
       {
-        abbrev:
+        name:
           [
             { required: true, message: "Please add a Code for the Job ", trigger: "blur" }
           ],
-        name: [
+        status: [
           { required: true, message: "Job name cannot be empty", trigger: "blur" }
         ],
-        status: [
+        scopeId: [
           { required: true, message: "Please Job be empty", trigger: "blur" }
         ],
       }
@@ -297,11 +296,11 @@ export default {
               return statusValue === 0 ? 'Active' : 'Not Active';
             },
             tagColor: (value) => { /* ... */ }
-          }, { label: 'ADD By', prop: 'createByName',minWidth:'100' },
-          { prop: 'createTime', label: 'Create Date', type: 'calendar',minWidth:'100' },
-          { label: 'Updated By', prop: 'updateByName',minWidth:'100' },
-          { prop: 'updateTime', label: 'Last Update Time',minWidth:'100' },
-          { prop: 'remark', label: 'Roles Note', minWidth: '100',minWidth:'100' },
+          }, { label: 'ADD By', prop: 'createByName', minWidth: '100' },
+          { prop: 'createTime', label: 'Create Date', type: 'calendar', minWidth: '100' },
+          { label: 'Updated By', prop: 'updateByName', minWidth: '100' },
+          { prop: 'updateTime', label: 'Last Update Time', minWidth: '100' },
+          { prop: 'remark', label: 'Roles Note', minWidth: '100', minWidth: '100' },
           {
             prop: 'perms', label: 'Role Permission/s', fixed: 'right', minWidth: '100', type: 'custom',
             customRender: row => {
@@ -315,7 +314,7 @@ export default {
             }
           },
           {
-            type: 'actions', label: 'Operations', align: 'right', 
+            type: 'actions', label: 'Operations', align: 'right',
             fixed: 'right', minWidth: '100', show: true
           }
         ]
@@ -334,7 +333,7 @@ export default {
 
 
     },
-    
+
     //**************PopUp*********************************************** */
 
     openDetails(row) {
@@ -448,25 +447,23 @@ export default {
     handleQuery(e) {
       this.getList();
     },
+    Reload() {
+      this.resetQuery()
+      this.getList();
+    },
 
     /** Reset button operation */
 
     resetQuery() {
-      this.queryParams = {
-        name: undefined,
-        status: '',
-        createTime: undefined,
-        permId: undefined,
-        deptId: undefined,
-        userId: undefined,
-        sideSearchToAdd: '',
-        customId: '',
-        pageNo: 1,
-        pageSize: 0
-      }
-
-      this.handleQuery();
-      this.getList();
+      this.queryParams.name = undefined,
+        this.queryParams.status = '',
+        this.queryParams.createTime = undefined,
+        this.queryParams.permId = undefined,
+        this.queryParams.deptId = undefined,
+        this.queryParams.userId = undefined,
+        this.queryParams.roleId = undefined,
+        this.queryParams.sideSearchToAdd = undefined,
+        this.queryParams.customId = undefined
     },
 
     //**************** Add, Edit and delete control section******************************************* */
@@ -485,9 +482,13 @@ export default {
 
 
     //****************************************ADDing*****************************
+    handleSideUpdate(selectedRows) {
+            if (this.selectedRows.length === 1) {
+                this.handleUpdate(this.selectedRows[0])
+            }
+        },
 
     handleAdd() {
-
       this.title = "Adding New Role"
       // this.formFieldSelectData()
       this.open = true;

@@ -13,9 +13,13 @@ const permission = {
     addRoutes: [],
     defaultRoutes: [],
     topbarRouters: [],
-    sidebarRouters: []
+    sidebarRouters: [],
+    routePerms: []
   },
   mutations: {
+    SET_ROUTES_PERMS: (state,perm) =>{
+      state.routePerms = perm
+    },
     SET_ROUTES: (state, routes) => {
       state.addRoutes = routes
       state.routes = constantRoutes.concat(routes)
@@ -37,15 +41,15 @@ const permission = {
         // 向后端请求路由数据
         User.getmenue().then(res => {
           const sdata = JSON.parse(JSON.stringify(res.result.data))
-          const rdata = JSON.parse(JSON.stringify(res.result.data))
+
           const r = {
             id: 1545,
-
             path: '/system',
             hidden: 1,
+            type: 0,
             meta: {
               icon: 'dashboard',
-              title: 'grpermission',
+              title: 'System',
             },
             component: 'Layout',
             children: [
@@ -53,18 +57,72 @@ const permission = {
                 id: 1223,
                 name: 'grpermission',
                 path: 'grpermission',
+                type: 0,
                 hidden: 1,
                 meta: {
                   icon: 'permission',
                   title: 'Group permission',
                 },
                 component: 'system/grpermission',
+                children: [
+                  {
+                    id: 13,
+                    name: 'gdrpermission',
+                    path: 'g1',
+                    type: 1,
+                    hidden: 1,
+                    meta: {
+                      icon: 'permission',
+                      title: 'g1',
+                    },
+                    component: 'system/grpermission',
+                  },
+                  {
+                    id: 1213,
+                    name: 'gdrpermission',
+                    path: 'g2',
+                    type: 0,
+                    hidden: 1,
+                    meta: {
+                      icon: 'permission',
+                      title: 'g2',
+                    },
+                    component: 'system/grpermission',
+                    children: [
+                      {
+                        id: 13,
+                        name: 'gdrpermission',
+                        path: 'grpermission',
+                        type: 1,
+                        hidden: 1,
+                        meta: {
+                          icon: 'permission',
+                          title: 'g3',
+                        },
+                        component: 'system/grpermission',
+                      }, {
+                        id: 153,
+                        name: 'gdrpermission',
+                        path: 'grpermission',
+                        type: 1,
+                        hidden: 1,
+                        meta: {
+                          icon: 'permission',
+                          title: 'g12',
+                        },
+                        component: 'system/grpermission',
+                      }
+                    ]
+                  }
+                ]
+
               },
               {
                 id: 123,
                 name: 'cudatascope',
                 path: 'cudatascope',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'custompermission',
                   title: 'Custom permission',
@@ -72,10 +130,30 @@ const permission = {
                 component: 'system/cudatascope',
               },
               {
+                id: 888,
+                name: 'defaultpermission',
+                path: 'defaultpermission',
+                type: 1,
+                hidden: 1,
+                component: 'system/defaultpermission',
+                meta: { title: 'defaultpermission', icon: 'dashboard' }
+              },
+              {
+                id: 881,
+                name: 'permission',
+                path: 'permission',
+                type: 1,
+                hidden: 1,
+                component: 'system/permission',
+                meta: { title: 'permission', icon: 'dashboard' }
+
+              },
+              {
                 id: 124,
                 name: 'jop',
                 path: 'jop',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'job',
                   title: 'jop',
@@ -87,6 +165,7 @@ const permission = {
                 name: 'dept',
                 path: 'dept',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'tab',
                   title: 'dept',
@@ -98,6 +177,7 @@ const permission = {
                 name: 'menu',
                 path: 'menu',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'nested',
                   title: 'menu',
@@ -109,6 +189,7 @@ const permission = {
                 name: 'role',
                 path: 'role',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'skill',
                   title: 'role',
@@ -120,6 +201,7 @@ const permission = {
                 name: 'MgUsers',
                 path: 'MgUsers',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'user',
                   title: 'MgUsers',
@@ -131,6 +213,7 @@ const permission = {
                 name: 'TaskControl',
                 path: 'TaskControl',
                 hidden: 1,
+                type: 1,
                 meta: {
                   icon: 'log',
                   title: 'TaskControl',
@@ -142,35 +225,31 @@ const permission = {
                 name: 'taskLogs',
                 path: 'taskLogs',
                 hidden: 1,
-                meta: 
+                type: 1,
+                meta:
                 {
                   icon: 'log',
                   title: 'TaskLogs',
                 },
                 component: 'system/taskLogs',
-              } , 
-               {
-                id: 65,
-                path : 'permission',
-                name : 'permission',
-                component : 'system/permission',
-                meta : {title : 'permission', icon : 'dashboard'}
-              }  ,
+              },
               {
-                id: 888,
-                name : 'defaultpermission',
-                path : 'defaultpermission',
-                component :'system/defaultpermission',
-                meta : {title : 'defaultpermission', icon : 'dashboard'}
+                id: 65,
+                path: 'permission',
+                name: 'permission',
+                type: 1,
+                component: 'system/permission',
+                meta: { title: 'permission', icon: 'dashboard' }
               },
               {
                 id: 101,
-                path : 'address',
-                name : 'address',
+                path: 'address',
+                name: 'address',
+                type: 1,
                 hidden: 1,
-                component : 'system/address',
-                meta : {title : 'Addresses', icon : 'location'}
-              }  ,
+                component: 'system/address',
+                meta: { title: 'Addresses', icon: 'location' }
+              },
               // {
               //   id: 132,
               //   name: 'taskLogs',
@@ -183,31 +262,28 @@ const permission = {
               //   },
               //   component: 'system/taskLogs',
               // } ,
-              
+
             ]
 
           }
-          sdata.push(r)
           const sidebarRoutes = convertToSidebarRouters(sdata)
-          console.log(sidebarRoutes)
-          const rewriteRoutes =filterAsyncRouter(sdata,false,false) 
-          const a = filterAsyncRouter([r],false,false)
           sidebarRoutes.push(r)
-          rewriteRoutes.push(r)
-          a.forEach(route => {
-            
-            router.addRoute(route);
-          });
-
-
+          const rewriteRoutes = asy(sdata)
+          console.log(rewriteRoutes)
           commit('SET_SIDEBAR_ROUTERS', sidebarRoutes)
           resolve(rewriteRoutes)
         }).catch(error => {
           reject(error)
         })
       })
-    }
-  }
+    },
+
+
+    //save each route's permission into store
+    RoutePerms({commit},perm){
+      commit('SET_ROUTES_PERMS',perm)
+        }
+  },
 }
 
 // 遍历后台传来的路由字符串，转换为组件对象
@@ -290,105 +366,105 @@ const permission = {
 //     children = children.concat(el)
 //   })
 //   return children
-// }
-function filterAsyncRouter(asyncRouterMap, lastRouter = false, filterType = false) {
-  return asyncRouterMap.map(route => {
-    const {
-      menuId,
-      parentId,
-      name,
-      orderNum,
-      type,
-      path,
-      component,
-      icon,
-      remark,
-      hierarchy,
-      children,
-      parentName
-    } = route;
+// // }
+// function filterAsyncRouter(asyncRouterMap, lastRouter = false, filterType = false) {
+//   return asyncRouterMap.map(route => {
+//     const {
+//       menuId,
+//       parentId,
+//       name,
+//       orderNum,
+//       type,
+//       path,
+//       component,
+//       icon,
+//       remark,
+//       hierarchy,
+//       children,
+//       parentName
+//     } = route;
 
-    if (type === filterType || filterType === false) {
+//     if (type === filterType || filterType === false) {
       // Include only routes with the specified type
-      const transformedRoute = {
-        menuId,
-        parentId,
-        name,
-        orderNum,
-        type,
-        path,
-        component, // Use 'Layout' if component is null
-        icon,
-        meta: {
-          icon: icon,
-          title: name,
-          affix: true,
-        },
-        remark,
-        hierarchy,
-        children,
-        parentName
-      };
+      // const transformedRoute = {
+      //   menuId,
+      //   parentId,
+      //   name,
+      //   orderNum,
+      //   type,
+      //   path: parentId === 0 ? '/' + path : path,
+        // component, // Use 'Layout' if component is null
+    //     icon,
+    //     meta: {
+    //       icon: icon,
+    //       title: name,
+    //       affix: true,
+    //     },
+    //     remark,
+    //     hierarchy,
+    //     children,
+    //     parentName
+    //   };
 
-      if (filterType && transformedRoute.children) {
-        transformedRoute.children = filterChildren(transformedRoute.children, filterType);
-      }
+    //   if (filterType && transformedRoute.children) {
+    //     transformedRoute.children = filterChildren(transformedRoute.children, filterType);
+    //   }
 
-      if (transformedRoute.component === 'Layout') {
-        transformedRoute.component = Layout;
-      } else if (transformedRoute.component === 'ParentView') {
-        transformedRoute.component = ParentView;
-      } else if (transformedRoute.component === 'InnerLink') {
-        transformedRoute.component = InnerLink;
-      } else {
-        transformedRoute.component = loadView(transformedRoute.component);
-      }
+    //   if (transformedRoute.component === 'Layout') {
+    //     transformedRoute.component = Layout;
+    //   } else if (transformedRoute.component === 'ParentView') {
+    //     transformedRoute.component = ParentView;
+    //   } else if (transformedRoute.component === 'InnerLink') {
+    //     transformedRoute.component = InnerLink;
+    //   } else {
+    //     transformedRoute.component = loadView(transformedRoute.component);
+    //   }
 
-      if (transformedRoute.children != null && transformedRoute.children && transformedRoute.children.length) {
-        transformedRoute.children = filterAsyncRouter(transformedRoute.children, transformedRoute, filterType);
-      } else {
-        delete transformedRoute['children'];
-        delete transformedRoute['redirect'];
-      }
+    //   if (transformedRoute.children != null && transformedRoute.children && transformedRoute.children.length) {
+    //     transformedRoute.children = filterAsyncRouter(transformedRoute.children, transformedRoute, filterType);
+    //   } else {
+    //     delete transformedRoute['children'];
+    //     delete transformedRoute['redirect'];
+    //   }
 
-      return transformedRoute;
-    }
+    //   return transformedRoute;
+    // }
 
-    return null; // Exclude routes with type different from the specified filterType
-  }).filter(route => route !== null); // Filter out null values
-}
+    // return null; // Exclude routes with type different from the specified filterType
+  // }).filter(route => route !== null); // Filter out null values
+// }
 
-function filterChildren(childrenMap, filterType) {
-  var children = [];
-  childrenMap.forEach((el, index) => {
-    if (el.children && el.children.length) {
-      if (el.component === 'ParentView') {
-        el.children.forEach(c => {
-          c.path = el.path + '/' + c.path;
-          if (c.children && c.children.length) {
-            children = children.concat(filterChildren(c.children, filterType));
-            return;
-          }
-          children.push(c);
-        });
-        return;
-      }
-    }
-    if (filterType && el.type === filterType) {
-      if (el.component !== 'ParentView') {
-        el.component = loadView(el.component);
-      }
-      if (el.children != null && el.children && el.children.length) {
-        el.children = filterChildren(el.children, filterType);
-      } else {
-        delete el['children'];
-        delete el['redirect'];
-      }
-      children.push(el);
-    }
-  });
-  return children;
-}
+// function filterChildren(childrenMap, filterType) {
+//   var children = [];
+//   childrenMap.forEach((el, index) => {
+//     if (el.children && el.children.length) {
+//       if (el.component === 'ParentView') {
+//         el.children.forEach(c => {
+//           c.path = el.path + '/' + c.path;
+//           if (c.children && c.children.length) {
+//             children = children.concat(filterChildren(c.children, filterType));
+//             return;
+//           }
+//           children.push(c);
+//         });
+//         return;
+//       }
+//     }
+//     if (filterType && el.type === filterType) {
+//       if (el.component !== 'ParentView') {
+//         el.component = loadView(el.component);
+//       }
+//       if (el.children != null && el.children && el.children.length) {
+//         el.children = filterChildren(el.children, filterType);
+//       } else {
+//         delete el['children'];
+//         delete el['redirect'];
+//       }
+//       children.push(el);
+//     }
+//   });
+//   return children;
+// }
 
 
 // 动态路由遍历，验证是否具备权限
@@ -429,14 +505,26 @@ export function filterDynamicRoutes(routes) {
 //   }
 // };
 export const loadView = (view) => {
-  if (process.env.NODE_ENV === 'development') {
-  
-    // return (resolve) => require([`@/views/${view}`], resolve)
-    return () => import(`@/views/${view}`)
-  } else {
-    // 使用 import 实现生产环境的路由懒加载
-    return () => import(`@/views/${view}`)
+  // if (process.env.NODE_ENV === 'development') {
+  //     console.log('Development mode')
+  //   return (resolve) => require([`@/views/${view}`], resolve)
+  // } else {
+  //   // 使用 import 实现生产环境的路由懒加载
+  //   return () => import(`@/views/${view}`)
+
+  let a = true
+
+  try {
+    console.log(`@/views/${view}/index.vue`)
+    return  require(`@/views/${view}/index.vue`).default;
+  } catch (e) {
+    a = false
   }
+  if (a) {
+    console.log(view)
+    return  require('@/views/index.vue').default;
+  }
+
 }
 
 
@@ -461,7 +549,7 @@ function convertToSidebarRouters(data, targetType = null) {
             hidden: item.hidden,
             redirect: item.redirect,
             meta: {
-              icon: item.icon,
+              icon: item.icon || 'dashboard',
               title: item.name,
               affix: true,
             },
@@ -479,7 +567,8 @@ function convertToSidebarRouters(data, targetType = null) {
   }
 
   data.forEach(item => {
-    
+
+
     // Check if the item should be included based on targetType
     if (targetType === null || targetType === item.type) {
       const sidebarItem = {
@@ -488,11 +577,11 @@ function convertToSidebarRouters(data, targetType = null) {
         type: item.type,
         id: item.menuId,
         name: item.name,
-        path: item.path,
+        path: item.parentId === 0 ? '/' + item.path : item.path,
         hidden: item.hidden,
         redirect: item.redirect,
         meta: {
-          icon: item.icon,
+          icon: item.icon || 'dashboard',
           title: item.name,
           affix: true,
         },
@@ -508,6 +597,31 @@ function convertToSidebarRouters(data, targetType = null) {
   });
 
   return sidebarRouters;
+}
+
+function asy(asyncRouterMap) {
+  const newArr = []
+  asyncRouterMap.forEach((item, index) => {
+    const component =item.component === 'Layout' ? Layout : loadView(item.component)
+    let routeTemplet = {
+      path: item.parentId === 0 ? '/' + item.path : item.path,
+      name: item.name,
+      parentId: item.parentId,
+      type: item.type,
+      menuId: item.menuId,
+      permission: item.permission,
+      redirects: item.redirect,
+      hidden: item.hidden,
+      // redirect: item.redirect,
+      component: component,
+      meta: { title: item.name, icon: 'dashboard' }
+    }
+    if (item.children && item.children.length) {
+      routeTemplet.children = asy(item.children)
+    }
+    newArr.push(routeTemplet)
+  })
+  return newArr
 }
 
 

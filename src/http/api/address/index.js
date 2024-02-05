@@ -1,6 +1,4 @@
 import request from '@/http/request'
-
-
 export default {
    
     getAddress(id) {
@@ -16,16 +14,14 @@ export default {
             method: 'post',
             data: data
         })
-    }
-    ,
+    },
     updateAddress(data) {
         return request({
             url: '/address',
             method: 'put',
             data: data
         })
-    }
-    ,
+    },
    
     deleteAddress(id) {
         return request({
@@ -39,7 +35,6 @@ export default {
             url: '/address/list',
             method: 'post',
             data: data
-        })
-        
+        })   
     },
 }

@@ -3,7 +3,7 @@
   <div class="app-container">
     <div class="flex" v-if="showSearch">
       <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-        :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
+        :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="Reload" :emptyFields="resetQuery"
         :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
         :resetIcon="resetIcon">
       </search_control>
@@ -13,7 +13,7 @@
       <!-- Table Header -->
       <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
         :buttonsConfig="headers" :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }"
-        :handleAdd="handleAdd" :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" 
+        :handleAdd="handleSideAdd" :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll"
         :handleDelete="handleDelete" :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
         :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     </div>
@@ -47,8 +47,11 @@
       initialValuesAdd : initialValuesEdit" :fields="Add_Edit" @close="closeAddEdit" @submit="onSubmit"
       @emi="emitChange">
     </addoredit>
-
+     
   </div>
+  <div v-for="x in routePerm" >
+                {{x.code}}
+            </div>
 </template>
   
   
@@ -66,7 +69,7 @@ import search_control from '@/views/components/qureyParams/index.vue'
 
 
 export default {
-  // name: "Job",
+  name: "Menu",
   dicts: ['sys_normal_disable'],
 
   components: {
@@ -79,6 +82,7 @@ export default {
   },
   data() {
     return {
+      routePerm: this.$route.meta.perms,
       // Visible: false,
       columnVisible: false,
       selectedItem: null,
@@ -104,7 +108,7 @@ export default {
       //     handler: this.handleAdd
       //   }
       // ],
-      columnPopUp: [{ label: 'Name', prop: 'name' }, {label:'ID', prop:'menuId'}],
+      columnPopUp: [{ label: 'Name', prop: 'name' }, { label: 'ID', prop: 'menuId' }],
       dialogVisible: false,
       buttonsConfig: [],
       mobileView: null,
@@ -147,6 +151,13 @@ export default {
           {
             "type": "text",
             inputtype: "text",
+            name: "controllerName",
+            label: "controller Name ",
+            placeholder: "Enter the controller Name",
+            span: 24
+          },{
+            "type": "text",
+            inputtype: "text",
             name: "component",
             label: "component Name ",
             placeholder: "Enter the component name",
@@ -171,6 +182,27 @@ export default {
             multiple: false
           },
           {
+            "type": "selectV",
+            inputtype: "selectV",
+            name: "redirect",
+            label: "Direction Type ",
+            placeholder: "Select the Type ",
+            data: [{ label: 'Direct', value: 0 }, { label: 'Redirect', value: 1 }],
+            multiple: false
+          },
+
+          {
+            inputtype: 'switch',
+            name: 'hidden',
+            label: 'Menu view access',
+            switchOnColor: '#309f62',
+            switchOffColor: '#ff4949',
+            activeText: 'Show',
+            inactiveText: 'Hide',
+            activeValue: 0,
+            inactiveValue: 1,
+          },
+          {
             "type": "text",
             inputtype: "text",
             name: "icon",
@@ -190,6 +222,13 @@ export default {
             inputtype: "text",
             name: "path",
             label: "Please add a Path",
+            placeholder: "Enter Description ",
+            span: 24
+          },
+          {
+            inputtype: "icon",
+            name: "icon",
+            label: "Icons",
             placeholder: "Enter Description ",
             span: 24
           },
@@ -307,8 +346,16 @@ export default {
 
   },
   //**************Methods Control*********************************************** */
-
-
+  // watch: {
+  //   switching(newVal, oldVal) {
+  //     if (this.mode === 'add' && this.open === true) {
+  //       this.handleAdd(); // Call anotherMethod whenever `this.switching` changes
+  //     }
+  //     if (this.mode === 'edit' && this.open === true) {
+  //       this.handleUpdate(); // Call anotherMethod whenever `this.switching` changes
+  //     }
+  //   },
+  // },
   methods: {
     handleOpenPopup(selectedData) {
       console.log('Iam here')
@@ -323,7 +370,9 @@ export default {
 
 //********************************table***************************************************************************************
 rowClassChecker({ row }) {
+      console.log(row)
       if (row.children && row.children.length > 0) {
+        console.log(row)
         return 'greenClass';
       }
     },
@@ -411,7 +460,7 @@ rowClassChecker({ row }) {
     closeDialog() {
       this.dialogVisible = false; // Method to close the dialog
     },
-//********************************************************************* */
+    //********************************************************************* */
     //Watch the form input
     emitChange(x) {
       const { type } = x
@@ -457,6 +506,11 @@ rowClassChecker({ row }) {
     handleQuery(e) {
       this.getList();
     },
+    Reload() {
+      this.resetQuery();
+      this.getList();
+
+    },
 
     /** Reset button operation */
 
@@ -468,12 +522,12 @@ rowClassChecker({ row }) {
       this.queryParams.type = ''
       this.queryParams.userId = ''
       this.queryParams.jobId = ''
-      this.handleQuery();
-      this.getList();
+
     },
     //**************** Add, Edit and delete control section******************************************* */
     //***************************Fields************************************************************/
     generateForm(type) {
+      console.log(type)
       this.Add_Edit =
         [
           {
@@ -483,34 +537,30 @@ rowClassChecker({ row }) {
             label: "Enter the Type ",
             placeholder: "Select the Type ",
             data: [{ label: 'Directory', value: 0 }, { label: 'File', value: 1 }, { label: 'External Link', value: 2 }],
-            span: 24,
             multiple: false
-          }
+          },
+          {
+            "type": "selectV",
+            inputtype: "selectV",
+            name: "redirect",
+            label: "Direction Type ",
+            placeholder: "Select the Type ",
+            data: [{ label: 'Direct', value: 0 }, { label: 'Redirect', value: 1 }],
+            multiple: false
+          },
+
+          {
+            inputtype: 'switch',
+            name: 'hidden',
+            label: 'Menu view access',
+            switchOnColor: '#309f62',
+            switchOffColor: '#ff4949',
+            activeText: 'Show',
+            inactiveText: 'Hide',
+            activeValue: 0,
+            inactiveValue: 1,
+          },
         ]
-
-      if (type === 0 || type === 1) {
-        this.Add_Edit.push(
-          {
-            "type": "text",
-            inputtype: "text",
-            name: "component",
-            label: "component Name ",
-            placeholder: "Enter the component name",
-            span: 24
-          },
-
-          {
-            "type": "text",
-            inputtype: "text",
-            name: "name",
-            label: "Menu Name ",
-            placeholder: "Select an Icon",
-            span: 24
-          },
-
-        )
-      }
-
       if (type === 2) {
         if (this.mode === 'add' && this.open === true) {
           this.initialValuesAdd = {
@@ -521,7 +571,28 @@ rowClassChecker({ row }) {
           }
         }
 
+      } else {
+        this.Add_Edit.push(
+          {
+            "type": "text",
+            inputtype: "text",
+            name: "component",
+            label: "component Name ",
+            placeholder: "Enter the component name",
+          },
+
+          {
+            "type": "text",
+            inputtype: "text",
+            name: "name",
+            label: "Menu Name ",
+            placeholder: "Select an Icon",
+          },
+
+        )
       }
+
+
 
       this.Add_Edit.push(
         {
@@ -529,7 +600,7 @@ rowClassChecker({ row }) {
           name: "path",
           label: "Please add a Path",
           placeholder: "Enter Description ",
-          span: 24
+
         },
         {
           "type": "text",
@@ -537,7 +608,7 @@ rowClassChecker({ row }) {
           name: "icon",
           label: "Icon Name ",
           placeholder: "Enter an Icon",
-          span: 24
+
         },
         {
           "type": "sorting",
@@ -545,7 +616,7 @@ rowClassChecker({ row }) {
           name: "orderNum",
           label: "Sorting Position",
           placeholder: "Display Sorting",
-          span: 24
+
         },
         {
           inputtype: 'switch',
@@ -557,7 +628,6 @@ rowClassChecker({ row }) {
           inactiveText: 'Disabled',
           activeValue: 0,
           inactiveValue: 1,
-          span: 24
         },
         {
           "type": "textarea",
@@ -565,7 +635,6 @@ rowClassChecker({ row }) {
           name: "remark",
           label: "Menu Note/Description",
           placeholder: "Please enter a description or note ",
-          span: 24
         },
       )
 
@@ -574,27 +643,54 @@ rowClassChecker({ row }) {
     },
 
     // *********************************ADDing*****************************
+    handleSideAdd(selectedRows) {
+      console.log(this.selectedRows[0])
+      if (this.selectedRows.length === 1) {
+        this.handleAdd(this.selectedRows[0])
+      }
+      else {
+        this.handleAdd()
+      }
+    },
     handleAdd(row) {
       this.mode = "add"
       this.open = true;
-      if (row.parentId === undefined) {
+      console.log(row)
+      if (row === undefined) {
         this.initialValuesAdd = { "delFlag": "0", 'type': 0, "parentId": 0 }
+        // console.log(this.switching)
+        // this.generateForm(this.switching)
       }
 
-      if (row.parentId !== undefined) {
-
-        this.initialValuesAdd = { "delFlag": "0", "parentId": row.menuId }
+      if (row !== undefined) {
+        if (row.parentId !== 0) {
+          console.log("Hello")
+          this.initialValuesAdd = { "delFlag": "0", "parentId": row.parentId }
+          // console.log(this.switching)
+          // this.generateForm(this.switching)
+        }
+        if (row.parentId === 0) {
+          this.initialValuesAdd = { "delFlag": "0", "parentId": row.menuId }
+          // console.log(this.switching)
+          // this.generateForm(this.switching)
+        }
+        // console.log(this.switching)
         // this.generateForm(this.switching)
       }
     },
 
     //*******************Edit control section**********************************/
+    handleSideUpdate(selectedRows) {
+      if (this.selectedRows.length === 1) {
+        this.handleUpdate(this.selectedRows[0])
+      }
+    },
     handleUpdate(row) {
-      this.mode = "Edit"
+      this.mode = "edit"
       this.open = true
       this.initialValuesEdit = row
       // this.generateForm(this.switching)
-      this.open = true
+      // this.open = true
     },
 
     /**************************** Submit button**************************** */
@@ -698,8 +794,8 @@ rowClassChecker({ row }) {
 </script>
 
 <style >
-.greenClass {
-  background-color: rgb(227, 235, 227);
+.el-table .greenClass {
+  background-color: rgb(10, 52, 10);
 }
 </style>
   

@@ -2,15 +2,15 @@
   <div class="app-container">
     <div class="flex" v-if="showSearch">
       <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-        :hierarchicalData="transNameList" :handleQuery="handleQuery" :resetQuery="resetQuery"
+        :hierarchicalData="transNameList" :handleQuery="search" :resetQuery="ReLoad"
         :searchButtonText="searchButtonText" :resetButtonText="resetButtonText" :searchIcon="searchIcon"
-        :resetIcon="resetIcon">
+        :resetIcon="resetIcon" :emptyFields="emptyFields">
       </search_control>
     </div>
 
     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
       :buttons="{ new: true, edit: true, expand: false, delete: true, filter: true }" :handleAdd="handleAdd"
-      :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+      :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
       :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
       :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
 
@@ -166,7 +166,7 @@ export default {
         {
           type: 'Position',
           inputtype: "Position",
-          name: 'name',
+          name: 'jobId',
           label: 'Job Name',
           data: 'Position',
           style: 'width: 150px'
@@ -324,13 +324,18 @@ export default {
       this.reset(this.form);
     },
     //************************************** */
-    handleQuery(e) {
-      this.getList();
+    search(){
+      this.getList()
+    
+    },
+    ReLoad() {
+      this.emptyFields();
+      this.getList()
     },
 
     /** Reset button operation */
 
-    resetQuery() {
+    emptyFields() {
       this.queryParams.name = ''
       this.queryParams.status = ''
       this.queryParams.deptId = ''
@@ -338,9 +343,7 @@ export default {
       this.queryParams.userId = ''
       this.queryParams.abbrev = ''
       this.queryParams.createTime = ''
-      this.queryParams.pageNum = ''
-      this.handleQuery();
-      this.getList();
+      this.queryParams.pageNum = ''  
     },
 
     //**************** Add, Edit and delete control section******************************************* */
@@ -360,6 +363,12 @@ export default {
       this.initialValuesEdit = row
       this.open = true
     },
+    handleSideUpdate(selectedRows) {
+            if (this.selectedRows.length === 1) {
+                this.handleUpdate(this.selectedRows[0])
+            }
+        },
+
 
     /**************************** Submit button**************************** */
     onSubmit(n) {

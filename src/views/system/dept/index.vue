@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="flex" v-if="showSearch">
       <search_control ref="form" :displaySearch="true" :fields="searchFields" :queryParams="queryParams"
-        :handleQuery="handleQuery" :resetQuery="resetQuery" :searchButtonText="searchButtonText"
+        :handleQuery="handleQuery" :resetQuery="Reload" :emptyFields="resetQuery" :searchButtonText="searchButtonText"
         :resetButtonText="resetButtonText" :searchIcon="searchIcon" :resetIcon="resetIcon">
       </search_control>
     </div>
     <tableHeader :isDark="isDark" buttonColor="#626aef" deleteButtonColor="red" :selectedRows="selectedRows"
-      :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }" :handleAdd="handleAdd"
-      :handleUpdate="handleUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
+      :buttons="{ new: true, edit: true, expand: true, delete: true, filter: true }" :handleAdd="handleSideAdd"
+      :handleUpdate="handleSideUpdate" :toggleExpandAll="toggleExpandAll" :handleDelete="handleDelete"
       :showSearch="showSearch" @toggleFilter="showSearch = !showSearch"
       :permissions="{ new: 'system:user:add', edit: 'system:user:edit', delete: 'system:post:remove' }" />
     <!-- Table view  -->
@@ -61,12 +61,12 @@ export default {
   data() {
     return {
       selectedRows: [],
-      dialogVisible:false,
-      mobileView:[],
+      dialogVisible: false,
+      mobileView: [],
       tablebuttons:
         [],
       tableColumns: [],
-      mode: '',
+      modeType: null,
       loading: true,
       showSearch: true,
       initialValuesEdit: undefined,
@@ -105,6 +105,9 @@ export default {
         deptId: '',
         createTime: undefined,
         leader: undefined,
+        userId: undefined,
+        email: undefined,
+        parentId: undefined,
         pageNo: 1,
         pageSize: 0
       },
@@ -113,13 +116,14 @@ export default {
         [
           {
             "type": "treeSelect",
-            inputtype: "departmentNew",
+            inputtype: "departments",
             name: "parentId",
+            new: true,
             label: "Department parent",
             placeholder: "Department selected",
             // span: 12
-
-          },
+          }
+          ,
           {
             "type": "input",
             inputtype: "text",
@@ -212,13 +216,25 @@ export default {
       searchFields: [
         // Define your search field configurations here
         // Example:
+
         {
           inputtype: 'departments',
           name: 'deptId',
           label: 'Department Name',
 
         },
-
+        {
+          inputtype: 'departments',
+          name: 'email',
+          deptemail:true,
+          label: 'Department Email',
+        },
+        // {
+        //   inputtype: 'departments',
+        //   name: 'parentId',
+        //   deptparent:true,
+        //   label: 'Parent Department',
+        // },
         {
           inputtype: 'StatusSelect',
           name: 'status',
@@ -228,9 +244,10 @@ export default {
           type: 'userField',
           inputtype: "userField",
           name: 'userId',
+          username: true,
           label: 'User Name',
           placeholder: "Enter username",
-          style: 'width: 150px'
+
 
         },
 
@@ -251,8 +268,8 @@ export default {
 
   methods: {
     //***********************Table****************************************** */
-    table(){
-      this.tableColumns= [
+    table() {
+      this.tableColumns = [
         { type: 'select' },
         { prop: 'name', label: 'Department', fixed: true, show: true, minWidth: '150' },
         { prop: 'orderNum', label: 'Order' },
@@ -275,7 +292,7 @@ export default {
         { prop: 'updateTime', label: 'Last Update Time' },
         { type: 'actions', label: 'Operation', minWidth: '100', fixed: 'right', align: 'right', show: true },
       ]
-      this.tablebuttons=
+      this.tablebuttons =
         [
           {
             add: true,
@@ -297,18 +314,18 @@ export default {
     //***********************PopUp*************************************** */
     openDetails(row) {
       this.mobileView = row;
-      this.buttonsConfig = 
-      [
-        {
-          add: true,
-        },
-        {
-          edit: true,
-        },
-        {
-          delete: true,
-        },
-      ]
+      this.buttonsConfig =
+        [
+          {
+            add: true,
+          },
+          {
+            edit: true,
+          },
+          {
+            delete: true,
+          },
+        ]
       this.dialogVisible = true;
     },
 
@@ -337,8 +354,12 @@ export default {
     },
     //************************************** */
     handleQuery(e) {
-
       this.getList();
+    },
+    Reload() {
+      this.resetQuery();
+      this.getList();
+
     },
     resetQuery() {
       this.queryParams.name = ''
@@ -347,8 +368,9 @@ export default {
       this.queryParams.userId = ''
       this.queryParams.createTime = ''
       this.queryParams.deptId = ''
-      this.handleQuery();
-      this.getList();
+      this.queryParams.email = ''
+      this.queryParams.parentId = ''
+
     },
     //**************** Add, Edit and delete control section******************************************* */
     getParentName(parentId) {
@@ -364,18 +386,37 @@ export default {
       }
     },
     //****************Retrieving making list with value*********************************** */
+    handleSideAdd(selectedRows) {
+      console.log(this.selectedRows[0])
+      if (this.selectedRows.length === 1) {
+        this.handleAdd(this.selectedRows[0])
+      }
+      else {
+        this.handleAdd()
+      }
+    },
     handleAdd(row) {
-      this.mode = 'add'
+      this.modeType = 'add'
 
       console.log(row)
-      // this.formFieldSelectData(),
+      let department = ''
+      if (row !== null && row !== undefined) {
+        console.log("sa" + row.deptId)
+        department = row.deptId
+      }
+      console.log(department)
       this.open = true;
-      this.initialValuesAdd = { "delFlag": 0, "status": 0, "parentId": row.deptId }
+      this.initialValuesAdd = { "status": 0, "delFlag": 0, "parentId": department }
     },
 
     //*******************Edit control section**********************************/
+    handleSideUpdate(selectedRows) {
+      if (this.selectedRows.length === 1) {
+        this.handleUpdate(this.selectedRows[0])
+      }
+    },
     handleUpdate(row) {
-      this.mode = "Edit"
+      this.modeType = "edit"
       this.initialValuesEdit = row
       this.open = true
       console.log(this.deptOptions)
@@ -388,7 +429,7 @@ export default {
     /**************************** Submit button**************************** */
     onSubmit(n) {
       this.form = n
-      if (this.mode === 'add') {
+      if (this.modeType === 'add') {
         this.$http.dept.addDept(this.form).then(response => {
           console.log()
           console.log('sssssssssssssssssssssss' + response.data)
@@ -436,7 +477,9 @@ export default {
         this.form.leader = '',
         this.form.phone = '',
         this.form.email = '',
-        this.form.status = 0
+        this.form.status = '',
+        this.form.email = '',
+        this.form.userId = ''
     },
 
     handle_SideDelete(row) {

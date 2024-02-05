@@ -1,13 +1,11 @@
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams } from '../setting'
-import { ElMessage, ElMessageBox,ElNotification  } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import modal from '@/plugins/modal'
 
 export let isRelogin = { show: false };
 export function requestIntersept(config) {
- 
-
     const isToken = (config.headers || {}).isToken === false
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
     if (getToken() && !isToken) {
@@ -33,30 +31,10 @@ export function requestIntersept(config) {
             console.warn(`[${config.url}]: ` + '请求数据大小超出允许的5M限制，无法进行防重复提交验证。')
             return config;
         }
-        //  this is to store the request data in the session storage
-        // const sessionObj = cache.session.getJSON('sessionObj')
-        // if (sessionObj === undefined || sessionObj === null || sessionObj === '') {
-        //   cache.session.setJSON('sessionObj', requestObj)
-        // } else {
-        //   const s_url = sessionObj.url;                  // 请求地址
-        //   const s_data = sessionObj.data;                // 请求数据
-        //   const s_time = sessionObj.time;                // 请求时间
-        //   const interval = 1000;                         // 间隔时间(ms)，小于此时间视为重复提交
-        //   if (s_data === requestObj.data && requestObj.time - s_time < interval && s_url === requestObj.url) {
-        //     const message = '数据正在处理，请勿重复提交';
-        //     console.warn(`[${s_url}]: ` + message)
-        //     return Promise.reject(new Error(message))
-        //   } else {
-        //     cache.session.setJSON('sessionObj', requestObj)
-        //   }
-        // }
 
     }
     return config
 }
-
-
-
 
 export function responseIntersept(res) {
 
@@ -100,14 +78,14 @@ export function responseIntersept(res) {
         })
         return Promise.reject('error')
     } else if (code !== '0') {
-        
+
         modal.notifyError(msg)
         return Promise.reject('error')
     } else {
-    
+
         return res.data
     }
-    
+
 
 }
 
